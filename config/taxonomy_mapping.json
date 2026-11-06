@@ -9,5 +9,29 @@
     "Teacher": "Lead_Educator",
     "Student": "Peer_Facilitator"
   },
+  "regional_terms": [
+    "Micro-Improvement Project",
+    "MIP",
+    "School Management Committee",
+    "SMC",
+    "Head Teacher",
+    "HM",
+    "Gram Panchayat",
+    "Panchayat",
+    "RTE Act",
+    "NIPUN",
+    "Shikshagraha",
+    "ShikshaLokam",
+    "CRP",
+    "₹",
+    "Rs."
+  ],
+  "limits": {
+    "max_mls_units": 5,
+    "min_steps_per_unit": 3,
+    "max_steps_per_unit": 7,
+    "min_duration_weeks": 2,
+    "max_duration_weeks": 4
+  },
   "onboarding_disclaimer": "The LSB framework functions purely as an adaptive, supportive scaffolding framework for lesson content delivery. It does not prescribe operational classroom routines, behavior management habits, or physical school rules."
 }

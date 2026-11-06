@@ -1,0 +1,44 @@
+{
+  "macro_objective": "Calculate baseline regional rainfall metrics via real-world measurements.",
+  "global_context": {
+    "grade_band": "Middle",
+    "time_block_minutes": 45,
+    "resource_intensity_score": 1
+  },
+  "mls_units": [
+    {
+      "mls_id": "MLS-HYDRO-01",
+      "title": "Community Framework Layout & Container Securement",
+      "dependencies": [],
+      "tasks": [
+        {
+          "step": 1,
+          "role": "Lead_Educator",
+          "action": "Present regional rain measurement goals; allow class to choose 2 preferred placement options."
+        },
+        {
+          "step": 2,
+          "role": "Peer_Facilitator",
+          "action": "Submit chosen options to the Community_Governance_Body to secure safe physical placement approvals."
+        }
+      ]
+    },
+    {
+      "mls_id": "MLS-HYDRO-02",
+      "title": "Daily Accumulation Audit & Plotting Rounds",
+      "dependencies": ["MLS-HYDRO-01"],
+      "tasks": [
+        {
+          "step": 1,
+          "role": "Peer_Facilitator",
+          "action": "Form non-hierarchical tracking pairs; one measures morning collection while the peer partner records metrics."
+        },
+        {
+          "step": 2,
+          "role": "Lead_Educator",
+          "action": "Compile measurement data rows into shared class-wide bar charts; exhibit charts in an offline classroom display walk."
+        }
+      ]
+    }
+  ]
+}
