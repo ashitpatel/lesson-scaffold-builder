@@ -1,6 +1,6 @@
 # Prompt pipeline
 
-Each prompt returns **JSON only**, so an orchestrator script can validate and route it. There is no orchestrator yet. The deterministic checks run in code: `python3 -m lsb.validate` (see [../README.md](../README.md)).
+Each prompt returns **JSON only**, so an orchestrator script can validate and route it. `python3 -m lsb.run` runs `05-decompose` → `lsb.validate` → `50-critic` with the revise loop below; the later stages have no runner yet. The deterministic checks run in code: `python3 -m lsb.validate` (see [../README.md](../README.md)).
 
 **Adaptation status.** `05-decompose` and `50-critic` are written for LSB: they work on a whole `MLS_DAG_Sequence` ([../schemas/mls-dag.schema.json](../schemas/mls-dag.schema.json)). Prompts 10–40 and 60 are still the Shikshagraha MIP transformer's: they work on one MIP-shaped project (`seq`, `target_stakeholder`, `x_transform`), contain region-specific terms, and refer to files this repo doesn't have (`frameworks/`, `evals/`, `schema/`). Until they're adapted, `40-transform` output can't go straight into the new critic.
 
