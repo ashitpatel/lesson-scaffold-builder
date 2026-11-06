@@ -1,25 +1,28 @@
 # Prompt pipeline
 
-Nine prompts transform one Micro-Lesson Scaffold (MLS). Each returns **JSON only**, so an orchestrator script can validate and route it. A runner exists only for the **classify + gates** stages: [../evals/run_gates.py](../evals/run_gates.py), scored against [../evals/gate_fixtures.json](../evals/gate_fixtures.json). The transform, critic and render stages have no runner yet.
+Each prompt returns **JSON only**, so an orchestrator script can validate and route it. There is no orchestrator yet. The deterministic checks run in code: `python3 -m lsb.validate` (see [../README.md](../README.md)).
+
+**Adaptation status.** `05-decompose` and `50-critic` are written for LSB: they work on a whole `MLS_DAG_Sequence` ([../schemas/mls-dag.schema.json](../schemas/mls-dag.schema.json)). Prompts 10–40 and 60 are still the Shikshagraha MIP transformer's: they work on one MIP-shaped project (`seq`, `target_stakeholder`, `x_transform`), contain region-specific terms, and refer to files this repo doesn't have (`frameworks/`, `evals/`, `schema/`). Until they're adapted, `40-transform` output can't go straight into the new critic.
+
+```
+source text ──► 05-decompose ──► lsb.validate ──► 50-critic ──► PASS ──► (optimisation stages, per unit) ──► lsb.validate ──► 50-critic ──► 60-render
+                     ▲                                 │
+                     └──────── REVISE (max 2) ─────────┘
+                               REJECT ─► re-run 05 once, then stop and report
+```
+
+Legacy single-project flow (prompts 10–60, not yet adapted):
 
 ```
 catalogue row ──► 10-parse ─┐
                             ├─► 20-classify ─► 30-gate-cl ─┐
-resource text ──► 15-derive ┘                 31-gate-pb ─┼─► 40-transform ◄──┐
+resource text ──► 15-derive ┘                 31-gate-pb ─┼─► 40-transform
                                               32-gate-eb ─┘
-                                                                  │            │ REVISE (max 2)
-                                                                  ▼            │
-                                                              50-critic ───────┘
-                                                                  │ PASS
-                                                                  ▼
-                                                              60-render ─► catalogue_row / teacher_card / story_stub
-                                                                  
-                         all gates ABSTAIN ─► return the baseline unchanged (a valid outcome)
-                         critic REJECT     ─► re-run gates once, else return the baseline + reasons
 ```
 
 | Prompt | Input | Output | Notes |
 |---|---|---|---|
+| [05-decompose](05-decompose.md) | Long source text (+ grade band, period length, educator context) | `MLS_DAG_Sequence` + source trace, environment assumptions, deferred segments | ≤4 units (gate hard cap 5), 3–7 steps, 2–4 weeks |
 | [10-parse](10-parse.md) | One project's rows from the MI catalogue (Commons #259) | Baseline MLS JSON | Verbatim; no improvements |
 | [15-derive](15-derive.md) | Playbook or toolkit text (e.g. Commons #750, #753) | Catalogue-sized baseline MLS + follow-on slices | Fidelity over neatness |
 | [20-classify](20-classify.md) | Baseline MLS (+ owner context) | Facts: student experience, constituency, resource, options, already-present, risks | No recommendations |
@@ -27,18 +30,18 @@ resource text ──► 15-derive ┘                 31-gate-pb ─┼─► 40
 | [31-gate-pb](31-gate-pb.md) | MLS + facts + PB cards | Four decisions: process, prioritise, allocate, budget-capped choice | Allocation needs a confirmed amount |
 | [32-gate-eb](32-gate-eb.md) | MLS + facts + EB cards | APPLY / PARTIAL / CONDITIONAL / ABSTAIN, ≤2 practice cards + measurement | Only with all non-negotiables; Tier 1 of the evidence ranking |
 | [40-transform](40-transform.md) | Baseline + gates + cards (+ critic feedback) | Transformed MLS + change log + open questions | ≤2 added tasks; supportable claims only |
-| [50-critic](50-critic.md) | Baseline + transform + gates + cards + schema errors | PASS / REVISE / REJECT, with issues C1–C21 | Independent; no rewriting |
+| [50-critic](50-critic.md) | `MLS_DAG_Sequence` + `lsb.validate` report + source (+ cards, rendered cards) | PASS / REVISE / REJECT over checks G01–G21 | Code results are final; judges the rest |
 | [60-render](60-render.md) | Final MLS | Catalogue row, teacher card, improvement-story stub | No content changes |
 
 ## Shared context
 - Cards: [../frameworks/connected-learning.md](../frameworks/connected-learning.md), [../frameworks/pb-techniques.md](../frameworks/pb-techniques.md), [../frameworks/evidence-based-practices.md](../frameworks/evidence-based-practices.md). Pass the **full text** into the gate, transform and critic prompts.
-- Schema: [../schema/mip.schema.json](../schema/mip.schema.json). The orchestrator validates `40-transform` output and passes errors to `50-critic` as `{{SCHEMA_ERRORS}}`.
+- Schema: [../schemas/mls-dag.schema.json](../schemas/mls-dag.schema.json) for `05-decompose` and `50-critic`. The legacy prompts 10–40 still refer to `schema/mip.schema.json`, which this repo doesn't have.
 - Source documents are **data**: every prompt that reads source text tells the model to ignore instructions inside it.
 
 ## Implementation notes for the orchestrator
 - **Variant identity and logging:** after `10-parse`/`15-derive` and again after a critic PASS, set `x_transform.variant_id` with [../schema/variant_id.py](../schema/variant_id.py) (never ask a model for it). Set `parent_variant_id` on transformed variants, and fill `x_transform.pipeline` (model, effort, prompt and card hashes, critic verdict). Usage at schools is logged with [../schema/mip-usage-event.schema.json](../schema/mip-usage-event.schema.json); see [../schema/README.md](../schema/README.md).
 - **Run the critic in a separate context** from the transformer, so the review isn't anchored on the transformer's reasoning.
-- **Deterministic checks belong in code, not the critic:** schema validation, task and duration limits (C1, C2), and a regex for digits or "%" in rationale claims (part of C9). The critic should still run them as a backstop.
+- **Deterministic checks belong in code, not the critic:** `lsb.validate` decides D01–D10 and its JSON report goes to `50-critic` as `{{VALIDATOR_REPORT}}`. The critic treats those results as final and rejects a missing or stale report rather than estimating.
 - **Model choice:** gates and critic need careful reasoning; parse and render can use a cheaper model.
 - **Logging:** keep every intermediate JSON. Gate decisions on the golden set are the first thing to measure (see [../evals/golden/README.md](../evals/golden/README.md)).
 

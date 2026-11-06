@@ -13,23 +13,57 @@
       "macro_alignment": "Sets up safe, approved collection points so the class can gather the rainfall data the baseline is calculated from.",
       "duration_weeks": 2,
       "tasks": [
-        { "step": 1, "role": "Lead_Educator", "action": "Present the class goal of measuring local rainfall; show a reused plastic bottle cut and marked as a rain gauge." },
-        { "step": 2, "role": "Peer_Facilitator", "action": "In mixed pairs, sketch two possible gauge spots on the school grounds and note why each is open to the sky and safe to reach." },
-        { "step": 3, "role": "Lead_Educator", "action": "Hold a show-of-hands round to pick the two preferred spots, then take them to the Community_Governance_Body for approval." },
-        { "step": 4, "role": "Community_Volunteer", "action": "With the educator present, help fix the approved gauges in place." }
+        {
+          "step": 1,
+          "role": "Lead_Educator",
+          "action": "Present the class goal of measuring local rainfall; show a reused plastic bottle cut and marked as a rain gauge."
+        },
+        {
+          "step": 2,
+          "role": "Peer_Facilitator",
+          "action": "In mixed pairs, sketch two possible gauge spots on the school grounds and note why each is open to the sky and safe to reach."
+        },
+        {
+          "step": 3,
+          "role": "Lead_Educator",
+          "action": "Hold a show-of-hands round to pick the two preferred spots, then take them to the Community_Governance_Body for approval."
+        },
+        {
+          "step": 4,
+          "role": "Community_Volunteer",
+          "action": "With the educator present, help fix the approved gauges in place."
+        }
       ]
     },
     {
       "mls_id": "MLS-HYDRO-02",
       "title": "Daily Accumulation Audit & Plotting Rounds",
-      "dependencies": ["MLS-HYDRO-01"],
+      "dependencies": [
+        "MLS-HYDRO-01"
+      ],
       "macro_alignment": "Turns daily gauge readings into the class data set and charts that give the baseline rainfall figures.",
       "duration_weeks": 4,
       "tasks": [
-        { "step": 1, "role": "Peer_Facilitator", "action": "Form non-hierarchical pairs; one reads the morning gauge while the partner records the reading on the class chart paper, swapping roles each day." },
-        { "step": 2, "role": "Lead_Educator", "action": "Each Friday, total the week's readings with the class and add a bar to the shared rainfall chart." },
-        { "step": 3, "role": "Peer_Facilitator", "action": "In groups, work out the weekly average and the wettest day, and explain the method to another group." },
-        { "step": 4, "role": "Lead_Educator", "action": "End with a 10-minute poster walk where pairs show their chart and baseline figure to a neighbouring class." }
+        {
+          "step": 1,
+          "role": "Peer_Facilitator",
+          "action": "Recall from MLS-HYDRO-01: use the two approved gauge spots. In pairs, one reads the morning gauge while the partner records it on the class chart paper; swap roles each day."
+        },
+        {
+          "step": 2,
+          "role": "Lead_Educator",
+          "action": "Each Friday, total the week's readings with the class and add a bar to the shared rainfall chart."
+        },
+        {
+          "step": 3,
+          "role": "Peer_Facilitator",
+          "action": "In groups, work out the weekly average and the wettest day, and explain the method to another group."
+        },
+        {
+          "step": 4,
+          "role": "Lead_Educator",
+          "action": "End with a 10-minute poster walk where pairs show their chart and baseline figure to a neighbouring class."
+        }
       ]
     }
   ]
