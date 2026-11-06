@@ -1,0 +1,13 @@
+{
+  "project_name": "Lesson Scaffold Builder (LSB)",
+  "taxonomy_mappings": {
+    "Micro-Improvement Project": "Micro-Lesson Scaffold",
+    "MIP": "MLS",
+    "School Management Committee": "Community_Governance_Body",
+    "SMC": "Community_Governance_Body",
+    "Head Teacher": "Lead_Educator",
+    "Teacher": "Lead_Educator",
+    "Student": "Peer_Facilitator"
+  },
+  "onboarding_disclaimer": "The LSB framework functions purely as an adaptive, supportive scaffolding framework for lesson content delivery. It does not prescribe operational classroom routines, behavior management habits, or physical school rules."
+}
