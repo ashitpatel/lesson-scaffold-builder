@@ -20,6 +20,10 @@ class WalkthroughFolders(unittest.TestCase):
             with self.subTest(folder=d.name):
                 self.assertTrue((d / "README.md").exists())
                 self.assertTrue((d / "source.md").exists())
+                self.assertTrue((d / "decisions.md").exists())
+                final = d / "final.md"
+                self.assertTrue(final.exists())
+                self.assertIn("LICENSE", final.read_text(encoding="utf-8"))
 
     def test_each_source_copy_matches_its_canonical_fixture(self):
         for d in self.folders():
@@ -30,6 +34,7 @@ class WalkthroughFolders(unittest.TestCase):
                 fixture = (ROOT / "tests/fixtures" / m.group(1)).read_text(encoding="utf-8")
                 self.assertEqual(body.splitlines(), fixture.splitlines())
                 self.assertIn("LICENSE", head)
+                self.assertIn("© 2026 Ashit Patel", head)
 
 
 class LinksResolve(unittest.TestCase):

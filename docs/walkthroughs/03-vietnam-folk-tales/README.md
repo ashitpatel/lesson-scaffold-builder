@@ -1,6 +1,7 @@
 # Walkthrough 3 — Vietnam: folk tales and retelling
 
 > **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/vietnam-folktales`). The source chapter is an original test input written for this project and set in a Vietnamese lower-secondary literature class: [tests/fixtures/vietnam-folktales-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/vietnam-folktales-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
+> Decision trace: [decisions.md](./decisions.md) · Full final cards: [final.md](./final.md)
 
 | | |
 |---|---|

@@ -20,7 +20,7 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 | 5 | [Bangladesh: letters, sounds and first words](walkthroughs/05-bangladesh-letters-and-sounds/) | Class 1 reading | Thumbs and finger checks, letters from memory, spaced review. **Connected Learning and participatory budgeting: ruled out everywhere** | Back benches and colouring sheets for children who can't yet read; a "slow readers" chart; a workbook to buy; nightly phone videos |
 | 6 | [Mexico: migration stories, past and present](walkthroughs/06-mexico-migration/) | Grade 8 history | Finger and scrap-paper checks, recall; an unranked class book | Questions about families' legal documents; family photos with names; an unsupervised bus-terminal trip; paying for printing |
 
-Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**.
+Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source chapter (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after) and the complete final cards (`final.md`).
 
 Three more test chapters (hydrology, ecosystems and civics, not set in any one country) were run in the same sweep; their results are in the [README's live results](../README.md#live-results).
 
