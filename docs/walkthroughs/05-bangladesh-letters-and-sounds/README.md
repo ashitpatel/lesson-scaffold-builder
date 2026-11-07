@@ -1,6 +1,6 @@
 # Walkthrough 5 — Bangladesh: letters, sounds and first words
 
-> **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/bangladesh-letters`). The source chapter is an original test input written for this project and set in a Bangladeshi Class 1 classroom: [tests/fixtures/bangladesh-letters-source.md](../../tests/fixtures/bangladesh-letters-source.md). No teacher has reviewed the result yet.
+> **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/bangladesh-letters`). The source chapter is an original test input written for this project and set in a Bangladeshi Class 1 classroom: [tests/fixtures/bangladesh-letters-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/bangladesh-letters-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
 
 | | |
 |---|---|

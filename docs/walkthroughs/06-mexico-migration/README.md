@@ -1,6 +1,6 @@
 # Walkthrough 6 — Mexico: migration stories, past and present
 
-> **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/mexico-migration`). The source chapter is an original test input written for this project and set in a Mexican lower-secondary history class: [tests/fixtures/mexico-migration-source.md](../../tests/fixtures/mexico-migration-source.md). No teacher has reviewed the result yet.
+> **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/mexico-migration`). The source chapter is an original test input written for this project and set in a Mexican lower-secondary history class: [tests/fixtures/mexico-migration-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/mexico-migration-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
 
 | | |
 |---|---|

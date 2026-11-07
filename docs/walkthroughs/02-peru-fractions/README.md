@@ -1,6 +1,6 @@
 # Walkthrough 2 — Peru: fractions in the market and the garden
 
-> **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/peru-fractions`). The source chapter is an original test input written for this project and set in a Peruvian primary school: [tests/fixtures/peru-fractions-source.md](../../tests/fixtures/peru-fractions-source.md). No teacher has reviewed the result yet.
+> **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/peru-fractions`). The source chapter is an original test input written for this project and set in a Peruvian primary school: [tests/fixtures/peru-fractions-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/peru-fractions-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
 
 | | |
 |---|---|
