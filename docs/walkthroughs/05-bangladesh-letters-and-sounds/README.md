@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | A 6-week Class 1 language chapter, "Letters, Sounds and First Words": the first eight letters, two a week, then blending sounds into words |
-| **Result** | Passed: 4 units fitting the source's 6 weeks (two run side by side), 21 model calls, about $3.56 at list price |
+| **Result** | Passed: 4 units fitting the source's 6 weeks (two run side by side), 21 model calls, 337,630 input / 88,903 output tokens |
 | **Kept** | The explicit letter-sound routine (card, sound said back three times, tracing, chalk on slates, two pictures), daily blending of five words, partner reading, daily reading practice, weekly listening, and each child reading a sentence aloud |
 | **Removed** | Children who can't yet read moved to the back benches with colouring sheets; a "slow readers" chart naming children on the wall; a workbook parents must buy; nightly smartphone videos of each child reading; a history lecture with a date to copy; the language's, script's, curriculum body's and currency's names |
 | **Added** | Thumbs and finger checks every child answers at once, and letters written from memory (evidence-based). **Connected Learning and participatory budgeting both abstained on every unit**, which is the right answer for a decoding drill |

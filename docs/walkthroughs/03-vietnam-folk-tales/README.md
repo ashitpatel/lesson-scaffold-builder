@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | A 6-week Grade 6 literature unit, "Folk Tales and Retelling", written to the national education programme |
-| **Result** | Passed: 4 units (one foundation unit, then three that can run side by side), 22 model calls, about $4.25 at list price |
+| **Result** | Passed: 4 units (one foundation unit, then three that can run side by side), 22 model calls, 377,964 input / 112,744 output tokens |
 | **Kept** | Folk-tale structure and character types, two set tales with story maps, character and lesson with a quotation, retelling aloud, collecting a tale by word of mouth, writing an original tale of 400–600 words |
 | **Removed** | Videos of each child uploaded to a parents' messaging group; winners' names on the school loudspeaker; visits to elderly neighbours pupils don't know; a class book sold at the fair with pupils collecting the money; a two-lesson history lecture; the country, ministry, festival, app and currency |
 | **Added** | Whole-class checks and recall from memory (evidence-based); an unranked class book of everyone's tales (Connected Learning). Participatory budgeting rightly abstained everywhere |

@@ -81,7 +81,8 @@ def evaluate(case: dict, run_dir: Path) -> dict:
         "status": summary.get("status"),
         "attempts": summary.get("attempts"),
         "calls": len(usage),
-        "cost_usd_list_price": round(sum(u.get("cost_usd_list_price") or 0 for u in usage), 2),
+        "tokens_in": sum(u.get("input", 0) + u.get("cache_read", 0) + u.get("cache_write", 0) for u in usage),
+        "tokens_out": sum(u.get("output", 0) for u in usage),
         "units": len(units),
         "stages": {k: {s: sum(1 for u in (log or {}).get("units", {}).values() if u.get("status") == s)
                        for s in ("applied", "abstained", "reverted", "edit_rejected")}
@@ -127,21 +128,23 @@ def run_case(case: dict, root: Path, extra: list[str], runner=None) -> Path:
 
 
 def report_markdown(results: list[dict], baseline: dict[str, dict] | None = None) -> str:
-    lines = ["# Regression report", "", "| Case | Result | Status | Units | Calls | Cost (list) | Cards applied | Failed checks |",
+    lines = ["# Regression report", "", "| Case | Result | Status | Units | Calls | Tokens in/out | Cards applied | Failed checks |",
              "|---|---|---|---|---|---|---|---|"]
     for r in results:
         st = r["stats"]
         failed = "; ".join(f"{c['check']} ({c['detail']})" if c["detail"] else c["check"]
                            for c in r["checks"] if not c["ok"]) or "—"
-        cost = f"${st.get('cost_usd_list_price', 0):.2f}"
+        tok = f"{st.get('tokens_in', 0):,} / {st.get('tokens_out', 0):,}"
         if baseline and r["name"] in baseline:
             b = baseline[r["name"]]["stats"]
-            cost += f" (was ${b.get('cost_usd_list_price', 0):.2f}, {b.get('status')})"
+            if "tokens_in" in b:
+                tok += f" (was {b['tokens_in']:,} / {b['tokens_out']:,}, {b.get('status')})"
         lines.append(f"| {r['name']} | {'PASS' if r['ok'] else 'FAIL'} | {st.get('status')} | {st.get('units')} | "
-                     f"{st.get('calls')} | {cost} | {', '.join(st.get('cards_applied') or []) or '—'} | {failed} |")
-    total = sum(r["stats"].get("cost_usd_list_price", 0) for r in results)
+                     f"{st.get('calls')} | {tok} | {', '.join(st.get('cards_applied') or []) or '—'} | {failed} |")
+    total_in = sum(r["stats"].get("tokens_in", 0) for r in results)
+    total_out = sum(r["stats"].get("tokens_out", 0) for r in results)
     lines += ["", f"{sum(r['ok'] for r in results)} of {len(results)} cases met every expectation. "
-                  f"Total cost at list price: ${total:.2f}."]
+                  f"Total tokens: {total_in:,} in / {total_out:,} out."]
     return "\n".join(lines) + "\n"
 
 

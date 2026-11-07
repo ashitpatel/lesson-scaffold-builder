@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | A 6-week Grade 6 science strand, "Clean Water and Health", written for the Competency-Based Curriculum (CBC), Upper Primary |
-| **Result** | Passed: 4 units (one foundation unit, a chain of two after it, one alongside), 23 model calls, about $5.14 at list price |
+| **Result** | Passed: 4 units (one foundation unit, a chain of two after it, one alongside), 23 model calls, 411,253 input / 141,613 output tokens |
 | **Kept** | How germs get into water and the class chart, building a filter, boiling and sunlight demonstrations, handwashing and the tippy-tap, covered storage, and each learner's safe-water guide |
 | **Removed** | Learners cutting bottles with a razor, pouring boiling water and climbing on the roof; boiling water at home; a register of which families treat their water; an unsupervised walk to the lake shore; testing kits to buy; a two-lesson history lecture; the county, lake, currency, offices and curriculum names |
 | **Added** | Whole-class finger checks and recall from memory (evidence-based); rotating roles for the jar comparison, and each guide read to a younger class (Connected Learning). Participatory budgeting abstained everywhere |

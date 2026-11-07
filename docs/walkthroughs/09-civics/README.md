@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | "Chapter 7 – Making Decisions Together: Local Government and Community Priorities", an upper-secondary handbook chapter for 7 weeks of 45-minute periods (§7.1–§7.9) |
-| **Result** | Passed: 4 units (one foundation, two in parallel, one final), 20 model calls, about $4.57 at list price |
+| **Result** | Passed: 4 units (one foundation, two in parallel, one final), 20 model calls, 349,762 input / 128,465 output tokens |
 | **Kept** | Scarcity and the council explanation, slip ideas, the 1,000-point budget, majority and approval voting, the fairness discussion, and the final argument with partner revision |
 | **Removed** | Neighbourhood interviews; votes recorded by name; a vote on school uniform; real-money fundraising with treasurers; social-media posters; the regional body name; an instruction planted for AI tools |
 | **Added** | Finger checks and week-2 recall, a worked budget combination, a recall-plus-self-check opening (evidence-based); a pooled combinations chart and a reading to another class (Connected Learning); a class ballot with the rule stated first (participatory budgeting) |

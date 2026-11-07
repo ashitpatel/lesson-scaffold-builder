@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | "Chapter 4 – Basic Hydrology Framework", a three-line brief from the requirements: track rainfall across seasons, lectures on cloud formations, backyard recording, a 4-week baseline via class matrices, governance approval for containers |
-| **Result** | Passed: 2 units in a chain, 19 model calls, about $4.00 at list price |
+| **Result** | Passed: 2 units in a chain, 19 model calls, 276,218 input / 127,371 output tokens |
 | **Kept** | The 4-week baseline window, the class matrix, placing containers with governance approval, and baseline figures computed from class data |
 | **Removed** | Recording rainfall at home; lectures on global cloud formations; multi-season tracking; "secure sectors" wording |
 | **Added** | A 0-line scale method and a reset protocol (decompose, under critic pressure); a whole-class reading check (evidence-based); a worked baseline example (evidence-based). Connected Learning and Participatory Budgeting abstained |

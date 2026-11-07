@@ -574,7 +574,7 @@ class ClaudeCodeBackend(unittest.TestCase):
 
     def ok(self, result='{"a": 1}', **over):
         d = {"type": "result", "subtype": "success", "is_error": False, "result": result,
-             "stop_reason": "end_turn", "total_cost_usd": 0.01,
+             "stop_reason": "end_turn",
              "usage": {"input_tokens": 3, "output_tokens": 4, "cache_read_input_tokens": 5,
                        "cache_creation_input_tokens": 6},
              "modelUsage": {"claude-opus-5-5": {}}}
@@ -645,7 +645,7 @@ class MuseBackend(unittest.TestCase):
         self.assertEqual(text, '{"a": 1}')
         self.assertEqual((usage["input"], usage["output"], usage["cache_read"]), (30, 4, 5))
         self.assertEqual(usage["model"], "muse-spark-1.3")
-        self.assertIsNone(usage["cost_usd_list_price"])
+        self.assertNotIn("cost_usd_list_price", usage)
         cmd = self.seen["cmd"]
         self.assertNotIn("--model", cmd)
         self.assertEqual(cmd[cmd.index("--reasoning-effort") + 1], "high")
@@ -686,6 +686,118 @@ class MuseBackend(unittest.TestCase):
             raise subprocess.TimeoutExpired(cmd, 1200)
         with self.assertRaises(run.StageError):
             run.MuseModel(runner=slow).complete([{"text": "s"}], "u")
+
+
+class GeminiBackend(unittest.TestCase):
+    """GeminiModel with a fake HTTPS opener: no network call is made."""
+
+    def model(self, payload=None, error=None, **kw):
+        import urllib.request
+        self.seen = {}
+
+        class FakeResponse:
+            def __init__(self, body):
+                self.body = body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def read(self):
+                return json.dumps(self.body).encode("utf-8")
+
+        def fake_opener(req, timeout=None):
+            assert isinstance(req, urllib.request.Request)
+            self.seen = {"url": req.full_url, "timeout": timeout,
+                         "key": req.get_header("X-goog-api-key"),
+                         "body": json.loads(req.data.decode("utf-8"))}
+            if error is not None:
+                raise error
+            return FakeResponse(payload)
+
+        kw.setdefault("api_key", "TESTKEY")
+        kw.setdefault("effort", "high")
+        return run.GeminiModel(opener=fake_opener, **kw)
+
+    def ok(self, *texts, finish="STOP", usage=None):
+        return {"candidates": [{"content": {"parts": [{"text": t} for t in texts or ['{"a": 1}']]},
+                                "finishReason": finish}],
+                "usageMetadata": usage or {"promptTokenCount": 30, "candidatesTokenCount": 4}}
+
+    def test_success_joins_parts_and_reports_usage(self):
+        m = self.model(self.ok('{"a": ', "1}"))
+        text, usage = m.complete([{"type": "text", "text": "SYSTEM"}], "USER")
+        self.assertEqual(text, '{"a": 1}')
+        self.assertEqual((usage["input"], usage["output"], usage["cache_read"]), (30, 4, 0))
+        self.assertEqual(usage["model"], "gemini-2.5-flash")
+        self.assertNotIn("cost_usd_list_price", usage)
+        body = self.seen["body"]
+        self.assertEqual(body["system_instruction"]["parts"], [{"text": "SYSTEM"}])
+        self.assertEqual(body["contents"][0]["parts"], [{"text": "USER"}])
+        self.assertEqual(body["generationConfig"]["responseMimeType"], "application/json")
+        self.assertEqual(body["generationConfig"]["thinkingConfig"], {"thinkingBudget": 8192})
+        self.assertIn("models/gemini-2.5-flash:generateContent", self.seen["url"])
+        self.assertEqual(self.seen["key"], "TESTKEY")
+
+    def test_effort_maps_to_thinking_budget(self):
+        self.model(self.ok(), effort="low").complete([{"text": "s"}], "u")
+        self.assertEqual(self.seen["body"]["generationConfig"]["thinkingConfig"],
+                         {"thinkingBudget": 0})
+
+    def test_model_flag_changes_url(self):
+        self.model(self.ok(), model="gemini-2.5-pro").complete([{"text": "s"}], "u")
+        self.assertIn("models/gemini-2.5-pro:generateContent", self.seen["url"])
+
+    def test_missing_key_exits(self):
+        import os
+        saved = {k: os.environ.pop(k) for k in ("GEMINI_API_KEY", "GOOGLE_API_KEY") if k in os.environ}
+        try:
+            with self.assertRaises(SystemExit):
+                run.GeminiModel(opener=lambda req, timeout=None: None).complete([{"text": "s"}], "u")
+        finally:
+            os.environ.update(saved)
+
+    def http_error(self, code, message):
+        import io
+        import urllib.error
+        return urllib.error.HTTPError("http://x", code, message, {},
+                                      io.BytesIO(json.dumps({"error": {"message": message}}).encode()))
+
+    def test_auth_error_exits(self):
+        with self.assertRaises(SystemExit):
+            self.model(error=self.http_error(400, "API key not valid")).complete([{"text": "s"}], "u")
+
+    def test_rate_limit_is_model_unavailable(self):
+        with self.assertRaises(run.ModelUnavailable):
+            self.model(error=self.http_error(429, "quota exceeded")).complete([{"text": "s"}], "u")
+
+    def test_server_error_is_a_stage_error(self):
+        with self.assertRaises(run.StageError):
+            self.model(error=self.http_error(500, "boom")).complete([{"text": "s"}], "u")
+
+    def test_blocked_prompt_is_a_stage_error(self):
+        with self.assertRaises(run.StageError):
+            self.model({"promptFeedback": {"blockReason": "SAFETY"}}).complete([{"text": "s"}], "u")
+
+    def test_no_candidates_is_a_stage_error(self):
+        with self.assertRaises(run.StageError):
+            self.model({"candidates": []}).complete([{"text": "s"}], "u")
+
+    def test_safety_stop_is_a_stage_error(self):
+        with self.assertRaises(run.StageError):
+            self.model(self.ok("half", finish="SAFETY")).complete([{"text": "s"}], "u")
+
+    def test_max_tokens_stop_is_a_stage_error(self):
+        with self.assertRaisesRegex(run.StageError, "max_tokens"):
+            self.model(self.ok("half", finish="MAX_TOKENS")).complete([{"text": "s"}], "u")
+
+    def test_timeout_is_a_stage_error(self):
+        import urllib.error
+        with self.assertRaises(run.StageError):
+            self.model(error=urllib.error.URLError(TimeoutError("timed out"))).complete(
+                [{"text": "s"}], "u")
 
 
 if __name__ == "__main__":

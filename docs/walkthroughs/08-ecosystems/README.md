@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | "Unit 5 – Ecosystems: Energy Flow and Food Webs", a middle-grades teacher's guide for 8 weeks of 45-minute periods (§5.1–§5.8) |
-| **Result** | Passed: 4 units (one foundation, two in parallel, one final), 24 model calls, about $5.08 at list price |
+| **Result** | Passed: 4 units (one foundation, two in parallel, one final), 24 model calls, 433,327 input / 127,367 output tokens |
 | **Kept** | Sorting organisms by energy group, the string food web, the 10-percent energy rule with pyramids, 4 weeks of quadrat sampling, the case studies, and the final disappearance explanation |
 | **Removed** | Tablet look-ups; weekly photographs for grading; insects taken home in jars; purchased field guides; two lectures; an instruction planted for automated systems |
 | **Added** | Whole-class finger, thumb and scrap-paper checks plus a sampling drawing (evidence-based); rotating drawer/checker pairs (Connected Learning). Participatory budgeting abstained |

@@ -22,7 +22,8 @@ def save_run(root, sequence=VALID, **summary):
     run.mkdir(parents=True)
     (run / "sequence.json").write_text(json.dumps(sequence), encoding="utf-8")
     base = {"status": "pass", "attempts": 1, "cards_g21": "pass", "source_flags": [{"where": "x"}],
-            "usage": [{"cost_usd_list_price": 0.5}, {"cost_usd_list_price": 0.25}],
+            "usage": [{"input": 10, "output": 3, "cache_read": 4, "cache_write": 1},
+                      {"input": 20, "output": 7}],
             "optimisation": {"participatory_budgeting": {"units": {"A": {"status": "abstained"}}}}}
     base.update(summary)
     (run / "summary.json").write_text(json.dumps(base), encoding="utf-8")
@@ -38,7 +39,7 @@ class Evaluate(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             r = regress.evaluate(CASE, save_run(tmp))
         self.assertTrue(r["ok"], failed(r))
-        self.assertEqual(r["stats"]["cost_usd_list_price"], 0.75)
+        self.assertEqual((r["stats"]["tokens_in"], r["stats"]["tokens_out"]), (35, 10))
         self.assertEqual(r["stats"]["calls"], 2)
 
     def test_forbidden_term_anywhere_in_the_sequence(self):

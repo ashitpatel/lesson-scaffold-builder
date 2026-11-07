@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | An 8-week Grade 8 history block, "Migration Stories, Past and Present" |
-| **Result** | Passed on the first attempt: 3 units, 7 weeks of content (one week of slack), 13 model calls, about $2.16 at list price, the cheapest run in the sweep |
+| **Result** | Passed on the first attempt: 3 units, 7 weeks of content (one week of slack), 13 model calls, 191,189 input / 58,178 output tokens, the smallest run in the sweep |
 | **Kept** | Push and pull factors, three primary sources analysed with the same four questions, a 1900-to-today timeline, and a two-page source-based explanation drafted, peer-read and revised |
 | **Removed** | Students asking family members whether relatives had legal documents or live abroad without papers; family photos pinned on a map with the family name; an unsupervised Saturday trip to the bus terminal to question travellers; students paying to print timelines in colour; the programme's, state's, country's and currency's names |
 | **Added** | Finger and scrap-paper checks every student answers at once, and recall from memory (evidence-based); an unranked class book of everyone's explanations (Connected Learning). Participatory budgeting abstained everywhere |

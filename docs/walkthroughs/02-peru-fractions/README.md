@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | A 6-week Grade 5 mathematics unit, "Fractions in the Market and the Garden", from a regional edition of the national curriculum |
-| **Result** | Passed: 3 units, 6 weeks in all, 17 model calls, about $3.60 at list price |
+| **Result** | Passed: 3 units, 6 weeks in all, 17 model calls, 294,788 input / 100,638 output tokens |
 | **Kept** | Folding paper strips, equivalent fractions, comparing and adding, the class garden bed, the poster |
 | **Removed** | Pupils bringing and spending money at a named market; homework on the family's harvest income; test scores posted by name on a wall chart; a two-session lecture on the history of measuring; the region's currency, curriculum body and education office |
 | **Added** | Whole-class checks and recall from memory (evidence-based); a showcase for a younger class (Connected Learning); a class vote on the garden bed, with the rule announced first (participatory budgeting) |

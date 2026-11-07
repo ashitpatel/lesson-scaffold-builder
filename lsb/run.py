@@ -6,8 +6,10 @@
 Backends: `--backend claude-code` (default) runs each call through headless Claude
 Code (`claude -p`) on your Claude Code login, with no API key needed.
 `--backend muse` runs each call through headless Muse Code (`muse exec`) on
-your Muse login instead. `--backend api` calls the Anthropic API directly and
-needs ANTHROPIC_API_KEY or an `ant auth login` profile.
+your Muse login instead. `--backend gemini` calls Google's Gemini API with a free
+key from Google AI Studio (GEMINI_API_KEY), no paid account needed. `--backend
+api` calls the Anthropic API directly and needs ANTHROPIC_API_KEY or an `ant
+auth login` profile.
 Every intermediate JSON is saved under runs/<timestamp>/.
 
 Choices: `--ask` pauses to ask, first, which frameworks to exclude, then
@@ -224,7 +226,6 @@ class ClaudeCodeModel:
             "output": u.get("output_tokens", 0),
             "cache_read": u.get("cache_read_input_tokens", 0),
             "cache_write": u.get("cache_creation_input_tokens", 0),
-            "cost_usd_list_price": out.get("total_cost_usd"),
         }
         if out.get("is_error") and USAGE_LIMIT.search(str(out.get("result"))):
             raise ModelUnavailable(str(out.get("result"))[:300])
@@ -245,7 +246,7 @@ class MuseModel:
     step and no reminders: the reply must be the JSON the prompt asks for. It
     runs in an empty temporary directory so no workspace skills or rules load.
     Stdout is JSONL; the reply is the joined run.output.delta texts and token
-    counts come from the run.usage event, which reports no USD cost.
+    counts come from the run.usage event.
     """
 
     def __init__(self, effort: str = "high", model: str | None = None, timeout: int = 1200, runner=None):
@@ -318,7 +319,95 @@ class MuseModel:
             "output": first.get("output_tokens", 0),
             "cache_read": first.get("cached_tokens", 0),
             "cache_write": 0,
-            "cost_usd_list_price": None,
+        }
+        return text, usage
+
+
+GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_EFFORT = {"low": 0, "medium": 2048, "high": 8192, "xhigh": 16384, "max": 24576}
+
+
+class GeminiModel:
+    """Calls Google's Gemini API over plain HTTPS (standard library only, no SDK).
+
+    Auth is a free key from Google AI Studio (GEMINI_API_KEY or GOOGLE_API_KEY).
+    The prompt goes as the system instruction, the values as the user turn, and
+    the reply is requested as JSON. Effort maps to a thinking budget.
+    """
+
+    def __init__(self, effort: str = "high", model: str | None = None, timeout: int = 1200,
+                 opener=None, api_key: str | None = None):
+        self.effort = effort
+        self.model = model or GEMINI_MODEL
+        self.timeout = timeout
+        self.opener = opener
+        self.api_key = api_key
+
+    def complete(self, system: list[dict], user: str) -> tuple[str, dict]:
+        import os
+        import urllib.error
+        import urllib.request
+
+        key = self.api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if not key:
+            raise SystemExit("Gemini needs a free API key: create one at https://aistudio.google.com/apikey "
+                             "and set GEMINI_API_KEY (or GOOGLE_API_KEY).")
+        body = {
+            "system_instruction": {"parts": [{"text": b["text"]} for b in system]},
+            "contents": [{"role": "user", "parts": [{"text": user}]}],
+            "generationConfig": {
+                "responseMimeType": "application/json",
+                "maxOutputTokens": MAX_TOKENS,
+                "thinkingConfig": {"thinkingBudget": GEMINI_EFFORT.get(self.effort, 8192)},
+            },
+        }
+        req = urllib.request.Request(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent",
+            data=json.dumps(body).encode("utf-8"),
+            headers={"Content-Type": "application/json", "x-goog-api-key": key},
+            method="POST")
+        opener = self.opener or urllib.request.urlopen
+        try:
+            with opener(req, timeout=self.timeout) as resp:
+                out = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            try:
+                detail = json.loads(e.read().decode("utf-8", "replace")).get("error", {}).get("message", "")
+            except Exception:
+                detail = ""
+            detail = (detail or f"HTTP {e.code}").strip()[:500]
+            if e.code in (400, 401, 403, 404):
+                raise SystemExit(f"Gemini rejected the request ({detail}); check the key and --model") from e
+            if e.code == 429:
+                raise ModelUnavailable(detail[:300]) from e
+            raise StageError(f"Gemini error ({detail})") from e
+        except urllib.error.URLError as e:
+            if isinstance(e.reason, TimeoutError):
+                raise StageError(f"Gemini timed out after {self.timeout}s") from e
+            raise StageError(f"Gemini request failed: {e.reason}") from e
+        fb = out.get("promptFeedback") or {}
+        if fb.get("blockReason"):
+            raise StageError(f"Gemini blocked the prompt ({fb['blockReason']})")
+        cands = out.get("candidates") or []
+        if not cands:
+            raise StageError("Gemini returned no candidates")
+        cand = cands[0]
+        finish = cand.get("finishReason")
+        if finish in ("SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "MALFORMED_FUNCTION_CALL"):
+            raise StageError(f"Gemini stopped the reply ({finish})")
+        if finish == "MAX_TOKENS":
+            raise StageError("reply hit max_tokens before finishing")
+        text = "".join(p.get("text", "") for p in (cand.get("content") or {}).get("parts", []))
+        if not text.strip():
+            raise StageError("Gemini returned no text")
+        u = out.get("usageMetadata") or {}
+        usage = {
+            "model": self.model,
+            "stop_reason": (finish or "STOP").lower() if isinstance(finish, str) else None,
+            "input": u.get("promptTokenCount", 0),
+            "output": u.get("candidatesTokenCount", 0),
+            "cache_read": u.get("cachedContentTokenCount", 0),
+            "cache_write": 0,
         }
         return text, usage
 
@@ -1031,11 +1120,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--time-block", type=int, metavar="MINUTES", help="class period length, 5-120")
     ap.add_argument("--context-file", type=Path, help="educator's notes about their setting")
     ap.add_argument("--effort", default="high", choices=["low", "medium", "high", "xhigh", "max"])
-    ap.add_argument("--backend", default="claude-code", choices=["claude-code", "muse", "api"],
+    ap.add_argument("--backend", default="claude-code", choices=["claude-code", "muse", "gemini", "api"],
                     help="claude-code: headless `claude -p` on your Claude Code login (default); "
-                         "muse: headless `muse exec` on your Muse login; api: Anthropic API key")
+                         "muse: headless `muse exec` on your Muse login; "
+                         "gemini: Gemini API on a free AI Studio key; api: Anthropic API key")
     ap.add_argument("--model", default=None,
-                    help="model id (default: claude-opus-5-5 for claude-code/api, the CLI default for muse)")
+                    help="model id (default: claude-opus-5-5 for claude-code/api, "
+                         "the CLI default for muse, gemini-2.5-flash for gemini)")
     ap.add_argument("--ask", action="store_true", help="ask about the breakdown and each stage's limits")
     ap.add_argument("--answers", type=Path, metavar="FILE",
                     help="JSON answers for the --ask questions (sweeps answer without stopping)")
@@ -1079,6 +1170,9 @@ def main(argv: list[str] | None = None) -> int:
         api_errors: tuple = ()
     elif args.backend == "muse":
         model = MuseModel(effort=args.effort, model=args.model)
+        api_errors = ()
+    elif args.backend == "gemini":
+        model = GeminiModel(effort=args.effort, model=args.model)
         api_errors = ()
     else:
         import anthropic

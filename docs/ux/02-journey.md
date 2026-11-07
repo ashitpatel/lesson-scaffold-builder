@@ -38,7 +38,7 @@ Each stage may change at most two cards' worth and add at most one step per unit
 
 **7. Read and decide.** In the run folder:
 - `cards.html` / `cards.txt`: what teachers get;
-- `summary.json`: the **source flags** (what in the source was unsafe or unusable), what each stage did per unit and why, and the cost;
+- `summary.json`: the **source flags** (what in the source was unsafe or unusable), what each stage did per unit and why, and token usage;
 - `NN-decompose.json`: what was set aside (`deferred_segments`) and what each unit assumes about the setting.
 
 Edit the cards, fix the source and re-run, or hand the cards on.

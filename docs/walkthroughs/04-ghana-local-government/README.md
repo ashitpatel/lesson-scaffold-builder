@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Source** | A 7-week JHS 2 social studies section, "Our District Assembly and Community Development" |
-| **Result** | Passed: 3 units (two that can run side by side, then a letter), 19 model calls, about $3.84 at list price |
+| **Result** | Passed: 3 units (two that can run side by side, then a letter), 19 model calls, 308,561 input / 96,882 output tokens |
 | **Kept** | How a local council works, the community's needs, a fixed development budget with costed projects, a class vote, whether the result is fair, and a revised letter to the council member |
 | **Removed** | An unsupervised household survey recording names and phone numbers; a real class-prefect election with campaign speeches; pupils attending a town hall meeting on their own; pupils bringing money to a class fund held by a pupil treasurer; a history lecture; the country's own names for its council, committees, national fund and currency |
 | **Added** | A chalkboard diagram, a worked budget example, a whole-class check and recall from memory (evidence-based); a reading of the letters to another class (Connected Learning); a mock vote counted two ways, with the rules announced first and the result reported (participatory budgeting) |
