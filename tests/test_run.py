@@ -122,6 +122,14 @@ class Pipeline(unittest.TestCase):
         self.assertEqual(r.attempt_scores[1]["blocker"], 6)  # D03, D04, D09 on both units
         self.assertEqual(r.best_attempt, 2)
 
+    def test_usage_limit_stops_the_run_without_burning_attempts(self):
+        m = FakeModel([decomposed(VALID), run.ModelUnavailable("You've hit your session limit")],
+                      [critic("REVISE", [ISSUE])])
+        r = self.go(m)
+        self.assertEqual((r.status, r.attempts, r.best_attempt), ("error", 2, 1))
+        self.assertTrue(any("model unavailable" in n for n in r.notes))
+        self.assertTrue((self.out / "sequence.json").exists())
+
     def test_revisions_are_capped(self):
         m = FakeModel([decomposed(VALID)] * 3, [critic("REVISE", [ISSUE])] * 3)
         r = self.go(m, max_revisions=2)
@@ -223,6 +231,11 @@ class ClaudeCodeBackend(unittest.TestCase):
     def test_error_result_is_a_stage_error(self):
         with self.assertRaises(run.StageError):
             self.model(self.ok(is_error=True, subtype="error_during_execution")).complete([{"text": "s"}], "u")
+
+    def test_usage_limit_is_model_unavailable(self):
+        out = self.ok(is_error=True, subtype="success", result="You've hit your session limit · resets 5:50pm")
+        with self.assertRaises(run.ModelUnavailable):
+            self.model(out).complete([{"text": "s"}], "u")
 
     def test_max_tokens_is_a_stage_error(self):
         with self.assertRaises(run.StageError):

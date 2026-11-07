@@ -57,6 +57,13 @@ class StageError(RuntimeError):
     """The model's reply couldn't be used (refusal, truncation, no JSON)."""
 
 
+class ModelUnavailable(RuntimeError):
+    """The model can't be called right now (e.g. a usage limit). Retrying won't help."""
+
+
+USAGE_LIMIT = re.compile(r"hit your (session |usage |weekly )?limit|usage limit|rate limit", re.I)
+
+
 class AnthropicModel:
     def __init__(self, effort: str = "high", model: str = MODEL):
         import anthropic
@@ -168,6 +175,8 @@ class ClaudeCodeModel:
             "cache_write": u.get("cache_creation_input_tokens", 0),
             "cost_usd_list_price": out.get("total_cost_usd"),
         }
+        if out.get("is_error") and USAGE_LIMIT.search(str(out.get("result"))):
+            raise ModelUnavailable(str(out.get("result"))[:300])
         if out.get("is_error") or out.get("subtype") != "success":
             raise StageError(f"claude -p error ({out.get('subtype')}): {str(out.get('result'))[:500]}")
         if usage["stop_reason"] == "refusal":
@@ -327,6 +336,10 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         result.attempts = attempt
         try:
             decomposed = call("decompose", DECOMPOSE, decompose_values(src, previous, feedback), attempt)
+        except ModelUnavailable as e:
+            result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
+            result.status = "error"
+            break
         except StageError as e:
             result.notes.append(f"attempt {attempt}: decompose unusable: {e}")
             previous, feedback = None, [{"check": "format", "problem": str(e),
@@ -346,6 +359,10 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         reviewed_issues = feedback if previous is not None else None  # a revision of `previous`
         try:
             critic = call("critic", CRITIC, critic_values(src, decomposed, report, reviewed_issues), attempt)
+        except ModelUnavailable as e:
+            result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
+            result.status = "error"
+            break
         except StageError as e:
             result.notes.append(f"attempt {attempt}: critic unusable: {e}")
             result.status = "error"

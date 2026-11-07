@@ -47,11 +47,34 @@ class CriticTable(unittest.TestCase):
 
 
 class DecomposeExample(unittest.TestCase):
-    def test_example_unit_matches_the_valid_fixture(self):
+    EXAMPLE = ROOT / "tests/fixtures/example-persuasive-valid.json"
+
+    def test_example_unit_matches_its_fixture(self):
         blocks = re.findall(r"```json\n(.*?)```", read("05-decompose.md"), re.S)
         example = json.loads(blocks[-1])
-        fixture = json.loads((ROOT / "tests/fixtures/hydrology-valid.json").read_text(encoding="utf-8"))
+        fixture = json.loads(self.EXAMPLE.read_text(encoding="utf-8"))
         self.assertEqual(example, fixture["mls_units"][1])
+
+    def test_example_fixture_passes_every_code_check(self):
+        report = v.validate(json.loads(self.EXAMPLE.read_text(encoding="utf-8")))
+        self.assertTrue(report.passed, v.format_text(report))
+
+    def test_prompts_do_not_contain_any_test_source(self):
+        # A worked example taken from a test source lets the model copy the
+        # answer, so a pass on that source proves nothing (seen in a live run).
+        fixtures = ROOT / "tests/fixtures"
+        sources = sorted(fixtures.glob("*-source.md"))
+        self.assertTrue(sources)
+        for src in sources:
+            markers = [src.read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()]
+            answer = fixtures / src.name.replace("-source.md", "-valid.json")
+            if answer.exists():  # the mls_id prefix of the expected answer, e.g. "MLS-HYDRO-"
+                markers += sorted(set(re.findall(r"MLS-[A-Z]+-", answer.read_text(encoding="utf-8"))))
+            for prompt in sorted(PROMPTS.glob("*.md")):
+                text = prompt.read_text(encoding="utf-8")
+                for marker in markers:
+                    with self.subTest(source=src.name, prompt=prompt.name, marker=marker):
+                        self.assertNotIn(marker, text)
 
 
 class AdaptedPromptsAreRegionNeutral(unittest.TestCase):

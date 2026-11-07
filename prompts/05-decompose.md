@@ -7,7 +7,7 @@ You decompose; you don't optimise. Later stages apply Connected Learning, partic
 
 ## Inputs
 - `{{SOURCE_TEXT}}`: the extracted text of the source.
-- `{{SOURCE_REF}}`: an identifier for the source, e.g. `Chapter 4 - Basic Hydrology Framework`.
+- `{{SOURCE_REF}}`: an identifier for the source, e.g. `Unit 3 - Persuasive Writing`.
 - `{{GRADE_BAND}}` (optional): `Primary`, `Middle` or `High`. If absent, infer it from the source and add a warning saying you did.
 - `{{TIME_BLOCK_MINUTES}}` (optional): the length of one class period, 5–120. Default 45, with a warning.
 - `{{CONTEXT}}` (optional): what the educator has told us about their setting (materials, schedules, holidays, volunteers). Treat it as the educator's claim, not verified fact.
@@ -75,40 +75,43 @@ Return **only** one JSON object, with no text before or after it:
 - `mls_id`s are unique, uppercase, and share one short prefix taken from the topic.
 
 ## Example
-**Source (abridged):** *"Chapter 4 – Basic Hydrology Framework. This segment covers tracking local rainfall across seasons. Teachers lead lectures on global cloud formation and assign students to record backyard rainfall. The goal is to calculate baseline local rainfall over 4 weeks using class tables. The local governance body must approve where containers are placed."*
+**Source (abridged):** *"Unit 3 – Persuasive Writing. Lessons open with a lecture on the history of rhetoric, from ancient orators to modern advertising. Students study how writers state a claim, support it with reasons and evidence, and answer an opposing view. They read two short opinion pieces on the same local issue and compare how each one argues. The unit ends with each student writing a one-page persuasive letter on an issue in their school or neighbourhood, and revising it after feedback."*
 
 **Output (`sequence.mls_units[1]` only):**
 ```json
 {
-  "mls_id": "MLS-HYDRO-02",
-  "title": "Daily Rainfall Recording & Baseline Calculation",
+  "mls_id": "MLS-PERSUADE-02",
+  "title": "Writing and Revising a Persuasive Letter",
   "dependencies": [
-    "MLS-HYDRO-01"
+    "MLS-PERSUADE-01"
   ],
-  "macro_alignment": "Turns 4 weeks of daily gauge readings in the class table into the baseline rainfall figures.",
-  "duration_weeks": 4,
+  "macro_alignment": "Turns the four argument parts into each student's own finished persuasive letter, revised after feedback.",
+  "duration_weeks": 3,
   "tasks": [
     {
       "step": 1,
-      "role": "Peer_Facilitator",
-      "action": "Recall from MLS-HYDRO-01: use the approved gauge spots and the blank class table. Each school morning, the pair on that day's rota reads each gauge, writes the millimetres in that day's row of the class table, then empties the gauge. Partners swap reader and recorder each turn, and the rota gives every pair a turn."
+      "role": "Lead_Educator",
+      "action": "Recall from MLS-PERSUADE-01: use the class chart of the four argument parts. Each student chooses an issue in their school or neighbourhood and writes a one-line claim and three reasons in their notebook."
     },
     {
       "step": 2,
       "role": "Lead_Educator",
-      "action": "Each Friday, total the week's readings with the class in the totals row of the class table. Where a reading covers more than one day (after a weekend or holiday), write the number of days next to it."
+      "action": "Give a full lesson of quiet writing time. Each student drafts a one-page letter that states the claim, supports each reason with evidence, and answers one opposing view."
     },
     {
       "step": 3,
       "role": "Peer_Facilitator",
-      "action": "In mixed groups, use the class table to work out the week's average daily rainfall: the week's total divided by the number of days the readings cover. Groups rotate who calculates and who checks each week."
+      "action": "In pairs, read each other's draft and check it against the four parts on the class chart. Each partner writes one note on what is missing or unclear, then partners swap roles."
     },
     {
       "step": 4,
       "role": "Lead_Educator",
-      "action": "On the last school day of week 4, work through the class table with the class to find the 4-week total and the average daily rainfall. Write these baseline figures at the top of the table with the dates they cover, then empty the gauges and bring them indoors."
+      "action": "Give a second full lesson for each student to revise the draft using the partner's note and write a final copy."
     }
   ]
 }
 ```
-The cloud-formation lecture becomes a `deferred_segments` entry ("lecture only"), because it has no classroom action of its own. The source's backyard recording moves to gauges on the school grounds, with a `decompose_warnings` entry saying why: recording at home would collect details about students' homes.
+Notes on this example:
+- The rhetoric-history lecture becomes a `deferred_segments` entry ("lecture only"), because it has no classroom action of its own.
+- Drafting and revising each keep a full lesson of student writing time (cognitive depth). They aren't reduced to a checklist.
+- Pair feedback organises the "feedback" the source prescribes, against the source's own four parts. Nothing is added that the source doesn't ask for: no display, audience or presentation. Later stages decide those.

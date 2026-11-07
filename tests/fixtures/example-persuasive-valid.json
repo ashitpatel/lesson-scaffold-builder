@@ -1,0 +1,36 @@
+{
+  "macro_objective": "Students write a persuasive letter that states a claim, supports it with reasons and evidence, and answers an opposing view.",
+  "global_context": {
+    "grade_band": "Middle",
+    "time_block_minutes": 45,
+    "resource_intensity_score": 1
+  },
+  "mls_units": [
+    {
+      "mls_id": "MLS-PERSUADE-01",
+      "title": "Taking Arguments Apart",
+      "dependencies": [],
+      "macro_alignment": "Gives students the claim, reason, evidence and opposing-view parts they will build their own letters from, by finding them in two real opinion pieces.",
+      "duration_weeks": 2,
+      "tasks": [
+        { "step": 1, "role": "Lead_Educator", "action": "Write the four parts of an argument on the board: claim, reasons, evidence, answer to an opposing view. Show each part in one short opinion paragraph read aloud to the class." },
+        { "step": 2, "role": "Peer_Facilitator", "action": "In pairs, read opinion piece A and mark its claim, each reason, the evidence for each reason, and any answer to an opposing view. Partners take turns reading aloud and marking." },
+        { "step": 3, "role": "Peer_Facilitator", "action": "In the same pairs, mark the four parts in opinion piece B, which argues the other side of the same local issue." },
+        { "step": 4, "role": "Lead_Educator", "action": "Build a class chart on chart paper comparing the two pieces part by part. Ask pairs which piece supports its reasons better and why, and write their reasons on the chart." }
+      ]
+    },
+    {
+      "mls_id": "MLS-PERSUADE-02",
+      "title": "Writing and Revising a Persuasive Letter",
+      "dependencies": ["MLS-PERSUADE-01"],
+      "macro_alignment": "Turns the four argument parts into each student's own finished persuasive letter, revised after feedback.",
+      "duration_weeks": 3,
+      "tasks": [
+        { "step": 1, "role": "Lead_Educator", "action": "Recall from MLS-PERSUADE-01: use the class chart of the four argument parts. Each student chooses an issue in their school or neighbourhood and writes a one-line claim and three reasons in their notebook." },
+        { "step": 2, "role": "Lead_Educator", "action": "Give a full lesson of quiet writing time. Each student drafts a one-page letter that states the claim, supports each reason with evidence, and answers one opposing view." },
+        { "step": 3, "role": "Peer_Facilitator", "action": "In pairs, read each other's draft and check it against the four parts on the class chart. Each partner writes one note on what is missing or unclear, then partners swap roles." },
+        { "step": 4, "role": "Lead_Educator", "action": "Give a second full lesson for each student to revise the draft using the partner's note and write a final copy." }
+      ]
+    }
+  ]
+}
