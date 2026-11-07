@@ -3,7 +3,7 @@ title: "Nine chapters, nine sets of cards"
 description: "A tour of the nine test chapters, from Kenyan clean water to Peruvian fractions: what went in, what the cards kept, removed and added, with two before-and-after deep dives."
 layout: post
 series: scaffold
-date: 2026-11-08 00:04:00 +0000
+date: 2026-11-07 00:04:00 +0000
 ---
 
 *Part 5 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*

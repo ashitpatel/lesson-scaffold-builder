@@ -3,7 +3,7 @@ title: "Seven questions before a single lesson is planned"
 description: "Before planning anything, the tool asks about your chapter, your modules and your methods: one sequence or several, broken along which lines, how many weeks, and which approaches to leave out."
 layout: post
 series: scaffold
-date: 2026-11-08 00:01:00 +0000
+date: 2026-11-07 00:01:00 +0000
 ---
 
 *Part 2 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*

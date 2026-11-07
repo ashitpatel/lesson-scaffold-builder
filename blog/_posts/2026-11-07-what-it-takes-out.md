@@ -3,7 +3,7 @@ title: "What it takes out of your chapter, and why"
 description: "Boiling water, wall charts of slow readers, scores posted by name, family income as homework: the things chapters ask for that cards must not, and the classroom reason for each removal."
 layout: post
 series: scaffold
-date: 2026-11-08 00:02:00 +0000
+date: 2026-11-07 00:02:00 +0000
 ---
 
 *Part 3 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*

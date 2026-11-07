@@ -3,7 +3,7 @@ title: "What it adds to your chapter, and only where it fits"
 description: "Fifteen small teaching methods in plain language: five memory and practice techniques, five peer and interest designs, five class-vote formats, each with strict conditions, and abstention as the most common answer."
 layout: post
 series: scaffold
-date: 2026-11-08 00:03:00 +0000
+date: 2026-11-07 00:03:00 +0000
 ---
 
 *Part 4 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
