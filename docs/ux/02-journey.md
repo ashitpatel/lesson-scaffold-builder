@@ -17,7 +17,7 @@
 
 **1. Pick a source.** Any long piece of teaching material: a textbook chapter, a syllabus section, a training manual. Paste or save it as text. Long sources are expected; the pipeline is built for material that is too big to run as it stands.
 
-**2. Add context (optional).** The grade band (Primary, Middle, High), the length of one class period, and notes on the setting ("no chart paper", "a volunteer comes on Fridays"). Without them the pipeline infers the grade band and assumes 45-minute periods, and says so.
+**2. Add context (optional).** The grade band (Primary, Middle, High), the length of one class period, and notes on the setting ("no chart paper", "a volunteer comes on Fridays"). Without them the pipeline infers the grade band and assumes 45-minute periods, and says so. Run with `--ask` to also be asked about the breakdown and each stage's limits, with suggestions drawn from the chapter; `--answers FILE` supplies those answers from JSON instead.
 
 ## Pipeline side
 

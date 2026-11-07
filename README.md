@@ -61,7 +61,7 @@ python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle 
 ```bash
 python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle
 ```
-A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, or the Anthropic API with `--backend api`. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did.
+A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, or the Anthropic API with `--backend api`. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did. Add `--ask` to be asked about the breakdown (unit maximum, focus) and each stage's limits (cards, cards per unit, added step), with suggestions drawn from your source; `--answers FILE` supplies those answers from JSON so sweeps don't stop.
 
 ### 3. Develop or test it
 ```bash
@@ -131,12 +131,12 @@ On 7 November 2026 the full sweep (`python3 -m lsb.regress`) ran all nine test c
 | Hydrology (generic, science) | PASS | 2 | 19 | $4.00 | EB-03, EB-04 |
 | Ecosystems (generic, science) | PASS | 4 | 24 | $5.08 | CL-02, EB-03, EB-04, EB-05 |
 | Civics (generic, civics) | PASS | 4 | 20 | $4.57 | CL-04, CL-05, EB-01, EB-03, EB-04, PB-02 |
-| [Kenya, Grade 6 science](docs/walkthroughs/01-kenya-clean-water.md) | PASS | 4 | 23 | $5.14 | CL-02, CL-05, EB-01, EB-04 |
-| [Peru, Grade 5 mathematics](docs/walkthroughs/02-peru-fractions.md) | PASS | 3 | 17 | $3.60 | CL-05, EB-01, EB-04, PB-04 |
-| [Vietnam, Grade 6 literature](docs/walkthroughs/03-vietnam-folk-tales.md) | PASS | 4 | 22 | $4.25 | CL-04, EB-01, EB-02, EB-04 |
-| [Ghana, JHS 2 social studies](docs/walkthroughs/04-ghana-local-government.md) | PASS | 3 | 19 | $3.84 | CL-05, EB-01, EB-03, EB-04, EB-05, PB-03, PB-05 |
-| [Bangladesh, Class 1 reading](docs/walkthroughs/05-bangladesh-letters-and-sounds.md) | PASS | 4 | 21 | $3.56 | EB-01, EB-02, EB-04 |
-| [Mexico, Grade 8 history](docs/walkthroughs/06-mexico-migration.md) | PASS | 3 | 13 | $2.16 | CL-04, EB-01, EB-04 |
+| [Kenya, Grade 6 science](docs/walkthroughs/01-kenya-clean-water/) | PASS | 4 | 23 | $5.14 | CL-02, CL-05, EB-01, EB-04 |
+| [Peru, Grade 5 mathematics](docs/walkthroughs/02-peru-fractions/) | PASS | 3 | 17 | $3.60 | CL-05, EB-01, EB-04, PB-04 |
+| [Vietnam, Grade 6 literature](docs/walkthroughs/03-vietnam-folk-tales/) | PASS | 4 | 22 | $4.25 | CL-04, EB-01, EB-02, EB-04 |
+| [Ghana, JHS 2 social studies](docs/walkthroughs/04-ghana-local-government/) | PASS | 3 | 19 | $3.84 | CL-05, EB-01, EB-03, EB-04, EB-05, PB-03, PB-05 |
+| [Bangladesh, Class 1 reading](docs/walkthroughs/05-bangladesh-letters-and-sounds/) | PASS | 4 | 21 | $3.56 | EB-01, EB-02, EB-04 |
+| [Mexico, Grade 8 history](docs/walkthroughs/06-mexico-migration/) | PASS | 3 | 13 | $2.16 | CL-04, EB-01, EB-04 |
 | **Total (9 of 9)** | | **31** | **178** | **$36.20** | |
 
 What the sweep shows:
@@ -170,7 +170,7 @@ lesson-scaffold-builder/
 ├── docs/                        READ FIRST if you're new
 │   ├── README.md                index
 │   ├── ux/                      who uses it, the end-to-end journey, decision points
-│   ├── walkthroughs/            six live-run examples from six countries, each ending in a teacher card
+│   ├── walkthroughs/            six folders, each pairing a live-run walkthrough with its source chapter
 │   ├── technical.md             every check, flag, output file and exit code
 │   └── regeneration-prompts.md  prompts to rebuild this project with an AI coding agent
 │

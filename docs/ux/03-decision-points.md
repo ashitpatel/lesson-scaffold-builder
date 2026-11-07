@@ -6,21 +6,21 @@
 
 | Situation | What the pipeline does | What the adapter sees | Example |
 |---|---|---|---|
-| **The source asks for something unsafe** (an unsupervised trip, learners pouring boiling water, climbing on a roof) | Leaves it out or makes it an educator-only demonstration; every outdoor step states supervision and what not to touch | A source flag, and the safe version on the card | [Kenya](../walkthroughs/01-kenya-clean-water.md) |
-| **The source tracks children** (a "slow readers" wall chart, scores by name, family migration status, videos of children) | Removes it; class totals only | A source flag naming the section | [Bangladesh](../walkthroughs/05-bangladesh-letters-and-sounds.md), [Mexico](../walkthroughs/06-mexico-migration.md) |
-| **Students would handle real money** (bringing coins to market, a class fund, selling a book) | Keeps budgeting as made-up numbers; adults handle any money | A source flag; a points budget on the card | [Peru](../walkthroughs/02-peru-fractions.md), [Ghana](../walkthroughs/04-ghana-local-government.md) |
+| **The source asks for something unsafe** (an unsupervised trip, learners pouring boiling water, climbing on a roof) | Leaves it out or makes it an educator-only demonstration; every outdoor step states supervision and what not to touch | A source flag, and the safe version on the card | [Kenya](../walkthroughs/01-kenya-clean-water/) |
+| **The source tracks children** (a "slow readers" wall chart, scores by name, family migration status, videos of children) | Removes it; class totals only | A source flag naming the section | [Bangladesh](../walkthroughs/05-bangladesh-letters-and-sounds/), [Mexico](../walkthroughs/06-mexico-migration/) |
+| **Students would handle real money** (bringing coins to market, a class fund, selling a book) | Keeps budgeting as made-up numbers; adults handle any money | A source flag; a points budget on the card | [Peru](../walkthroughs/02-peru-fractions/), [Ghana](../walkthroughs/04-ghana-local-government/) |
 | **Region-specific names or currency** | Replaces them with generic labels ("the local council", "points") | Nothing regional on the cards; code fails any currency left in | every walkthrough |
 | **A line in the source addresses the AI** | Ignores it | A source flag: "not followed" | [Civics run](../../tests/fixtures/civics-source.md) |
 | **Pure lecture** (a history of the subject, dates to copy) | Sets it aside | Listed under what was left out, with the reason | every walkthrough |
-| **A lecture defines a term the units need** | Folds a short explanation into the first step that uses it | The term taught in step 1 of a unit | [Mexico](../walkthroughs/06-mexico-migration.md) |
-| **Deep work in the source** (an essay, writing a story) | Keeps sustained time for it; no stage may shorten it | Full lessons of writing on the card | [Vietnam](../walkthroughs/03-vietnam-folk-tales.md) |
+| **A lecture defines a term the units need** | Folds a short explanation into the first step that uses it | The term taught in step 1 of a unit | [Mexico](../walkthroughs/06-mexico-migration/) |
+| **Deep work in the source** (an essay, writing a story) | Keeps sustained time for it; no stage may shorten it | Full lessons of writing on the card | [Vietnam](../walkthroughs/03-vietnam-folk-tales/) |
 | **A practice fits but can't be done properly** | The stage abstains or defers it | "Deferred: …" with a reason | — |
-| **No resource trade-off** (most science, reading and writing units) | Participatory budgeting abstains | "Fit-gate fails", per unit | [Bangladesh](../walkthroughs/05-bangladesh-letters-and-sounds.md) |
-| **A real class decision** (sharing a garden bed, choosing among projects) | Participatory budgeting adds the counting rule first, then a report-back | A vote with its rule stated before anyone votes | [Peru](../walkthroughs/02-peru-fractions.md), [Ghana](../walkthroughs/04-ghana-local-government.md) |
+| **No resource trade-off** (most science, reading and writing units) | Participatory budgeting abstains | "Fit-gate fails", per unit | [Bangladesh](../walkthroughs/05-bangladesh-letters-and-sounds/) |
+| **A real class decision** (sharing a garden bed, choosing among projects) | Participatory budgeting adds the counting rule first, then a report-back | A vote with its rule stated before anyone votes | [Peru](../walkthroughs/02-peru-fractions/), [Ghana](../walkthroughs/04-ghana-local-government/) |
 | **An edit breaks a rule** (removes a step, changes a unit's weeks) | Code rejects it; one retry with the reason; then the unit stays as it was | "edit_rejected" for that unit | — |
 | **The reviewer finds a problem in an edited unit** | One revision; then that unit goes back to its earlier version | "reverted", with the reason | — |
-| **A fallback would stretch a unit past 4 weeks** | Rewritten to shorten or combine instead | "If a week is lost, …" within the unit's weeks | [Kenya](../walkthroughs/01-kenya-clean-water.md) |
-| **A later review finds a problem in a step no stage changed** | Doesn't blame the stage; sends it back to decompose for an in-place repair of just that step, then reviews again | `late-issues.json`; the repaired step on the card, or status `issues_open` and no cards | [Kenya](../walkthroughs/01-kenya-clean-water.md) |
+| **A fallback would stretch a unit past 4 weeks** | Rewritten to shorten or combine instead | "If a week is lost, …" within the unit's weeks | [Kenya](../walkthroughs/01-kenya-clean-water/) |
+| **A later review finds a problem in a step no stage changed** | Doesn't blame the stage; sends it back to decompose for an in-place repair of just that step, then reviews again | `late-issues.json`; the repaired step on the card, or status `issues_open` and no cards | [Kenya](../walkthroughs/01-kenya-clean-water/) |
 | **The reviewer can't be satisfied** | Keeps the best attempt and reports it | Status `revise_exhausted`, with every attempt's issues | — |
 
 ## Principles
