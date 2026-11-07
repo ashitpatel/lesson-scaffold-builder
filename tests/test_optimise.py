@@ -237,6 +237,14 @@ class Repair(unittest.TestCase):
         found = opt.check_repair(before, after, [{"where": "mls_units[1].tasks[2]"}])
         self.assertEqual(len(found), 3, found)
 
+    def test_a_repaired_units_fallbacks_may_follow_its_step(self):
+        before, after = self.full(), self.full()
+        after["sequence"]["mls_units"][0]["tasks"][2]["action"] = "fixed"
+        after["environment_assumptions"][0]["if_not"] = "updated to match"
+        self.assertEqual(opt.check_repair(before, after, [{"where": "mls_units[0].tasks[2]"}]), [])
+        after["environment_assumptions"][0]["mls_id"] = "MLS-PERSUADE-02"
+        self.assertTrue(opt.check_repair(before, after, [{"where": "mls_units[0].tasks[2]"}]))
+
     def test_steps_and_units_are_edited_in_place(self):
         before, after = self.full(), self.full()
         after["sequence"]["mls_units"][1]["tasks"].append({"step": 5, "role": "Lead_Educator", "action": "x"})

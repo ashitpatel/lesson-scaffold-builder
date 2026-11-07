@@ -207,7 +207,8 @@ def check_repair(before: dict, after: Any, issues: list[dict]) -> list[str]:
     """Problems with a repair of `before` (a full decompose output) aimed at `issues`; [] means accepted.
 
     A repair may change only what an issue points at: a flagged step, a flagged
-    unit field, a flagged fallback, or anything in a unit flagged as a whole. It
+    unit field, a flagged fallback, or anything in a unit flagged as a whole. A
+    repaired unit's fallbacks may also be updated to match the fix. It
     never adds, removes or reorders units, steps or fallbacks, so the source trace
     and every optimisation edit elsewhere stay valid.
     """
@@ -240,11 +241,16 @@ def check_repair(before: dict, after: Any, issues: list[dict]) -> list[str]:
         for j, (x, y) in enumerate(zip(bt, at)):
             if x != y and i not in units_ok and (i, j) not in tasks_ok:
                 problems.append(f"mls_units[{i}].tasks[{j}] changed but no issue points at it")
+    # A unit's fallbacks describe its steps, so a repair to a unit may update them too;
+    # otherwise a fixed step leaves a fallback that still describes the old one.
+    repaired_units = {b_units[i].get("mls_id") for i in
+                      units_ok | {i for i, _ in tasks_ok} | {i for i, _ in fields_ok} if i < len(b_units)}
     b_as, a_as = before.get("environment_assumptions") or [], after.get("environment_assumptions") or []
     if len(b_as) != len(a_as):
         problems.append("fallbacks were added or removed; a repair edits them in place")
     else:
         for k, (x, y) in enumerate(zip(b_as, a_as)):
-            if x != y and k not in assumptions_ok:
-                problems.append(f"environment_assumptions[{k}] changed but no issue points at it")
+            same_unit = isinstance(x, dict) and isinstance(y, dict) and x.get("mls_id") == y.get("mls_id")
+            if x != y and k not in assumptions_ok and not (same_unit and x.get("mls_id") in repaired_units):
+                problems.append(f"environment_assumptions[{k}] changed but no issue points at it or at its unit")
     return problems

@@ -539,7 +539,8 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
 
 REPAIR_NOTE = {"check": "repair", "source": "orchestrator",
                "problem": "These issues were found after the optimisation stages, in PREVIOUS_OUTPUT as they left it. "
-                          "Edit only the steps, fields and fallbacks the issues point at, in place. Keep every other "
+                          "Edit only the steps, fields and fallbacks the issues point at, in place, and update that unit's "
+                          "fallbacks if the fix changes what they describe. Keep every other "
                           "step exactly as it is, and don't add, remove or reorder units, steps or fallbacks."}
 
 
