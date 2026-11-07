@@ -16,7 +16,8 @@ The validator's result is final: a critic PASS on a sequence that fails a code
 check is recorded and treated as REVISE.
 
 Once the sequence passes, the optimisation stages run in order, each once per unit:
-30-connected-learning (skip with --no-cl), then 31-participatory-budgeting (--no-pb).
+25-evidence-based (skip with --no-eb), 30-connected-learning (--no-cl), then
+31-participatory-budgeting (--no-pb).
 lsb.optimise checks each edit's limits in code; accepted edits are merged, validated
 and reviewed by the critic again. A unit whose edit still has issues after
 --max-stage-revisions is reverted, so a stage never fails a passed sequence.
@@ -71,12 +72,14 @@ class FrameworkStage:
 
 
 STAGES = {
+    "eb": FrameworkStage("evidence_based", "eb", "25-evidence-based.md",
+                         ROOT / "frameworks" / "evidence-based-practices.md", "EB_CARDS", opt.EB_CARDS),
     "cl": FrameworkStage("connected_learning", "cl", "30-connected-learning.md",
                          ROOT / "frameworks" / "connected-learning.md", "CL_CARDS", opt.CL_CARDS),
     "pb": FrameworkStage("participatory_budgeting", "pb", "31-participatory-budgeting.md",
                          ROOT / "frameworks" / "participatory-budgeting.md", "PB_CARDS", opt.PB_CARDS),
 }
-STAGE_ORDER = ("cl", "pb")
+STAGE_ORDER = ("eb", "cl", "pb")
 VERDICTS = ("PASS", "REVISE", "REJECT")
 
 
@@ -669,7 +672,7 @@ def dry_run(src: Source) -> int:
         problems += bool(missing)
         print(f"{name:30} ~{chars // 4:>6,} tokens  {status}")
     print("\nA live run makes 2 calls per decompose attempt (decompose + critic), then, once the\n"
-          "sequence passes, per optimisation stage (CL, then PB): 1 call per unit and 1 critic\n"
+          "sequence passes, per optimisation stage (EB, CL, then PB): 1 call per unit and 1 critic\n"
           "call per review round (none if every unit abstains).")
     return 1 if problems else 0
 
@@ -685,6 +688,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--backend", default="claude-code", choices=["claude-code", "api"],
                     help="claude-code: headless `claude -p` on your Claude Code login (default); api: Anthropic API key")
     ap.add_argument("--max-revisions", type=int, default=2)
+    ap.add_argument("--no-eb", action="store_true", help="skip the Evidence-Based stage")
     ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
     ap.add_argument("--no-pb", action="store_true", help="skip the Participatory Budgeting stage")
     ap.add_argument("--max-stage-revisions", type=int, default=1,

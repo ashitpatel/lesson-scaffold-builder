@@ -34,15 +34,17 @@ ISSUE = {"severity": "blocker", "source": "judgement", "where": "mls_units[0].ta
 class FakeModel:
     """Replies with the next scripted text for the stage named by the system prompt."""
 
-    def __init__(self, decompose, critic, cl=(), pb=()):
-        self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl), "pb": list(pb)}
+    def __init__(self, decompose, critic, cl=(), pb=(), eb=()):
+        self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl), "pb": list(pb),
+                       "eb": list(eb)}
         self.calls = []
 
     def complete(self, system, user):
         text = system[0]["text"]
         stage = ("decompose" if "Input Decomposition Layer" in text
                  else "cl" if "Connected Learning stage" in text
-                 else "pb" if "Participatory Budgeting stage" in text else "critic")
+                 else "pb" if "Participatory Budgeting stage" in text
+                 else "eb" if "Evidence-Based stage" in text else "critic")
         self.calls.append((stage, user))
         reply = self.script[stage].pop(0)
         if isinstance(reply, Exception):
@@ -382,6 +384,22 @@ class StagesInOrder(unittest.TestCase):
 
     def units_pb(self, r):
         return {u: x["status"] for u, x in r.optimisation["participatory_budgeting"]["units"].items()}
+
+
+class AllStages(unittest.TestCase):
+    def test_eb_runs_first_then_cl_then_pb(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eb0 = json.loads(cl_reply(U0, True, "EB-01"))["unit"]
+            m = FakeModel([decomposed(VALID)], [critic("PASS")] * 3,
+                          cl=[cl_reply(eb0, False), cl_reply(U1, False)],
+                          pb=[cl_reply(eb0, False), cl_reply(U1, False)],
+                          eb=[cl_reply(U0, True, "EB-01"), cl_reply(U1, False)])
+            r = run.run_pipeline(SOURCE, m, Path(tmp) / "run", stages=run.STAGE_ORDER)
+            self.assertEqual([s for s, _ in m.calls],
+                             ["decompose", "critic", "eb", "eb", "critic", "cl", "cl", "pb", "pb"])
+            self.assertEqual(list(r.optimisation), ["evidence_based", "connected_learning", "participatory_budgeting"])
+            self.assertIn("Run the EB-01 activity", r.sequence["mls_units"][0]["tasks"][-1]["action"])
+            self.assertIn("Evidence-Based, EB-01 Retrieval Practice", (Path(tmp) / "run/cards.txt").read_text())
 
 
 class Requests(unittest.TestCase):

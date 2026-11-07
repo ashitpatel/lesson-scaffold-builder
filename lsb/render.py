@@ -40,7 +40,7 @@ WIDTH = 78
 WHO = 22  # left column width in cards.txt
 ROLE_NAMES = {"Lead_Educator": "Lead Educator", "Peer_Facilitator": "Peer Facilitator",
               "Community_Volunteer": "Community Volunteer"}
-STAGE_NAMES = {"connected_learning": "Connected Learning", "participatory_budgeting": "Participatory Budgeting"}
+STAGE_NAMES = {"evidence_based": "Evidence-Based", "connected_learning": "Connected Learning", "participatory_budgeting": "Participatory Budgeting"}
 
 
 @dataclass
