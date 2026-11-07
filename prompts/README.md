@@ -1,11 +1,11 @@
 # Prompt pipeline
 
-Each prompt returns **JSON only**, so an orchestrator script can validate and route it. `python3 -m lsb.run` runs `05-decompose` → `lsb.validate` → `50-critic` with the revise loop below, then `30-connected-learning` and `31-participatory-budgeting`, each per unit → `lsb.validate` → `50-critic`; the other stages have no runner yet. The deterministic checks run in code: `python3 -m lsb.validate` (see [../README.md](../README.md)).
+Each prompt returns **JSON only**, so an orchestrator script can validate and route it. `python3 -m lsb.run` runs `05-decompose` → `lsb.validate` → `50-critic` with the revise loop below, then `25-evidence-based`, `30-connected-learning` and `31-participatory-budgeting`, each per unit → `lsb.validate` → `50-critic`, and renders the teacher cards in code. The deterministic checks run in code: `python3 -m lsb.validate` (see [../docs/technical.md](../docs/technical.md)).
 
-**Adaptation status.** `05-decompose`, `30-connected-learning`, `31-participatory-budgeting` and `50-critic` are written for LSB: they work on an `MLS_DAG_Sequence` ([../schemas/mls-dag.schema.json](../schemas/mls-dag.schema.json)), `30` and `31` one unit at a time. Prompts 10, 15, 20, 32, 40 and 60 are still the Shikshagraha MIP transformer's: they work on one MIP-shaped project (`seq`, `target_stakeholder`, `x_transform`), contain region-specific terms, and refer to files this repo doesn't have (`frameworks/`, `evals/`, `schema/`). Until they're adapted, `40-transform` output can't go straight into the new critic.
+**Adaptation status.** `05-decompose`, `25-evidence-based`, `30-connected-learning`, `31-participatory-budgeting` and `50-critic` are written for LSB: they work on an `MLS_DAG_Sequence` ([../schemas/mls-dag.schema.json](../schemas/mls-dag.schema.json)), `25`, `30` and `31` one unit at a time. Prompts 10, 15, 20, 40 and 60 are legacy, kept for reference and not used: they are the Shikshagraha MIP transformer's, work on one MIP-shaped project (`seq`, `target_stakeholder`, `x_transform`), contain region-specific terms, and refer to files this repo doesn't have (`frameworks/`, `evals/`, `schema/`). Until they're adapted, `40-transform` output can't go straight into the new critic.
 
 ```
-source text ──► 05-decompose ──► lsb.validate ──► 50-critic ──► PASS ──► 30-connected-learning ──► lsb.optimise ──► lsb.validate ──► 50-critic ──► 31-participatory-budgeting (same loop) ──► lsb.render (cards + G21 check) ──► (32 EB: not yet)
+source text ──► 05-decompose ──► lsb.validate ──► 50-critic ──► PASS ──► 25-evidence-based ──► lsb.optimise ──► lsb.validate ──► 50-critic ──► 30-connected-learning, then 31-participatory-budgeting (same loop) ──► lsb.render (cards + G21 check)
                      ▲                                 │                   (once per unit)       (edit limits)                     │
                      └──────── REVISE (max 2) ─────────┘                         ▲                                                  │
                                REJECT ─► re-run 05 once, then stop and report     └──── issues in a unit (max 1), then revert it ─────┘
@@ -17,7 +17,7 @@ Legacy single-project flow (prompts 10–60, not yet adapted):
 catalogue row ──► 10-parse ─┐
                             ├─► 20-classify ─► (30: replaced) ┐
 resource text ──► 15-derive ┘              (31: replaced) ┼─► 40-transform
-                                              32-gate-eb ─┘
+                                              (32: replaced) ┘
 ```
 
 | Prompt | Input | Output | Notes |
@@ -28,7 +28,7 @@ resource text ──► 15-derive ┘              (31: replaced) ┼─► 40-t
 | [20-classify](20-classify.md) | Baseline MLS (+ owner context) | Facts: student experience, constituency, resource, options, already-present, risks | No recommendations |
 | [30-connected-learning](30-connected-learning.md) | One unit of a passed sequence + its source trace + CL cards (+ critic feedback) | APPLY / ABSTAIN, the edited unit, a change log per card | ≤2 cards, ≤1 added step; limits checked by `lsb.optimise`; abstaining is often correct |
 | [31-participatory-budgeting](31-participatory-budgeting.md) | One unit (after CL) + its trace + PB cards (+ critic feedback) | APPLY / ABSTAIN, the edited unit, a change log per card | Fit-gate first: a real resource trade-off; ≤2 cards, ≤1 added step; abstaining is the usual answer |
-| [32-gate-eb](32-gate-eb.md) | MLS + facts + EB cards | APPLY / PARTIAL / CONDITIONAL / ABSTAIN, ≤2 practice cards + measurement | Only with all non-negotiables; Tier 1 of the evidence ranking |
+| [25-evidence-based](25-evidence-based.md) | One unit of a passed sequence + its trace + EB cards (+ critic feedback) | APPLY / ABSTAIN, the edited unit, a change log per card | Runs first; only with all of a card's non-negotiables; ≤2 cards, ≤1 added step |
 | [40-transform](40-transform.md) | Baseline + gates + cards (+ critic feedback) | Transformed MLS + change log + open questions | ≤2 added tasks; supportable claims only |
 | [50-critic](50-critic.md) | `MLS_DAG_Sequence` + `lsb.validate` report + source (+ cards, rendered cards) | PASS / REVISE / REJECT over checks G01–G21 | Code results are final; judges the rest |
 | [60-render](60-render.md) | Final MLS | Catalogue row, teacher card, improvement-story stub | Legacy. LSB's teacher cards are rendered in code by `lsb.render` instead |
