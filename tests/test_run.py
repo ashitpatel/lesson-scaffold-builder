@@ -538,5 +538,77 @@ class ClaudeCodeBackend(unittest.TestCase):
             self.model("", returncode=1, stderr="Please run /login to log in").complete([{"text": "s"}], "u")
 
 
+class MuseBackend(unittest.TestCase):
+    """MuseModel with a fake subprocess runner: no CLI call is made."""
+
+    def model(self, stdout, returncode=0, stderr="", **kw):
+        import subprocess
+        self.seen = {}
+
+        def fake_run(cmd, **call_kw):
+            self.seen = {"cmd": cmd, **call_kw}
+            self.seen["prompt"] = Path(cmd[cmd.index("--prompt-file") + 1]).read_text()
+            return subprocess.CompletedProcess(cmd, returncode, stdout, stderr)
+        return run.MuseModel(effort="high", runner=fake_run, **kw)
+
+    def ev(self, payload_type, payload):
+        return json.dumps({"payload_type": payload_type, "payload": payload})
+
+    def ok(self, *texts):
+        lines = [self.ev("run.model.configured", {"model_id": "muse-spark-1.3"})]
+        lines += [self.ev("run.output.delta", {"text": t}) for t in texts or ['{"a": 1}']]
+        lines.append(self.ev("run.usage", {"models": [{"model": "muse-spark-1.3", "input_tokens": 30,
+                                                       "output_tokens": 4, "cached_tokens": 5}]}))
+        return "\n".join(lines) + "\n"
+
+    def test_success_joins_deltas_and_reports_usage(self):
+        m = self.model(self.ok('{"a": ', "1}"))
+        text, usage = m.complete([{"type": "text", "text": "SYSTEM"}], "USER")
+        self.assertEqual(text, '{"a": 1}')
+        self.assertEqual((usage["input"], usage["output"], usage["cache_read"]), (30, 4, 5))
+        self.assertEqual(usage["model"], "muse-spark-1.3")
+        self.assertIsNone(usage["cost_usd_list_price"])
+        cmd = self.seen["cmd"]
+        self.assertNotIn("--model", cmd)
+        self.assertEqual(cmd[cmd.index("--reasoning-effort") + 1], "high")
+        self.assertEqual(cmd[cmd.index("--max-model-steps") + 1], "1")
+        self.assertEqual(self.seen["prompt"], "SYSTEM\n\nUSER")
+
+    def test_model_flag_is_passed_through(self):
+        self.model(self.ok(), model="muse-spark-1.3").complete([{"text": "s"}], "u")
+        cmd = self.seen["cmd"]
+        self.assertEqual(cmd[cmd.index("--model") + 1], "muse-spark-1.3")
+
+    def test_non_json_lines_are_ignored(self):
+        m = self.model("muse: workspace root: /tmp/x\n" + self.ok())
+        text, _ = m.complete([{"text": "s"}], "u")
+        self.assertEqual(text, '{"a": 1}')
+
+    def test_empty_reply_is_a_stage_error(self):
+        with self.assertRaises(run.StageError):
+            self.model(self.ev("run.usage", {"models": []}) + "\n").complete([{"text": "s"}], "u")
+
+    def test_error_exit_is_a_stage_error(self):
+        with self.assertRaises(run.StageError):
+            self.model("", returncode=1, stderr="boom").complete([{"text": "s"}], "u")
+
+    def test_usage_limit_is_model_unavailable(self):
+        with self.assertRaises(run.ModelUnavailable):
+            self.model("", returncode=1, stderr="rate limit exceeded").complete([{"text": "s"}], "u")
+
+    def test_not_signed_in_exits(self):
+        with self.assertRaises(SystemExit):
+            self.model("", returncode=1, stderr="not logged in: run `muse login` first").complete(
+                [{"text": "s"}], "u")
+
+    def test_timeout_is_a_stage_error(self):
+        import subprocess
+
+        def slow(cmd, **kw):
+            raise subprocess.TimeoutExpired(cmd, 1200)
+        with self.assertRaises(run.StageError):
+            run.MuseModel(runner=slow).complete([{"text": "s"}], "u")
+
+
 if __name__ == "__main__":
     unittest.main()

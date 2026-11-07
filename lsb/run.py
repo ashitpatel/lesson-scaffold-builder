@@ -5,8 +5,10 @@
 
 Backends: `--backend claude-code` (default) runs each call through headless Claude
 Code (`claude -p`) on your Claude Code login, with no API key needed.
-`--backend api` calls the Anthropic API directly and needs ANTHROPIC_API_KEY or an
-`ant auth login` profile. Every intermediate JSON is saved under runs/<timestamp>/.
+`--backend muse` runs each call through headless Muse Code (`muse exec`) on
+your Muse login instead. `--backend api` calls the Anthropic API directly and
+needs ANTHROPIC_API_KEY or an `ant auth login` profile.
+Every intermediate JSON is saved under runs/<timestamp>/.
 
 Routing (prompts/README.md):
   critic PASS    -> done
@@ -221,6 +223,92 @@ class ClaudeCodeModel:
         if usage["stop_reason"] == "max_tokens":
             raise StageError("reply hit max_tokens before finishing")
         return out.get("result") or "", usage
+
+
+class MuseModel:
+    """Calls the model through headless Muse Code (`muse exec`), on the user's Muse login.
+
+    No API key needed. `muse exec` has no system-prompt channel, so the system
+    prompt and the user turn go in one prompt file, in that order. One model
+    step and no reminders: the reply must be the JSON the prompt asks for. It
+    runs in an empty temporary directory so no workspace skills or rules load.
+    Stdout is JSONL; the reply is the joined run.output.delta texts and token
+    counts come from the run.usage event, which reports no USD cost.
+    """
+
+    def __init__(self, effort: str = "high", model: str | None = None, timeout: int = 1200, runner=None):
+        import subprocess
+
+        self.effort = effort
+        self.model = model
+        self.timeout = timeout
+        self.runner = runner or subprocess.run
+
+    def complete(self, system: list[dict], user: str) -> tuple[str, dict]:
+        import subprocess
+        import tempfile
+
+        with tempfile.TemporaryDirectory(prefix="lsb-") as tmp:
+            prompt_file = Path(tmp) / "prompt.md"
+            prompt_file.write_text("\n\n".join(b["text"] for b in system) + "\n\n" + user, encoding="utf-8")
+            cmd = [
+                "muse", "exec", "--json",
+                "--prompt-file", str(prompt_file),
+                "--reasoning-effort", self.effort,
+                "--max-model-steps", "1",
+                "--disable-reminders",
+                "--no-session-log",
+            ]
+            if self.model:
+                cmd += ["--model", self.model]
+            try:
+                proc = self.runner(cmd, capture_output=True, text=True, cwd=tmp, timeout=self.timeout)
+            except FileNotFoundError as e:
+                raise SystemExit("`muse` CLI not found; install Muse Code or use --backend claude-code") from e
+            except subprocess.TimeoutExpired as e:
+                raise StageError(f"muse exec timed out after {self.timeout}s") from e
+
+        texts: list[str] = []
+        model_id: str | None = None
+        first: dict = {}
+        for line in (proc.stdout or "").splitlines():
+            line = line.strip()
+            if not line.startswith("{"):
+                continue
+            try:
+                ev = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            payload = ev.get("payload") or {}
+            if ev.get("payload_type") == "run.output.delta":
+                texts.append(payload.get("text") or "")
+            elif ev.get("payload_type") == "run.model.configured":
+                model_id = payload.get("model_id") or model_id
+            elif ev.get("payload_type") == "run.usage" and not first:
+                first = (payload.get("models") or [{}])[0]
+
+        if proc.returncode != 0:
+            detail = (proc.stderr or "").strip().splitlines()
+            detail = (detail[-1] if detail else "no error message")[:500]
+            low = (proc.stderr or "").lower()
+            if any(s in low for s in ("log in", "logged in", "login", "auth")):
+                raise SystemExit(f"Muse is not signed in: {detail}")
+            if USAGE_LIMIT.search(proc.stderr or ""):
+                raise ModelUnavailable(detail[:300])
+            raise StageError(f"muse exec exit {proc.returncode}: {detail}")
+        text = "".join(texts)
+        if not text.strip():
+            raise StageError("muse exec returned no text")
+        usage = {
+            "model": first.get("model") or model_id or self.model or "muse",
+            "stop_reason": None,
+            "input": first.get("input_tokens", 0),
+            "output": first.get("output_tokens", 0),
+            "cache_read": first.get("cached_tokens", 0),
+            "cache_write": 0,
+            "cost_usd_list_price": None,
+        }
+        return text, usage
 
 
 # ---------------------------------------------------------------- requests
@@ -799,8 +887,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--time-block", type=int, metavar="MINUTES", help="class period length, 5-120")
     ap.add_argument("--context-file", type=Path, help="educator's notes about their setting")
     ap.add_argument("--effort", default="high", choices=["low", "medium", "high", "xhigh", "max"])
-    ap.add_argument("--backend", default="claude-code", choices=["claude-code", "api"],
-                    help="claude-code: headless `claude -p` on your Claude Code login (default); api: Anthropic API key")
+    ap.add_argument("--backend", default="claude-code", choices=["claude-code", "muse", "api"],
+                    help="claude-code: headless `claude -p` on your Claude Code login (default); "
+                         "muse: headless `muse exec` on your Muse login; api: Anthropic API key")
+    ap.add_argument("--model", default=None,
+                    help="model id (default: claude-opus-5-5 for claude-code/api, the CLI default for muse)")
     ap.add_argument("--max-revisions", type=int, default=2)
     ap.add_argument("--no-eb", action="store_true", help="skip the Evidence-Based stage")
     ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
@@ -828,11 +919,14 @@ def main(argv: list[str] | None = None) -> int:
 
     out_dir = args.out or RUNS / dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     if args.backend == "claude-code":
-        model: Model = ClaudeCodeModel(effort=args.effort)
+        model: Model = ClaudeCodeModel(effort=args.effort, model=args.model or MODEL)
         api_errors: tuple = ()
+    elif args.backend == "muse":
+        model = MuseModel(effort=args.effort, model=args.model)
+        api_errors = ()
     else:
         import anthropic
-        model = AnthropicModel(effort=args.effort)
+        model = AnthropicModel(effort=args.effort, model=args.model or MODEL)
         api_errors = (anthropic.RateLimitError, anthropic.APIStatusError, anthropic.APIConnectionError)
     try:
         result = run_pipeline(src, model, out_dir, args.max_revisions,
