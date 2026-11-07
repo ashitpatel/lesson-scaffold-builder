@@ -322,7 +322,7 @@ def stage_values(stage: FrameworkStage, src: Source, decomposed: dict, uid: str,
 
 @dataclass
 class RunResult:
-    status: str  # pass | revise_exhausted | rejected | error
+    status: str  # pass | revise_exhausted | rejected | issues_open | error
     attempts: int
     sequence: dict | None  # the best attempt's sequence (fewest blockers, then majors)
     out_dir: Path
@@ -330,6 +330,8 @@ class RunResult:
     attempt_scores: dict[int, dict] = field(default_factory=dict)
     source_flags: list[dict] = field(default_factory=list)  # problems in the source itself, for a person
     optimisation: dict | None = None  # per optimisation stage: what it did to each unit
+    late_issues: list[dict] = field(default_factory=list)  # found by a stage's review in content no stage changed
+    repair: dict | None = None  # the repair rounds that dealt with late_issues
     cards_problems: list[str] | None = None  # G21 check on the rendered cards; None if not rendered
     usage: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
@@ -371,9 +373,6 @@ def _rank(score: dict) -> tuple:
     return (score.get("rejected", 0), score["blocker"], score["major"], score["minor"])
 
 
-UNIT_WHERE = re.compile(r"mls_units\[(\d+)\]")
-
-
 def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call, save, result: RunResult,
                         earlier_cards: str = "", max_revisions: int = 1) -> dict | None:
     """Apply one stage's cards unit by unit to a sequence that passed the critic.
@@ -384,9 +383,12 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
     back through the validator and the critic, with these cards and any from
     earlier stages. A unit the critic finds issues in is revised up to
     `max_revisions` times, then reverted to its input version. Anything the stage
-    can't pin on one edited unit (a REJECT, an unusable review, an issue outside
-    the edited units) reverts every edit. So a stage can only keep or improve the
-    passed sequence; it never fails the run.
+    can't act on (a REJECT, an unusable review) reverts every edit.
+
+    The review sees the whole sequence, so it can also find problems in content
+    this stage didn't change: a step another stage wrote, or one the decompose
+    review missed. Those aren't this stage's to fix and don't count against its
+    edits; they go to `result.late_issues` for the repair round after the stages.
 
     Returns the new {"sequence", "source_trace"} if any edit was kept, else None.
     """
@@ -438,10 +440,25 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
             record(uid, out, "applied")
 
     def revert(uids, why: str) -> None:
-        for uid in list(uids):
+        names = sorted(uids)
+        for uid in names:
             accepted.pop(uid, None)
             log["units"][uid]["status"] = "reverted"
-        result.notes.append(f"{stage.key}: reverted {', '.join(sorted(uids))}: {why}")
+        result.notes.append(f"{stage.key}: reverted {', '.join(names)}: {why}")
+
+    def stage_unit(issue: dict) -> str | None:
+        """The edited unit this issue is about, if it's about something this stage changed."""
+        for loc in opt.locations(issue.get("where")):
+            if loc[0] == "assumption" or loc[1] >= len(units):
+                continue
+            uid = units[loc[1]]["mls_id"]
+            if uid not in accepted:
+                continue
+            if loc[0] == "unit":
+                return uid
+            if loc[0] == "task" and opt.match_steps(originals[uid], accepted[uid]["unit"])[loc[2]:loc[2] + 1] == [None]:
+                return uid
+        return None
 
     def candidate() -> dict:
         merged = opt.merge(seq, {u: o["unit"] for u, o in accepted.items()})
@@ -478,17 +495,18 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
             return None
 
         by_unit: dict[str, list[dict]] = {}
-        unplaced = []
+        known = {(i.get("where"), i.get("problem")) for i in result.late_issues}
         for i in blocking:
-            m = UNIT_WHERE.search(str(i.get("where", "")))
-            uid = units[int(m.group(1))]["mls_id"] if m and int(m.group(1)) < len(units) else None
-            if uid in accepted:
+            uid = stage_unit(i)
+            if uid is not None:
                 by_unit.setdefault(uid, []).append(i)
-            else:
-                unplaced.append(i)
-        if unplaced or not by_unit:
-            revert(accepted, f"{len(unplaced) or len(blocking)} issue(s) not traceable to one edited unit")
-            return None
+            elif (i.get("where"), i.get("problem")) not in known:
+                result.late_issues.append({**i, "found_by": f"{stage.key} review {rnd}"})
+                known.add((i.get("where"), i.get("problem")))
+        if not by_unit:  # nothing wrong with this stage's own edits
+            if critic.get("source_flags") is not None:
+                result.source_flags = [f for f in critic["source_flags"] if isinstance(f, dict)]
+            return cand
         if rnd > max_revisions:
             revert(by_unit, "issues remained after revision")
             if not accepted:
@@ -507,6 +525,73 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
                 accepted[uid] = out
                 record(uid, out, "applied")
         previous_issues = blocking
+    return None
+
+
+REPAIR_NOTE = {"check": "repair", "source": "orchestrator",
+               "problem": "These issues were found after the optimisation stages, in PREVIOUS_OUTPUT as they left it. "
+                          "Edit only the steps, fields and fallbacks the issues point at, in place. Keep every other "
+                          "step exactly as it is, and don't add, remove or reorder units, steps or fallbacks."}
+
+
+def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: RunResult,
+               cards: str = "", max_rounds: int = 2) -> dict | None:
+    """Fix problems a stage's review found in content no stage changed.
+
+    `full` is a decompose-shaped output holding the current sequence and trace.
+    Decompose gets it back with the issues ("fix every listed issue, change nothing
+    else"); `optimise.check_repair` holds it to the steps, fields and fallbacks the
+    issues point at (one retry). The repaired sequence is validated and reviewed
+    with the fallbacks and the kept cards. Returns the repaired output if the review
+    passes within `max_rounds`, else None.
+    """
+    log: dict = {"issues": len(issues), "rounds": []}
+    result.repair = log
+    current, previous_issues = full, issues
+    for rnd in range(1, max_rounds + 1):
+        feedback = [REPAIR_NOTE] + previous_issues
+        out = None
+        for tries in (1, 2):
+            label = f"repair{rnd}" + ("-retry" if tries == 2 else "")
+            try:
+                out = call("repair", DECOMPOSE, decompose_values(src, current, feedback), label)
+                problems = opt.check_repair(current, out, previous_issues)
+            except StageError as e:
+                out, problems = None, [str(e)]
+            if out is not None:
+                save(f"{label}.json", out)
+            if not problems:
+                break
+            result.notes.append(f"repair {rnd}: output failed the code check: {'; '.join(problems)}")
+            feedback = [REPAIR_NOTE] + previous_issues + [{"check": "edit-limits", "source": "code", "problem": p}
+                                                          for p in problems]
+        else:
+            log["rounds"].append({"round": rnd, "verdict": "edit_rejected"})
+            return None
+        # Steps are edited in place, so the current trace (with card ids) still lines up.
+        cand = {**out, "source_trace": current.get("source_trace") or []}
+        report = v.validate(cand["sequence"])
+        save(f"repair{rnd}-validator.json", report.to_dict())
+        try:
+            critic = call("critic", CRITIC, critic_values(src, cand, report, previous_issues, cards),
+                          f"repair{rnd}-critic")
+        except StageError as e:
+            result.notes.append(f"repair {rnd}: critic unusable: {e}")
+            return None
+        save(f"repair{rnd}-critic.json", critic)
+        verdict = critic.get("verdict")
+        issues_now = _issues(critic)
+        covered = {(i.get("where"), i.get("problem")) for i in issues_now}
+        issues_now += [i for i in _code_issues(report) if (i["where"], i["problem"]) not in covered]
+        blocking = [i for i in issues_now if i.get("source") == "code" or i.get("severity") in ("blocker", "major")]
+        log["rounds"].append({"round": rnd, "verdict": verdict, "blocking_issues": len(blocking)})
+        if critic.get("source_flags") is not None:
+            result.source_flags = [f for f in critic["source_flags"] if isinstance(f, dict)]
+        if verdict == "PASS" and report.passed:
+            return cand
+        if verdict != "REVISE":
+            return None
+        current, previous_issues = cand, blocking
     return None
 
 
@@ -632,6 +717,24 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             final_trace = current["source_trace"]
             save("source_trace.json", final_trace)
 
+        if result.late_issues:
+            save("late-issues.json", result.late_issues)
+            full = {**best_decomposed, "sequence": result.sequence, "source_trace": final_trace}
+            try:
+                repaired = run_repair(src, full, result.late_issues, call, save, result, "\n\n".join(kept_cards))
+            except ModelUnavailable as e:
+                result.notes.append(f"repair: model unavailable: {e}")
+                repaired = None
+            if repaired is not None:
+                best_decomposed = repaired  # its fallbacks are the reviewed ones
+                result.sequence = repaired["sequence"]
+                final_trace = repaired["source_trace"]
+                save("source_trace.json", final_trace)
+            else:
+                result.status = "issues_open"
+                result.notes.append(f"{len(result.late_issues)} issue(s) found after decompose could not be "
+                                    "repaired; see late-issues.json. No cards were rendered.")
+
     if result.status == "pass" and best_decomposed is not None:
         deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
         result.cards_problems = render.write_cards(deck, out_dir)
@@ -646,6 +749,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "best_attempt": result.best_attempt,
         "attempt_scores": result.attempt_scores,
         "optimisation": result.optimisation,
+        "late_issues": result.late_issues,
+        "repair": result.repair,
         "cards_g21": None if result.cards_problems is None else (result.cards_problems or "pass"),
         "source_flags": result.source_flags,
         "source_ref": src.ref,

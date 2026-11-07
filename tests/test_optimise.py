@@ -208,5 +208,50 @@ class Trace(unittest.TestCase):
         self.assertEqual(merged, [other, {"mls_id": "MLS-PERSUADE-02", "step": 1}])
 
 
+class Repair(unittest.TestCase):
+    def full(self):
+        return {"sequence": copy.deepcopy(EXAMPLE), "source_trace": [],
+                "environment_assumptions": [{"mls_id": "MLS-PERSUADE-01", "assumes": "a", "if_not": "b"}]}
+
+    def test_locations(self):
+        self.assertEqual(opt.locations("mls_units[2].tasks[3], mls_units[2].tasks[4]"),
+                         [("task", 2, 3), ("task", 2, 4)])
+        self.assertEqual(opt.locations("mls_units[1] (MLS-X-02).tasks[0]"), [("task", 1, 0)])
+        self.assertEqual(opt.locations("mls_units[1].macro_alignment"), [("field", 1, "macro_alignment")])
+        self.assertEqual(opt.locations("mls_units[0]"), [("unit", 0)])
+        self.assertEqual(opt.locations("environment_assumptions[3]"), [("assumption", 3)])
+        self.assertEqual(opt.locations("$.macro_objective"), [])
+
+    def test_flagged_step_and_fallback_may_change(self):
+        before, after = self.full(), self.full()
+        after["sequence"]["mls_units"][1]["tasks"][2]["action"] = "fixed"
+        after["environment_assumptions"][0]["if_not"] = "fixed"
+        issues = [{"where": "mls_units[1].tasks[2]"}, {"where": "environment_assumptions[0]"}]
+        self.assertEqual(opt.check_repair(before, after, issues), [])
+
+    def test_unflagged_changes_are_rejected(self):
+        before, after = self.full(), self.full()
+        after["sequence"]["mls_units"][0]["tasks"][0]["action"] = "x"
+        after["sequence"]["mls_units"][0]["duration_weeks"] = 3
+        after["environment_assumptions"][0]["if_not"] = "x"
+        found = opt.check_repair(before, after, [{"where": "mls_units[1].tasks[2]"}])
+        self.assertEqual(len(found), 3, found)
+
+    def test_steps_and_units_are_edited_in_place(self):
+        before, after = self.full(), self.full()
+        after["sequence"]["mls_units"][1]["tasks"].append({"step": 5, "role": "Lead_Educator", "action": "x"})
+        self.assertTrue(any("edits steps in place" in p for p in
+                            opt.check_repair(before, after, [{"where": "mls_units[1]"}])))
+        after = self.full()
+        after["sequence"]["mls_units"].pop()
+        self.assertTrue(any("same units" in p for p in opt.check_repair(before, after, [])))
+
+    def test_whole_unit_flag_allows_its_fields_and_steps(self):
+        before, after = self.full(), self.full()
+        after["sequence"]["mls_units"][1]["macro_alignment"] = "x"
+        after["sequence"]["mls_units"][1]["tasks"][0]["action"] = "x"
+        self.assertEqual(opt.check_repair(before, after, [{"where": "mls_units[1]"}]), [])
+
+
 if __name__ == "__main__":
     unittest.main()

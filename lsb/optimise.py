@@ -12,6 +12,7 @@ points at the source section or card it comes from.
 from __future__ import annotations
 
 import copy
+import re
 from typing import Any
 
 CL_CARDS = ("CL-01", "CL-02", "CL-03", "CL-04", "CL-05")
@@ -180,3 +181,70 @@ def merge_trace(trace: list[dict], unit_traces: dict[str, list[dict]]) -> list[d
     """`trace` with the entries of each re-traced unit replaced."""
     kept = [e for e in trace if not (isinstance(e, dict) and e.get("mls_id") in unit_traces)]
     return kept + [e for entries in unit_traces.values() for e in entries]
+
+
+# ---------------------------------------------------------------- issue locations and repairs
+
+LOCATION = re.compile(r"mls_units\[(\d+)\](?:\s*\([^)]*\))?(?:\.tasks\[(\d+)\]|\.([a-z_]+))?|environment_assumptions\[(\d+)\]")
+
+
+def locations(where: Any) -> list[tuple]:
+    """Places an issue's `where` points at: ("task", u, t), ("field", u, name), ("unit", u) or ("assumption", i)."""
+    out: list[tuple] = []
+    for m in LOCATION.finditer(str(where or "")):
+        if m.group(4) is not None:
+            out.append(("assumption", int(m.group(4))))
+        elif m.group(2) is not None:
+            out.append(("task", int(m.group(1)), int(m.group(2))))
+        elif m.group(3) is not None and m.group(3) != "tasks":
+            out.append(("field", int(m.group(1)), m.group(3)))
+        else:
+            out.append(("unit", int(m.group(1))))
+    return out
+
+
+def check_repair(before: dict, after: Any, issues: list[dict]) -> list[str]:
+    """Problems with a repair of `before` (a full decompose output) aimed at `issues`; [] means accepted.
+
+    A repair may change only what an issue points at: a flagged step, a flagged
+    unit field, a flagged fallback, or anything in a unit flagged as a whole. It
+    never adds, removes or reorders units, steps or fallbacks, so the source trace
+    and every optimisation edit elsewhere stay valid.
+    """
+    if not isinstance(after, dict) or not isinstance(after.get("sequence"), dict):
+        return ["output has no 'sequence' object"]
+    flagged = [loc for i in issues for loc in locations(i.get("where"))]
+    tasks_ok = {(loc[1], loc[2]) for loc in flagged if loc[0] == "task"}
+    fields_ok = {(loc[1], loc[2]) for loc in flagged if loc[0] == "field"}
+    units_ok = {loc[1] for loc in flagged if loc[0] == "unit"}
+    assumptions_ok = {loc[1] for loc in flagged if loc[0] == "assumption"}
+    problems: list[str] = []
+
+    b_seq, a_seq = before["sequence"], after["sequence"]
+    for key in ("macro_objective", "global_context"):
+        if a_seq.get(key) != b_seq.get(key):
+            problems.append(f"{key} changed; a repair changes only what the issues point at")
+    b_units, a_units = b_seq.get("mls_units", []), a_seq.get("mls_units", [])
+    if [u.get("mls_id") for u in a_units if isinstance(u, dict)] != [u.get("mls_id") for u in b_units]:
+        return problems + ["units were added, removed, renamed or reordered; a repair keeps the same units"]
+    for i, (bu, au) in enumerate(zip(b_units, a_units)):
+        for key in set(bu) | set(au):
+            if key in ("tasks", "mls_id") or bu.get(key) == au.get(key):
+                continue
+            if i not in units_ok and (i, key) not in fields_ok:
+                problems.append(f"mls_units[{i}].{key} changed but no issue points at it")
+        bt, at = bu.get("tasks") or [], au.get("tasks") or []
+        if len(bt) != len(at):
+            problems.append(f"mls_units[{i}] has {len(at)} steps, was {len(bt)}; a repair edits steps in place")
+            continue
+        for j, (x, y) in enumerate(zip(bt, at)):
+            if x != y and i not in units_ok and (i, j) not in tasks_ok:
+                problems.append(f"mls_units[{i}].tasks[{j}] changed but no issue points at it")
+    b_as, a_as = before.get("environment_assumptions") or [], after.get("environment_assumptions") or []
+    if len(b_as) != len(a_as):
+        problems.append("fallbacks were added or removed; a repair edits them in place")
+    else:
+        for k, (x, y) in enumerate(zip(b_as, a_as)):
+            if x != y and k not in assumptions_ok:
+                problems.append(f"environment_assumptions[{k}] changed but no issue points at it")
+    return problems

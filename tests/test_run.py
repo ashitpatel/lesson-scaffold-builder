@@ -325,13 +325,57 @@ class ConnectedLearning(unittest.TestCase):
         self.assertEqual((r.status, r.sequence), ("pass", VALID))
         self.assertEqual(set(self.units(r).values()), {"reverted"})
 
-    def test_issue_outside_the_edited_units_reverts_every_edit(self):
+    def repaired(self, unit_index, step_index, text):
+        seq = copy.deepcopy(VALID)
+        seq["mls_units"][0] = json.loads(cl_reply(U0))["unit"]  # the kept CL edit
+        seq["mls_units"][unit_index]["tasks"][step_index]["action"] = text
+        return decomposed(seq)
+
+    def test_issue_outside_the_edited_units_keeps_the_edit_and_is_repaired(self):
         other = {**CL_ISSUE, "where": "mls_units[1].tasks[0]"}
-        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REVISE", [other])],
+        m = FakeModel([decomposed(VALID), self.repaired(1, 0, "Fixed step.")],
+                      [critic("PASS"), critic("REVISE", [other]), critic("PASS")],
                       [cl_reply(U0), cl_reply(U1, False)])
         r = self.go(m)
-        self.assertEqual(r.sequence, VALID)
-        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "reverted")
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic", "cl", "cl", "critic", "decompose", "critic"])
+        self.assertEqual(r.status, "pass")
+        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "applied")  # not blamed on CL
+        self.assertEqual(len(r.sequence["mls_units"][0]["tasks"]), 5)
+        self.assertEqual(r.sequence["mls_units"][1]["tasks"][0]["action"], "Fixed step.")
+        self.assertEqual(r.late_issues[0]["where"], "mls_units[1].tasks[0]")
+        self.assertIn("the showcase needs the educator present", m.calls[5][1])  # the repair gets the issue
+        self.assertTrue((self.out / "cards.txt").exists())
+
+    def test_issue_on_an_unchanged_step_of_an_edited_unit_is_not_the_stages(self):
+        unchanged = {**CL_ISSUE, "where": "mls_units[0].tasks[1]"}
+        m = FakeModel([decomposed(VALID), self.repaired(0, 1, "Fixed step.")],
+                      [critic("PASS"), critic("REVISE", [unchanged]), critic("PASS")],
+                      [cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "applied")
+        self.assertEqual(r.sequence["mls_units"][0]["tasks"][1]["action"], "Fixed step.")
+        self.assertEqual(r.status, "pass")
+
+    def test_unrepairable_late_issue_means_the_run_does_not_pass(self):
+        other = {**CL_ISSUE, "where": "mls_units[1].tasks[0]"}
+        m = FakeModel([decomposed(VALID), self.repaired(1, 0, "Try 1."), self.repaired(1, 0, "Try 2.")],
+                      [critic("PASS"), critic("REVISE", [other]), critic("REVISE", [other]), critic("REVISE", [other])],
+                      [cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(r.status, "issues_open")
+        self.assertFalse((self.out / "cards.txt").exists())
+        self.assertTrue((self.out / "late-issues.json").exists())
+        self.assertEqual([x["verdict"] for x in r.repair["rounds"]], ["REVISE", "REVISE"])
+
+    def test_repair_that_changes_unflagged_steps_is_rejected(self):
+        other = {**CL_ISSUE, "where": "mls_units[1].tasks[0]"}
+        bad = json.loads(self.repaired(1, 0, "Fixed step."))
+        bad["sequence"]["mls_units"][1]["tasks"][2]["action"] = "Sneaky change."
+        m = FakeModel([decomposed(VALID), json.dumps(bad), json.dumps(bad)],
+                      [critic("PASS"), critic("REVISE", [other])], [cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(r.status, "issues_open")
+        self.assertIn("mls_units[1].tasks[2] changed but no issue points at it", m.calls[6][1])
 
     def test_usage_limit_keeps_the_decomposed_sequence(self):
         m = FakeModel([decomposed(VALID)], [critic("PASS")], [run.ModelUnavailable("You've hit your session limit")])
