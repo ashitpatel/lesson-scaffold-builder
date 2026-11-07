@@ -61,7 +61,7 @@ python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle 
 ```bash
 python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle
 ```
-A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, or the Anthropic API with `--backend api`. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did. Add `--ask` to be asked about the breakdown (unit maximum, focus) and each stage's limits (cards, cards per unit, added step), with suggestions drawn from your source; `--answers FILE` supplies those answers from JSON so sweeps don't stop.
+A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, or the Anthropic API with `--backend api`. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did. Add `--ask` to be asked which frameworks to run, then about the modules (one MLS or several, dimensions, timeframe) and each stage's limits (cards, cards per unit, added step), with suggestions drawn from your source; `--answers FILE` supplies those answers from JSON so sweeps don't stop.
 
 ### 3. Develop or test it
 ```bash

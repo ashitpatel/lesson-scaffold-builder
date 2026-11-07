@@ -171,14 +171,16 @@ def check_task_granularity(payload: Any, limits: dict) -> CheckResult:
     return r
 
 
-def check_execution_window(payload: Any, limits: dict) -> CheckResult:
+def check_execution_window(payload: Any, limits: dict, single_span: bool = False) -> CheckResult:
     r = CheckResult("D04", "Run length", "Execution Window")
     lo, hi = limits["min_duration_weeks"], limits["max_duration_weeks"]
-    for i, u in _units(payload):
+    units = _units(payload)
+    span_all = single_span and len(units) == 1
+    for i, u in units:
         weeks = u.get("duration_weeks")
         if weeks is None:
             r.fail(_label(i, u), "duration_weeks is not declared, so the 2-to-4 week window cannot be confirmed")
-        elif not isinstance(weeks, int) or isinstance(weeks, bool) or not lo <= weeks <= hi:
+        elif not isinstance(weeks, int) or isinstance(weeks, bool) or weeks < lo or (weeks > hi and not span_all):
             r.fail(_label(i, u), f"duration_weeks is {weeks!r}; it must be {lo} to {hi}")
     return r
 
@@ -254,7 +256,8 @@ def check_step_size(payload: Any, limits: dict) -> CheckResult:
     return r
 
 
-def validate(payload: Any, schema: dict | None = None, config: dict | None = None) -> Report:
+def validate(payload: Any, schema: dict | None = None, config: dict | None = None,
+             single_span: bool = False) -> Report:
     schema = schema if schema is not None else load_json(SCHEMA_PATH)
     config = config if config is not None else load_config()
     limits = config["limits"]
@@ -262,7 +265,7 @@ def validate(payload: Any, schema: dict | None = None, config: dict | None = Non
         check_schema(payload, schema),
         check_unit_cap(payload, limits),
         check_task_granularity(payload, limits),
-        check_execution_window(payload, limits),
+        check_execution_window(payload, limits, single_span),
         check_roles(payload),
         check_step_sequence(payload),
         check_dependency_mapping(payload),

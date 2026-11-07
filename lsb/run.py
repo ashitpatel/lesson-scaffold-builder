@@ -10,9 +10,12 @@ your Muse login instead. `--backend api` calls the Anthropic API directly and
 needs ANTHROPIC_API_KEY or an `ant auth login` profile.
 Every intermediate JSON is saved under runs/<timestamp>/.
 
-Choices: `--ask` pauses to ask how to break the source down (unit maximum,
-breakdown focus) and what each stage may do (cards, cards per unit, added
-step), with suggestions drawn from the source and the cards files.
+Choices: `--ask` pauses to ask, first, which frameworks to exclude, then
+the MLS decisions (one module or several; if several, unit maximum, breakdown
+focus, max weeks per module) and what each remaining stage may do (cards,
+cards per unit, added step), with suggestions drawn from the source and the
+cards files. A single MLS spans the chapter: D04 yields its upper bound and
+the critic runs in `single` mode.
 `--answers FILE` reads those answers from a JSON object instead, so sweeps
 answer without stopping; anything missing falls back to defaults. Without
 either flag nothing is asked. The values land in choices.json.
@@ -373,7 +376,7 @@ class Source:
 
 
 def decompose_values(src: Source, previous: dict | None = None, feedback: list | None = None,
-                     focus: str = "auto") -> dict[str, str]:
+                     focus: str = "auto", single: str = "no") -> dict[str, str]:
     return {
         "SOURCE_TEXT": src.text,
         "SOURCE_REF": src.ref,
@@ -381,13 +384,14 @@ def decompose_values(src: Source, previous: dict | None = None, feedback: list |
         "TIME_BLOCK_MINUTES": str(src.time_block_minutes) if src.time_block_minutes else NONE,
         "CONTEXT": src.context or NONE,
         "USER_FOCUS": focus,
+        "SINGLE_MODULE": single,
         "PREVIOUS_OUTPUT": _dump(previous) if previous is not None else NONE,
         "CRITIC_FEEDBACK": _dump(feedback) if feedback else NONE,
     }
 
 
 def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issues: list | None = None,
-                  cards: str | None = None) -> dict[str, str]:
+                  cards: str | None = None, mode: str = "multi") -> dict[str, str]:
     return {
         "SEQUENCE_JSON": _dump(decomposed["sequence"]),
         "VALIDATOR_REPORT": _dump(report.to_dict()),
@@ -400,6 +404,7 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
         "FRAMEWORK_CARDS": cards or NONE,
         "RENDERED_CARDS": NONE,
         "PREVIOUS_ISSUES": _dump(previous_issues) if previous_issues else NONE,
+        "MODE": mode,
     }
 
 
@@ -486,7 +491,8 @@ def _update_flags(result: RunResult, critic: dict) -> None:
 def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call, save, result: RunResult,
                         earlier_cards: str = "", max_revisions: int = 1,
                         allowed: tuple[str, ...] | None = None,
-                        max_cards: int = opt.MAX_CARDS, max_added: int = opt.MAX_ADDED_STEPS) -> dict | None:
+                        max_cards: int = opt.MAX_CARDS, max_added: int = opt.MAX_ADDED_STEPS,
+                        single_span: bool = False) -> dict | None:
     """Apply one stage's cards unit by unit to a sequence that passed the critic.
 
     `current` is {"sequence", "source_trace"}. Each unit's edit must pass
@@ -590,10 +596,12 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
         if not accepted:
             return None
         cand = candidate()
-        report = v.validate(cand["sequence"])
+        report = v.validate(cand["sequence"], single_span=single_span)
         save(f"{p}{rnd}-validator.json", report.to_dict())
         try:
-            critic = call("critic", CRITIC, critic_values(src, cand, report, previous_issues, review_cards),
+            critic = call("critic", CRITIC,
+                          critic_values(src, cand, report, previous_issues, review_cards,
+                                        "single" if single_span else "multi"),
                           f"{p}{rnd}-critic")
         except StageError as e:
             revert(accepted, f"critic unusable: {e}")
@@ -654,7 +662,7 @@ REPAIR_NOTE = {"check": "repair", "source": "orchestrator",
 
 
 def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: RunResult,
-               cards: str = "", max_rounds: int = 2) -> dict | None:
+               cards: str = "", max_rounds: int = 2, single_span: bool = False) -> dict | None:
     """Fix problems a stage's review found in content no stage changed.
 
     `full` is a decompose-shaped output holding the current sequence and trace.
@@ -689,10 +697,12 @@ def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: 
             return None
         # Steps are edited in place, so the current trace (with card ids) still lines up.
         cand = {**out, "source_trace": current.get("source_trace") or []}
-        report = v.validate(cand["sequence"])
+        report = v.validate(cand["sequence"], single_span=single_span)
         save(f"repair{rnd}-validator.json", report.to_dict())
         try:
-            critic = call("critic", CRITIC, critic_values(src, cand, report, previous_issues, cards),
+            critic = call("critic", CRITIC,
+                          critic_values(src, cand, report, previous_issues, cards,
+                                        "single" if single_span else "multi"),
                           f"repair{rnd}-critic")
         except StageError as e:
             result.notes.append(f"repair {rnd}: critic unusable: {e}")
@@ -713,6 +723,26 @@ def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: 
     return None
 
 
+def _framework_choices() -> list[ask.Choice]:
+    return [ask.Choice(
+        "frameworks_excluded", "Exclude any frameworks for this run?",
+        (("evidence_based", "Evidence-based practices",
+          "memory techniques: recall, spacing, worked examples, checks, visuals"),
+         ("connected_learning", "Connected Learning",
+          "engagement designs: choice, peer roles, real context, class products, audience"),
+         ("participatory_budgeting", "Participatory budgeting",
+          "civic reasoning: class votes and budget decisions where a real trade-off exists")),
+        [], multi=True,
+        context="The optimisation stages improve each unit after it passes review; "
+                "excluded frameworks are skipped entirely. Blank excludes nothing.")]
+
+
+def _single_choice() -> ask.Choice:
+    return ask.Choice("single_module", "Break the lesson into multiple MLS, or keep one?",
+                      ((False, "Multiple modules", "2-to-4-week units; the default"),
+                       (True, "One MLS", "a single unit spanning the whole chapter")), False)
+
+
 def _breakdown_choices(src: Source) -> list[ask.Choice]:
     heads = ask.section_headers(src.text)
     context = "The source has %d sections:\n%s" % (len(heads), "\n".join(f"  - {h}" for h in heads))
@@ -726,6 +756,10 @@ def _breakdown_choices(src: Source) -> list[ask.Choice]:
                    (("auto", "Auto", "the pipeline decides"),
                     ("one unit per source section", "One unit per source section",
                      "the unit maximum still wins")), "auto", free_text=True, context=context),
+        ask.Choice("max_weeks", "Max timeframe per module?",
+                   ((2, "2 weeks", "every unit exactly 2"),
+                    (3, "3 weeks", ""),
+                    (4, "4 weeks", "the default window")), 4),
     ]
 
 
@@ -752,9 +786,19 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     out_dir.mkdir(parents=True, exist_ok=True)
     prompter = prompter or ask.DefaultPrompter()
     choices: dict[str, Any] = {}
-    for c in _breakdown_choices(src):
+    for c in _framework_choices():
         choices[c.key] = prompter.ask(c)
-    choices["max_units"] = int(choices["max_units"])
+    excluded = set(choices["frameworks_excluded"])
+    stages = tuple(k for k in stages if STAGES[k].key not in excluded)
+    choices["single_module"] = bool(prompter.ask(_single_choice()))
+    if choices["single_module"]:
+        choices.update({"max_units": 1, "focus": "auto", "max_weeks": None})
+    else:
+        for c in _breakdown_choices(src):
+            choices[c.key] = prompter.ask(c)
+        choices["max_units"] = int(choices["max_units"])
+        choices["max_weeks"] = int(choices["max_weeks"])
+    single_span = choices["single_module"]
 
     def save(name: str, obj: Any) -> None:
         (out_dir / name).write_text(_dump(obj) + "\n", encoding="utf-8")
@@ -778,7 +822,9 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     for attempt in range(1, max_revisions + 2):
         result.attempts = attempt
         try:
-            decomposed = call("decompose", DECOMPOSE, decompose_values(src, previous, feedback, choices["focus"]),
+            decomposed = call("decompose", DECOMPOSE,
+                              decompose_values(src, previous, feedback, choices["focus"],
+                                               "yes" if single_span else "no"),
                               attempt)
         except ModelUnavailable as e:
             result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
@@ -797,12 +843,15 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                                                "fix": "Wrap the MLS_DAG_Sequence in a top-level 'sequence' key."}]
             continue
 
-        report = v.validate(sequence)
+        report = v.validate(sequence, single_span=single_span)
         save(f"{attempt:02d}-validator.json", report.to_dict())
 
         reviewed_issues = feedback if previous is not None else None  # a revision of `previous`
         try:
-            critic = call("critic", CRITIC, critic_values(src, decomposed, report, reviewed_issues), attempt)
+            critic = call("critic", CRITIC,
+                          critic_values(src, decomposed, report, reviewed_issues,
+                                        mode="single" if single_span else "multi"),
+                          attempt)
         except ModelUnavailable as e:
             result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
             result.status = "error"
@@ -839,6 +888,22 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             if verdict == "PASS":
                 result.notes.append(
                     f"attempt {attempt}: {n_units} units exceeds your maximum of {choices['max_units']}; "
+                    "treated as REVISE")
+                verdict = "REVISE"
+        max_weeks = choices["max_weeks"]
+        over_weeks = [i for i, u in enumerate(sequence.get("mls_units") or [])
+                      if max_weeks is not None and max_weeks < 4
+                      and isinstance(u.get("duration_weeks"), int)
+                      and not isinstance(u.get("duration_weeks"), bool)
+                      and u["duration_weeks"] > max_weeks]
+        if over_weeks:
+            for i in over_weeks:
+                issues.append({"check": "D04", "source": "code", "where": f"mls_units[{i}].duration_weeks",
+                               "problem": f"runs longer than your maximum of {max_weeks} weeks",
+                               "fix": f"Shorten to at most {max_weeks} weeks of content."})
+            if verdict == "PASS":
+                result.notes.append(
+                    f"attempt {attempt}: {len(over_weeks)} unit(s) exceed your maximum of {max_weeks} weeks; "
                     "treated as REVISE")
                 verdict = "REVISE"
         score = {**_score(issues), "rejected": int(verdict == "REJECT")}
@@ -878,7 +943,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             try:
                 new = run_framework_stage(stage, src, current, call, save, result,
                                           "\n\n".join(kept_cards), max_stage_revisions,
-                                          picked, max_cards, max_added)
+                                          picked, max_cards, max_added, single_span)
             except ModelUnavailable as e:
                 result.notes.append(f"{stage.key}: model unavailable; stopped before finishing this stage, "
                                     f"kept the sequence from the stages before it: {e}")
@@ -895,7 +960,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             save("late-issues.json", result.late_issues)
             full = {**best_decomposed, "sequence": result.sequence, "source_trace": final_trace}
             try:
-                repaired = run_repair(src, full, result.late_issues, call, save, result, "\n\n".join(kept_cards))
+                repaired = run_repair(src, full, result.late_issues, call, save, result, "\n\n".join(kept_cards),
+                                          single_span=single_span)
             except ModelUnavailable as e:
                 result.notes.append(f"repair: model unavailable: {e}")
                 repaired = None

@@ -74,6 +74,22 @@ class Mutations(unittest.TestCase):
         del self.unit()["duration_weeks"]
         self.assertEqual(failed(self.p), ["D04"])
 
+    def test_single_span_yields_the_upper_weeks_bound(self):
+        self.p["mls_units"] = self.p["mls_units"][:1]
+        self.unit()["duration_weeks"] = 6
+        self.assertEqual(failed(self.p), ["D04"])
+        self.assertEqual(v.validate(self.p, single_span=True).failed_ids(), [])
+
+    def test_single_span_keeps_the_minimum_and_multi_unit_cap(self):
+        self.p["mls_units"] = self.p["mls_units"][:1]
+        self.unit()["duration_weeks"] = 1
+        self.assertEqual(v.validate(self.p, single_span=True).failed_ids(), ["D04"])
+        self.p["mls_units"].append(copy.deepcopy(self.p["mls_units"][0]))
+        self.p["mls_units"][1]["mls_id"] = "MLS-EXTRA-0"
+        self.p["mls_units"][1]["duration_weeks"] = 6
+        self.unit()["duration_weeks"] = 2
+        self.assertEqual(v.validate(self.p, single_span=True).failed_ids(), ["D04"])
+
     def test_nonstandard_role_fails_schema_and_role_check(self):
         self.unit()["tasks"][0]["role"] = "Head_Teacher"
         self.assertEqual(failed(self.p), ["D01", "D05"])

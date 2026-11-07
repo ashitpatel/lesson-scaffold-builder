@@ -481,6 +481,42 @@ class Choices(unittest.TestCase):
         self.assertEqual(saved["max_units"], 2)
         self.assertEqual(saved["focus"], "auto")
 
+    def test_excluded_framework_is_never_called_or_asked(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("cl",),
+                             prompter=self.file_prompter({"frameworks_excluded": ["connected_learning"]}))
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic"])
+        self.assertEqual(r.status, "pass")
+        saved = json.loads((self.out / "choices.json").read_text(encoding="utf-8"))
+        self.assertEqual(saved["frameworks_excluded"], ["connected_learning"])
+        self.assertNotIn("connected_learning_cards", saved)
+
+    def test_unknown_exclusion_falls_back_to_none(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")], [cl_reply(U0, False), cl_reply(U1, False)])
+        run.run_pipeline(SOURCE, m, self.out, stages=("cl",),
+                         prompter=self.file_prompter({"frameworks_excluded": ["nonsense"]}))
+        self.assertIn("cl", [s for s, _ in m.calls])
+        saved = json.loads((self.out / "choices.json").read_text(encoding="utf-8"))
+        self.assertEqual(saved["frameworks_excluded"], [])
+
+    def test_single_module_passes_a_full_span_unit(self):
+        one = copy.deepcopy(VALID)
+        one["mls_units"] = one["mls_units"][:1]
+        one["mls_units"][0]["duration_weeks"] = 6
+        m = FakeModel([decomposed(one)], [critic("PASS")])
+        r = run.run_pipeline(SOURCE, m, self.out, prompter=self.file_prompter({"single_module": True}))
+        self.assertEqual(r.status, "pass")
+        saved = json.loads((self.out / "choices.json").read_text(encoding="utf-8"))
+        self.assertEqual(saved["single_module"], True)
+        self.assertEqual(saved["max_units"], 1)
+        self.assertIsNone(saved["max_weeks"])
+
+    def test_max_weeks_forces_a_revise(self):
+        m = FakeModel([decomposed(VALID)] * 3, [critic("PASS")] * 3)
+        r = run.run_pipeline(SOURCE, m, self.out, prompter=self.file_prompter({"max_weeks": 2}))
+        self.assertEqual(r.status, "revise_exhausted")
+        self.assertTrue(any("maximum of 2 weeks" in n for n in r.notes), r.notes)
+
     def test_focus_reaches_decompose_values(self):
         self.assertEqual(run.decompose_values(SOURCE)["USER_FOCUS"], "auto")
         self.assertEqual(run.decompose_values(SOURCE, focus="by skill")["USER_FOCUS"], "by skill")
