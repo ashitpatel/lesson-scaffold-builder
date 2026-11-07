@@ -1,0 +1,73 @@
+{
+  "_about": "Regression cases for python3 -m lsb.regress. Each source is an original test chapter in tests/fixtures/. 'forbidden' lists planted traps and region-specific names that must not survive into the final sequence; 'required' lists terms a faithful sequence must keep. See lsb/regress.py.",
+  "cases": [
+    {
+      "name": "hydrology",
+      "source": "tests/fixtures/hydrology-source.md",
+      "ref": "Chapter 4 - Basic Hydrology Framework",
+      "expect": {"status": "pass", "max_units": 4, "required": ["rain"]}
+    },
+    {
+      "name": "ecosystems",
+      "source": "tests/fixtures/ecosystems-source.md",
+      "ref": "Unit 5 - Ecosystems: Energy Flow and Food Webs",
+      "expect": {"status": "pass", "max_units": 4, "forbidden": ["tablets", "jars"], "required": ["quadrat", "food web"],
+                 "min_source_flags": 4, "stage_may_not_apply": ["participatory_budgeting"]}
+    },
+    {
+      "name": "civics",
+      "source": "tests/fixtures/civics-source.md",
+      "ref": "Chapter 7 - Making Decisions Together: Local Government and Community Priorities",
+      "expect": {"status": "pass", "max_units": 4, "forbidden": ["Panchayat", "treasurer", "cash book", "uniform", "social media"],
+                 "required": ["approval"], "min_source_flags": 5}
+    },
+    {
+      "name": "kenya-water",
+      "source": "tests/fixtures/kenya-water-source.md",
+      "ref": "Grade 6 Science and Technology - Strand 3: Clean Water and Health",
+      "expect": {"status": "pass", "max_units": 4,
+                 "forbidden": ["Kisumu", "Lake Victoria", "KSh", "shillings", "baraza", "CBC", "Competency-Based", "razor"],
+                 "required": ["filter"], "min_source_flags": 4, "stage_may_not_apply": ["participatory_budgeting"]}
+    },
+    {
+      "name": "peru-fractions",
+      "source": "tests/fixtures/peru-fractions-source.md",
+      "ref": "Mathematics Grade 5 - Unit 4: Fractions in the Market and the Garden",
+      "expect": {"status": "pass", "max_units": 4,
+                 "forbidden": ["soles", "S/", "UGEL", "MINEDU", "Cusco", "San Pedro", "quipu"],
+                 "required": ["equivalent", "garden"], "min_source_flags": 3}
+    },
+    {
+      "name": "vietnam-folktales",
+      "source": "tests/fixtures/vietnam-folktales-source.md",
+      "ref": "Literature Grade 6 - Unit 2: Folk Tales and Retelling",
+      "expect": {"status": "pass", "max_units": 4,
+                 "forbidden": ["MOET", "Tết", "Tet", "Zalo", "VND", "loudspeaker", "Vietnam"],
+                 "required": ["folk tale"], "min_source_flags": 3, "stage_may_not_apply": ["participatory_budgeting"]}
+    },
+    {
+      "name": "ghana-assembly",
+      "source": "tests/fixtures/ghana-assembly-source.md",
+      "ref": "JHS 2 Social Studies - Section 4: Community Development and Local Government",
+      "expect": {"status": "pass", "max_units": 4,
+                 "forbidden": ["Ghana", "GH₵", "cedis", "District Assembly", "Unit Committee", "Common Fund", "prefect", "treasurer"],
+                 "required": ["vote"], "min_source_flags": 4}
+    },
+    {
+      "name": "bangladesh-letters",
+      "source": "tests/fixtures/bangladesh-letters-source.md",
+      "ref": "Class 1 Language - Chapter 3: Letters, Sounds and First Words",
+      "expect": {"status": "pass", "max_units": 4,
+                 "forbidden": ["NCTB", "taka", "bazaar", "slow readers", "back benches", "smartphone"],
+                 "required": ["blend"], "min_source_flags": 3, "stage_may_not_apply": ["participatory_budgeting"]}
+    },
+    {
+      "name": "mexico-migration",
+      "source": "tests/fixtures/mexico-migration-source.md",
+      "ref": "History Grade 8 - Block 3: Migration Stories, Past and Present",
+      "expect": {"status": "pass", "max_units": 4,
+                 "forbidden": ["SEP", "pesos", "Oaxaca", "bus terminal", "without papers"],
+                 "required": ["push", "pull"], "min_source_flags": 3, "stage_may_not_apply": ["participatory_budgeting"]}
+    }
+  ]
+}
