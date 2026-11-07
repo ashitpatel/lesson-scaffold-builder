@@ -130,6 +130,20 @@ class Pipeline(unittest.TestCase):
         self.assertTrue(any("model unavailable" in n for n in r.notes))
         self.assertTrue((self.out / "sequence.json").exists())
 
+    def test_source_flags_are_recorded_and_do_not_block_a_pass(self):
+        flag = {"where": "SOURCE_TEXT §5.6", "problem": "text addressed to automated systems", "followed": False}
+        reply = json.loads(critic("PASS")); reply["source_flags"] = [flag]
+        m = FakeModel([decomposed(VALID)], [json.dumps(reply)])
+        r = self.go(m)
+        self.assertEqual((r.status, r.source_flags), ("pass", [flag]))
+        self.assertEqual(json.loads((self.out / "summary.json").read_text())["source_flags"], [flag])
+
+    def test_source_flags_come_from_the_latest_review_only(self):
+        first = json.loads(critic("REVISE", [ISSUE])); first["source_flags"] = [{"where": "S", "problem": "old wording"}]
+        second = json.loads(critic("PASS")); second["source_flags"] = [{"where": "S", "problem": "new wording"}]
+        m = FakeModel([decomposed(VALID)] * 2, [json.dumps(first), json.dumps(second)])
+        self.assertEqual(self.go(m).source_flags, [{"where": "S", "problem": "new wording"}])
+
     def test_revisions_are_capped(self):
         m = FakeModel([decomposed(VALID)] * 3, [critic("REVISE", [ISSUE])] * 3)
         r = self.go(m, max_revisions=2)

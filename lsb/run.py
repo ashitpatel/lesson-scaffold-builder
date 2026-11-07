@@ -272,6 +272,7 @@ class RunResult:
     out_dir: Path
     best_attempt: int | None = None
     attempt_scores: dict[int, dict] = field(default_factory=dict)
+    source_flags: list[dict] = field(default_factory=list)  # problems in the source itself, for a person
     usage: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
@@ -368,6 +369,9 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             result.status = "error"
             break
         save(f"{attempt:02d}-critic.json", critic)
+        # The latest review's list replaces earlier ones: each critic reviews the
+        # whole source, so lists from different attempts repeat in different words.
+        result.source_flags = [f for f in critic.get("source_flags") or [] if isinstance(f, dict)]
 
         verdict = critic.get("verdict")
         if verdict not in VERDICTS:
@@ -413,6 +417,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "attempts": result.attempts,
         "best_attempt": result.best_attempt,
         "attempt_scores": result.attempt_scores,
+        "source_flags": result.source_flags,
         "source_ref": src.ref,
         "notes": result.notes,
         "usage": result.usage,
@@ -493,6 +498,8 @@ def main(argv: list[str] | None = None) -> int:
               f"{' (REJECT)' if score.get('rejected') else ''}{mark}")
     for note in result.notes:
         print(f"  {note}")
+    for flag in result.source_flags:
+        print(f"  source flag: {flag.get('where', '?')}: {flag.get('problem', '')}")
     print(f"saved to {out_dir}")
     return 0 if result.passed else 1
 
