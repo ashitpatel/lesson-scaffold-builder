@@ -30,6 +30,8 @@
     "max_mls_units": 5,
     "min_steps_per_unit": 3,
     "max_steps_per_unit": 7,
+    "max_sentences_per_step": 4,
+    "max_words_per_step": 80,
     "min_duration_weeks": 2,
     "max_duration_weeks": 4
   },

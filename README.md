@@ -29,8 +29,9 @@ It validates against [schemas/mls-dag.schema.json](schemas/mls-dag.schema.json).
 | D08 | No dependency cycles | Cycle Prevention |
 | D09 | Every unit has a `macro_alignment` link | Macro Alignment (presence only) |
 | D10 | No region-specific terms in any string | Universal Taxonomy (term list only) |
+| D11 | Each step is at most 4 sentences and 80 words | Task Granularity (one action per step) |
 
-The other 13 critic checks need judgement: audience, privacy, financial isolation, offline default, socioeconomic adaptability, pedagogical sourcing, coherence, low overhead, materials, clerical reduction, safety, collaborative balance and output clarity. They belong to the LLM critic, which should receive this report as input. D09 and D10 also have a judgement half (is the link real, is a term regional) that stays with the critic.
+D11 exists because revisions tend to append fixes to an existing step: in the live hydrology runs, one step grew from 5 to 9 sentences across attempts while the critic let it through. The other 13 critic checks need judgement: audience, privacy, financial isolation, offline default, socioeconomic adaptability, pedagogical sourcing, coherence, low overhead, materials, clerical reduction, safety, collaborative balance and output clarity. They belong to the LLM critic, which should receive this report as input. D09 and D10 also have a judgement half (is the link real, is a term regional) that stays with the critic.
 
 The hydrology example printed in the requirements fails D03, D04 and D09. See [tests/fixtures/README.md](tests/fixtures/README.md).
 

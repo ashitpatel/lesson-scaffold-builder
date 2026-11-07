@@ -112,6 +112,21 @@ class Mutations(unittest.TestCase):
         self.unit()["tasks"][0]["action"] = "Clap the rhythm; read the SMCs and MIPS logos."
         self.assertEqual(failed(self.p), [])
 
+    def test_overloaded_step_fails_step_size(self):
+        self.unit()["tasks"][0]["action"] = " ".join(f"Do thing {k}." for k in range(1, 6))
+        report = v.validate(self.p)
+        self.assertEqual(report.failed_ids(), ["D11"])
+        self.assertIn("5 sentences", report.checks[10].issues[0].problem)
+
+    def test_long_single_sentence_fails_step_size(self):
+        self.unit()["tasks"][0]["action"] = "Measure " + "and record " * 45 + "the rain."
+        self.assertEqual(failed(self.p), ["D11"])
+
+    def test_four_sentences_with_abbreviations_pass(self):
+        self.unit()["tasks"][0]["action"] = ("Use reused items, e.g. bottles. Mark a 0 line at 2.5 cm, i.e. the water level. "
+                                              "Read it daily. Write the number down.")
+        self.assertEqual(failed(self.p), [])
+
 
 class Robustness(unittest.TestCase):
     def test_garbage_payload_reports_instead_of_crashing(self):
@@ -136,7 +151,7 @@ class Cli(unittest.TestCase):
         code, out = self.run_cli(FIXTURES / "hydrology-spec.json", "--json")
         data = json.loads(out)
         self.assertFalse(data["passed"])
-        self.assertEqual(len(data["checks"]), 10)
+        self.assertEqual(len(data["checks"]), 11)
 
 
 if __name__ == "__main__":

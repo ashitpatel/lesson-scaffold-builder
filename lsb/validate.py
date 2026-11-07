@@ -123,6 +123,15 @@ def _strings(node: Any, path: str = "$") -> Iterator[tuple[str, str]]:
             yield from _strings(v, f"{path}[{i}]")
 
 
+# A sentence ends at . ! or ? followed by whitespace and a capital letter or
+# opening quote/bracket. "e.g." and "i.e." don't end a sentence.
+_SENTENCE_END = re.compile(r"(?<!\be\.g)(?<!\bi\.e)(?<=[.!?])\s+(?=[A-Z'\"(])")
+
+
+def sentence_count(text: str) -> int:
+    return len([s for s in _SENTENCE_END.split(text.strip()) if s.strip()])
+
+
 def _term_pattern(term: str) -> re.Pattern:
     # Word-boundary match for terms that start/end with a word character, so
     # "HM" does not match inside "rhythm" or "MIP" inside "MIPS"; plain
@@ -229,6 +238,22 @@ def check_regional_terms(payload: Any, terms: list[str]) -> CheckResult:
     return r
 
 
+def check_step_size(payload: Any, limits: dict) -> CheckResult:
+    r = CheckResult("D11", "Step size", "Task Granularity")
+    max_s, max_w = limits["max_sentences_per_step"], limits["max_words_per_step"]
+    for i, u in _units(payload):
+        for j, t in _tasks(u):
+            action = t.get("action")
+            if not isinstance(action, str):
+                continue
+            n_s, n_w = sentence_count(action), len(action.split())
+            if n_s > max_s or n_w > max_w:
+                r.fail(f"{_label(i, u)}.tasks[{j}]",
+                       f"{n_s} sentences, {n_w} words; a step is one action (at most {max_s} sentences and "
+                       f"{max_w} words). Split it into separate steps.")
+    return r
+
+
 def validate(payload: Any, schema: dict | None = None, config: dict | None = None) -> Report:
     schema = schema if schema is not None else load_json(SCHEMA_PATH)
     config = config if config is not None else load_config()
@@ -244,6 +269,7 @@ def validate(payload: Any, schema: dict | None = None, config: dict | None = Non
         check_cycles(payload),
         check_macro_alignment(payload),
         check_regional_terms(payload, config.get("regional_terms", [])),
+        check_step_size(payload, limits),
     ])
 
 
