@@ -21,6 +21,8 @@ lsb.optimise checks each edit's limits in code; accepted edits are merged, valid
 and reviewed by the critic again. A unit whose edit still has issues after
 --max-stage-revisions is reverted, so a stage never fails a passed sequence.
 sequence.json is the final sequence; decomposed-sequence.json is the one before them.
+A passed run also writes the teacher cards (cards.txt, cards.html; see lsb.render)
+and records their G21 check in summary.json.
 
 Exit status: 0 the sequence passed, 1 it did not, 2 usage or API error.
 """
@@ -37,6 +39,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from lsb import optimise as opt
+from lsb import render
 from lsb import validate as v
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -320,6 +323,7 @@ class RunResult:
     attempt_scores: dict[int, dict] = field(default_factory=dict)
     source_flags: list[dict] = field(default_factory=list)  # problems in the source itself, for a person
     optimisation: dict | None = None  # per optimisation stage: what it did to each unit
+    cards_problems: list[str] | None = None  # G21 check on the rendered cards; None if not rendered
     usage: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
@@ -599,6 +603,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         previous, feedback = decomposed, issues
         result.status = "revise_exhausted"
 
+    final_trace = (best_decomposed or {}).get("source_trace") or []
     if stages and result.status == "pass" and best_decomposed is not None:
         save("decomposed-sequence.json", result.sequence)
         current = {"sequence": best_decomposed["sequence"], "source_trace": best_decomposed.get("source_trace") or []}
@@ -617,7 +622,14 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                 kept_cards.append(stage.cards())
         if current["sequence"] is not best_decomposed["sequence"]:
             result.sequence = current["sequence"]
-            save("source_trace.json", current["source_trace"])
+            final_trace = current["source_trace"]
+            save("source_trace.json", final_trace)
+
+    if result.status == "pass" and best_decomposed is not None:
+        deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
+        result.cards_problems = render.write_cards(deck, out_dir)
+        for problem in result.cards_problems:
+            result.notes.append(f"cards: G21 check failed: {problem}")
 
     if result.sequence is not None:
         save("sequence.json", result.sequence)
@@ -627,6 +639,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "best_attempt": result.best_attempt,
         "attempt_scores": result.attempt_scores,
         "optimisation": result.optimisation,
+        "cards_g21": None if result.cards_problems is None else (result.cards_problems or "pass"),
         "source_flags": result.source_flags,
         "source_ref": src.ref,
         "notes": result.notes,
@@ -725,6 +738,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  {note}")
     for flag in result.source_flags:
         print(f"  source flag: {flag.get('where', '?')}: {flag.get('problem', '')}")
+    if result.cards_problems is not None:
+        print("teacher cards: cards.txt, cards.html; G21 " +
+              ("pass" if not result.cards_problems else f"{len(result.cards_problems)} problem(s)"))
     print(f"saved to {out_dir}")
     return 0 if result.passed else 1
 

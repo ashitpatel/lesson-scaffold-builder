@@ -153,6 +153,18 @@ class Pipeline(unittest.TestCase):
         self.assertEqual((r.status, r.attempts), ("revise_exhausted", 3))
         self.assertFalse(r.passed)
 
+    def test_a_passed_run_writes_checked_teacher_cards(self):
+        r = self.go(FakeModel([decomposed(VALID)], [critic("PASS")]))
+        self.assertEqual(r.cards_problems, [])
+        self.assertIn("MLS-HYDRO-02:", (self.out / "cards.txt").read_text(encoding="utf-8"))
+        self.assertTrue((self.out / "cards.html").exists())
+        self.assertEqual(json.loads((self.out / "summary.json").read_text())["cards_g21"], "pass")
+
+    def test_a_run_that_did_not_pass_writes_no_cards(self):
+        r = self.go(FakeModel([decomposed(VALID)] * 3, [critic("REVISE", [ISSUE])] * 3))
+        self.assertIsNone(r.cards_problems)
+        self.assertFalse((self.out / "cards.txt").exists())
+
     def test_reject_restarts_once_then_stops(self):
         m = FakeModel([decomposed(VALID)] * 2, [critic("REJECT"), critic("REJECT")])
         r = self.go(m)

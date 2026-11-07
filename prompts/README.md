@@ -5,7 +5,7 @@ Each prompt returns **JSON only**, so an orchestrator script can validate and ro
 **Adaptation status.** `05-decompose`, `30-connected-learning`, `31-participatory-budgeting` and `50-critic` are written for LSB: they work on an `MLS_DAG_Sequence` ([../schemas/mls-dag.schema.json](../schemas/mls-dag.schema.json)), `30` and `31` one unit at a time. Prompts 10, 15, 20, 32, 40 and 60 are still the Shikshagraha MIP transformer's: they work on one MIP-shaped project (`seq`, `target_stakeholder`, `x_transform`), contain region-specific terms, and refer to files this repo doesn't have (`frameworks/`, `evals/`, `schema/`). Until they're adapted, `40-transform` output can't go straight into the new critic.
 
 ```
-source text ──► 05-decompose ──► lsb.validate ──► 50-critic ──► PASS ──► 30-connected-learning ──► lsb.optimise ──► lsb.validate ──► 50-critic ──► 31-participatory-budgeting (same loop) ──► (32 EB, 60-render: not yet)
+source text ──► 05-decompose ──► lsb.validate ──► 50-critic ──► PASS ──► 30-connected-learning ──► lsb.optimise ──► lsb.validate ──► 50-critic ──► 31-participatory-budgeting (same loop) ──► lsb.render (cards + G21 check) ──► (32 EB: not yet)
                      ▲                                 │                   (once per unit)       (edit limits)                     │
                      └──────── REVISE (max 2) ─────────┘                         ▲                                                  │
                                REJECT ─► re-run 05 once, then stop and report     └──── issues in a unit (max 1), then revert it ─────┘
@@ -31,7 +31,7 @@ resource text ──► 15-derive ┘              (31: replaced) ┼─► 40-t
 | [32-gate-eb](32-gate-eb.md) | MLS + facts + EB cards | APPLY / PARTIAL / CONDITIONAL / ABSTAIN, ≤2 practice cards + measurement | Only with all non-negotiables; Tier 1 of the evidence ranking |
 | [40-transform](40-transform.md) | Baseline + gates + cards (+ critic feedback) | Transformed MLS + change log + open questions | ≤2 added tasks; supportable claims only |
 | [50-critic](50-critic.md) | `MLS_DAG_Sequence` + `lsb.validate` report + source (+ cards, rendered cards) | PASS / REVISE / REJECT over checks G01–G21 | Code results are final; judges the rest |
-| [60-render](60-render.md) | Final MLS | Catalogue row, teacher card, improvement-story stub | No content changes |
+| [60-render](60-render.md) | Final MLS | Catalogue row, teacher card, improvement-story stub | Legacy. LSB's teacher cards are rendered in code by `lsb.render` instead |
 
 ## Shared context
 - Cards: [../frameworks/connected-learning.md](../frameworks/connected-learning.md) (CL-01 to CL-05) and [../frameworks/participatory-budgeting.md](../frameworks/participatory-budgeting.md) (fit-gate, PB-01 to PB-05), both from the requirements. The EB card file the legacy prompts name (`frameworks/evidence-based-practices.md`) doesn't exist yet. Pass the **full text** into the optimisation and critic prompts.

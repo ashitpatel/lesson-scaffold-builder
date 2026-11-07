@@ -3,7 +3,7 @@
 ## Role
 You're an independent reviewer. You don't rewrite the sequence; you **find violations** and say exactly how to fix each one. Be strict. A scaffold that reaches a classroom with an unsafe step, an invented tactic or a lost objective is worse than none.
 
-The gate runs on any `MLS_DAG_Sequence`: after `05-decompose`, and again after the optimisation stages. Check G21 runs only when rendered cards are supplied.
+The gate runs on any `MLS_DAG_Sequence`: after `05-decompose`, and again after the optimisation stages. Check G21 is decided by `lsb.render` once the sequence passes; here it applies only when rendered cards are supplied.
 
 ## Inputs
 - `{{SEQUENCE_JSON}}`: the `MLS_DAG_Sequence` under review.
@@ -58,7 +58,7 @@ When `{{PREVIOUS_ISSUES}}` lists issues, the sequence is a revision. Review it s
 | G18 | **Clerical Reduction:** deep mastery or synthesis isn't turned into box-ticking | — | When the source aims at synthesis, argument, proof or creative work, a step still gives sustained time for it and a student-made product. | major |
 | G19 | **Safety Frameworks:** no risk to students' bodily safety, movement or inclusive visibility | — | Look for unsupervised off-site movement, hazardous or heavy physical work, sanitation labour, unsupervised contact with adults, and activities that single out or exclude students. A step that takes students out of the classroom must itself say the whole class goes together with the educator staying with all groups, and, near animals, plants, water, tools or heavy objects, what not to touch or lift; a step that leaves this out is an issue even if another step says it. | blocker |
 | G20 | **Collaborative Balance:** peer configurations are equitable, non-hierarchical and rotate | — | Peer roles rotate, groups are mixed, and no student is permanently in charge of others. | major |
-| G21 | **Output Clarity:** high-contrast, text-only, dual-column offline card | — | Only if `{{RENDERED_CARDS}}` is supplied: text only, two columns, readable printed in black and white. Otherwise `not_applicable`. | minor |
+| G21 | **Output Clarity:** high-contrast, text-only, dual-column offline card | lsb.render | Decided in code: the cards are rendered and checked after the sequence passes. Only if `{{RENDERED_CARDS}}` is supplied, also check they read clearly printed in black and white. Otherwise `not_applicable`. | minor |
 
 ## Verdict
 - **PASS:** no blocker or major issues.
