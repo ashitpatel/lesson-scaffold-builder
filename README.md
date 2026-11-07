@@ -4,6 +4,8 @@
 
 > **Status (November 2026): working prototype, run live.** The whole pipeline runs from the command line: decompose → code checks → a 21-check reviewer → three optimisation stages → teacher cards. It has been run on nine original test chapters set in different countries (see [live results](#live-results)). **No teacher or curriculum specialist has reviewed its output yet**, and nothing here shows that the cards improve learning. The evidence-based practice list is a project choice that needs review by the people who own the content.
 
+Why this project exists, for teachers: [From chapter to classroom](https://ashitpatel.github.io/lesson-scaffold-builder/from-chapter-to-classroom/), the first post in a [blog series](https://ashitpatel.github.io/lesson-scaffold-builder/) on turning chapters into runnable lessons.
+
 ---
 
 ## Try it now
@@ -237,7 +239,8 @@ lesson-scaffold-builder/
 ├── dist/                        generated, ready to paste (do not edit)
 │   ├── instructions.md          the full instructions
 │   └── kickoff.md               the first message; also behind the Try-it-now links
-└── scripts/build.py             regenerates dist/ and the README links from prompt/
+├── scripts/build.py             regenerates dist/, the README links and blog/_data/try_links.yml
+└── blog/                        Jekyll blog series (published to GitHub Pages)
 ```
 
 ---
