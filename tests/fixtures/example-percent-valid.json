@@ -1,0 +1,36 @@
+{
+  "macro_objective": "Students find and compare percentages of a whole and use them to reason about everyday quantities.",
+  "global_context": {
+    "grade_band": "Middle",
+    "time_block_minutes": 45,
+    "resource_intensity_score": 1
+  },
+  "mls_units": [
+    {
+      "mls_id": "MLS-PERCENT-01",
+      "title": "Finding Percentages",
+      "dependencies": [],
+      "macro_alignment": "Gives students the two methods, fraction of 100 and unit percent, that they will use on every percentage problem in the next unit.",
+      "duration_weeks": 2,
+      "tasks": [
+        { "step": 1, "role": "Lead_Educator", "action": "Draw a 10 by 10 grid on the board and shade 35 squares. Explain that 35 out of 100 is 35 percent, and write 35% = 35/100 = 0.35." },
+        { "step": 2, "role": "Lead_Educator", "action": "Work three examples on the board of finding a percentage of an amount by first finding 1 percent, then multiplying." },
+        { "step": 3, "role": "Peer_Facilitator", "action": "In pairs, students solve ten practice questions from the board in their notebooks. One partner solves while the other checks each step, then they swap for the next question." },
+        { "step": 4, "role": "Lead_Educator", "action": "Write both methods on chart paper with one worked example each, and keep the chart for MLS-PERCENT-02." }
+      ]
+    },
+    {
+      "mls_id": "MLS-PERCENT-02",
+      "title": "Percentages of a Whole",
+      "dependencies": ["MLS-PERCENT-01"],
+      "macro_alignment": "Uses the two percentage methods to work out and compare what share of a total each part takes.",
+      "duration_weeks": 2,
+      "tasks": [
+        { "step": 1, "role": "Lead_Educator", "action": "Recall from MLS-PERCENT-01: put up the chart of the two percentage methods. Work two examples on the board of finding what percentage one amount is of a total." },
+        { "step": 2, "role": "Peer_Facilitator", "action": "In pairs, solve the eight word problems on the board. Partners take turns: one solves, the other checks the working, then they swap." },
+        { "step": 3, "role": "Lead_Educator", "action": "Go through the answers with the whole class, working on the board any problem that several pairs got wrong." },
+        { "step": 4, "role": "Lead_Educator", "action": "Each student writes three word problems of their own about percentages of a total and solves them in their notebook." }
+      ]
+    }
+  ]
+}

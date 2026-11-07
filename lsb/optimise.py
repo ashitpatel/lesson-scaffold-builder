@@ -1,6 +1,6 @@
 """Deterministic half of the optimisation stages: check a per-unit edit, merge it back.
 
-An optimisation stage (prompts/30-connected-learning.md) returns one edited unit
+An optimisation stage (prompts/30-connected-learning.md, 31-participatory-budgeting.md) returns one edited unit
 plus a change log. Code, not the model, decides whether the edit kept within its
 limits: the unit's identity and placement in the DAG are unchanged, no step was
 removed or reordered, at most one step was added, and every step that differs
@@ -15,6 +15,7 @@ import copy
 from typing import Any
 
 CL_CARDS = ("CL-01", "CL-02", "CL-03", "CL-04", "CL-05")
+PB_CARDS = ("PB-01", "PB-02", "PB-03", "PB-04", "PB-05")
 FIXED_FIELDS = ("mls_id", "title", "dependencies", "macro_alignment", "duration_weeks")
 DECISIONS = ("APPLY", "ABSTAIN")
 MAX_ADDED_STEPS = 1

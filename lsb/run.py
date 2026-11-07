@@ -1,4 +1,4 @@
-"""Run one source text through 05-decompose -> lsb.validate -> 50-critic, then Connected Learning.
+"""Run one source text through 05-decompose -> lsb.validate -> 50-critic, then the optimisation stages.
 
     python3 -m lsb.run tests/fixtures/hydrology-source.md --ref "Chapter 4 - Basic Hydrology Framework" --dry-run
     python3 -m lsb.run tests/fixtures/hydrology-source.md --ref "Chapter 4 - Basic Hydrology Framework"
@@ -15,11 +15,12 @@ Routing (prompts/README.md):
 The validator's result is final: a critic PASS on a sequence that fails a code
 check is recorded and treated as REVISE.
 
-Once the sequence passes, 30-connected-learning runs once per unit (skip it with
---no-cl). lsb.optimise checks each edit's limits in code; accepted edits are merged,
-validated and reviewed by the critic again. A unit whose edit still has issues
-after --max-cl-revisions is reverted, so this stage never fails a passed sequence.
-sequence.json is the final sequence; decomposed-sequence.json is the one before CL.
+Once the sequence passes, the optimisation stages run in order, each once per unit:
+30-connected-learning (skip with --no-cl), then 31-participatory-budgeting (--no-pb).
+lsb.optimise checks each edit's limits in code; accepted edits are merged, validated
+and reviewed by the critic again. A unit whose edit still has issues after
+--max-stage-revisions is reverted, so a stage never fails a passed sequence.
+sequence.json is the final sequence; decomposed-sequence.json is the one before them.
 
 Exit status: 0 the sequence passed, 1 it did not, 2 usage or API error.
 """
@@ -49,9 +50,30 @@ PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
 NONE = "(none)"
 
 DECOMPOSE = "05-decompose.md"
-CONNECTED_LEARNING = "30-connected-learning.md"
 CRITIC = "50-critic.md"
-CL_CARDS_PATH = ROOT / "frameworks" / "connected-learning.md"
+
+
+@dataclass(frozen=True)
+class FrameworkStage:
+    """One optimisation stage: a per-unit prompt plus the cards it may apply."""
+    key: str  # name in summary.json
+    short: str  # file-name prefix, CLI flag
+    prompt: str
+    cards_path: Path
+    cards_placeholder: str
+    card_ids: tuple[str, ...]
+
+    def cards(self) -> str:
+        return self.cards_path.read_text(encoding="utf-8")
+
+
+STAGES = {
+    "cl": FrameworkStage("connected_learning", "cl", "30-connected-learning.md",
+                         ROOT / "frameworks" / "connected-learning.md", "CL_CARDS", opt.CL_CARDS),
+    "pb": FrameworkStage("participatory_budgeting", "pb", "31-participatory-budgeting.md",
+                         ROOT / "frameworks" / "participatory-budgeting.md", "PB_CARDS", opt.PB_CARDS),
+}
+STAGE_ORDER = ("cl", "pb")
 VERDICTS = ("PASS", "REVISE", "REJECT")
 
 
@@ -272,15 +294,15 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
     }
 
 
-def cl_values(src: Source, decomposed: dict, uid: str, cards: str,
-              previous: dict | None = None, feedback: list | None = None) -> dict[str, str]:
+def stage_values(stage: FrameworkStage, src: Source, decomposed: dict, uid: str,
+                 previous: dict | None = None, feedback: list | None = None) -> dict[str, str]:
     trace = [e for e in decomposed.get("source_trace") or [] if isinstance(e, dict) and e.get("mls_id") == uid]
     return {
         "SEQUENCE_JSON": _dump(decomposed["sequence"]),
         "UNIT_ID": uid,
         "UNIT_TRACE": _dump(trace) if trace else NONE,
         "SOURCE_TEXT": src.text,
-        "CL_CARDS": cards,
+        stage.cards_placeholder: stage.cards(),
         "PREVIOUS_OUTPUT": _dump(previous) if previous is not None else NONE,
         "CRITIC_FEEDBACK": _dump(feedback) if feedback else NONE,
     }
@@ -297,7 +319,7 @@ class RunResult:
     best_attempt: int | None = None
     attempt_scores: dict[int, dict] = field(default_factory=dict)
     source_flags: list[dict] = field(default_factory=list)  # problems in the source itself, for a person
-    optimisation: dict | None = None  # what the Connected Learning stage did, per unit
+    optimisation: dict | None = None  # per optimisation stage: what it did to each unit
     usage: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
@@ -341,44 +363,48 @@ def _rank(score: dict) -> tuple:
 UNIT_WHERE = re.compile(r"mls_units\[(\d+)\]")
 
 
-def run_connected_learning(src: Source, decomposed: dict, call, save, result: RunResult,
-                           max_revisions: int = 1) -> list[dict] | None:
-    """Apply the CL cards unit by unit to a sequence that passed the critic.
+def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call, save, result: RunResult,
+                        earlier_cards: str = "", max_revisions: int = 1) -> dict | None:
+    """Apply one stage's cards unit by unit to a sequence that passed the critic.
 
-    Each unit's edit must pass `optimise.check_unit_edit` (one retry with the
-    problems as feedback; then the unit stays as it was). Accepted edits are merged
-    and the whole sequence goes back through the validator and the critic. A unit
-    the critic finds issues in is revised up to `max_revisions` times, then
-    reverted to its decomposed version. Anything the stage can't pin on one edited
-    unit (a REJECT, an unusable review, an issue outside the edited units) reverts
-    every edit. The stage can therefore only keep or improve the passed sequence;
-    it never fails the run. Returns the final source trace if any edit was kept.
+    `current` is {"sequence", "source_trace"}. Each unit's edit must pass
+    `optimise.check_unit_edit` (one retry with the problems as feedback; then the
+    unit stays as it was). Accepted edits are merged and the whole sequence goes
+    back through the validator and the critic, with these cards and any from
+    earlier stages. A unit the critic finds issues in is revised up to
+    `max_revisions` times, then reverted to its input version. Anything the stage
+    can't pin on one edited unit (a REJECT, an unusable review, an issue outside
+    the edited units) reverts every edit. So a stage can only keep or improve the
+    passed sequence; it never fails the run.
+
+    Returns the new {"sequence", "source_trace"} if any edit was kept, else None.
     """
-    cards = CL_CARDS_PATH.read_text(encoding="utf-8")
-    seq = decomposed["sequence"]
-    trace = decomposed.get("source_trace") or []
+    cards = stage.cards()
+    review_cards = "\n\n".join(c for c in (earlier_cards, cards) if c)
+    seq = current["sequence"]
+    trace = current.get("source_trace") or []
     units = [u for u in seq.get("mls_units", []) if isinstance(u, dict) and isinstance(u.get("mls_id"), str)]
     originals = {u["mls_id"]: u for u in units}
-    log: dict = {"stage": "connected_learning", "units": {}, "reviews": []}
-    result.optimisation = log
+    log: dict = {"units": {}, "reviews": []}
+    result.optimisation = {**(result.optimisation or {}), stage.key: log}
     accepted: dict[str, dict] = {}
+    p = stage.short
 
     def edit(uid: str, rnd: int, previous: dict | None = None, feedback: list | None = None) -> dict | None:
         for tries in (1, 2):
-            label = f"cl{rnd}-{uid}" + ("-retry" if tries == 2 else "")
+            label = f"{p}{rnd}-{uid}" + ("-retry" if tries == 2 else "")
             try:
-                out = call("connected-learning", CONNECTED_LEARNING,
-                           cl_values(src, decomposed, uid, cards, previous, feedback), label)
-                problems = opt.check_unit_edit(originals[uid], out)
+                out = call(stage.key, stage.prompt, stage_values(stage, src, current, uid, previous, feedback), label)
+                problems = opt.check_unit_edit(originals[uid], out, stage.card_ids)
             except StageError as e:
                 out, problems = None, [str(e)]
             if out is not None:
                 save(f"{label}.json", out)
             if not problems:
                 return out
-            result.notes.append(f"connected learning {uid}: edit failed the code check: {'; '.join(problems)}")
+            result.notes.append(f"{stage.key} {uid}: edit failed the code check: {'; '.join(problems)}")
             previous = out
-            feedback = [{"check": "edit-limits", "source": "code", "problem": p} for p in problems]
+            feedback = [{"check": "edit-limits", "source": "code", "problem": p_} for p_ in problems]
         return None
 
     def record(uid: str, out: dict | None, status: str) -> None:
@@ -404,7 +430,7 @@ def run_connected_learning(src: Source, decomposed: dict, call, save, result: Ru
         for uid in list(uids):
             accepted.pop(uid, None)
             log["units"][uid]["status"] = "reverted"
-        result.notes.append(f"connected learning: reverted {', '.join(sorted(uids))}: {why}")
+        result.notes.append(f"{stage.key}: reverted {', '.join(sorted(uids))}: {why}")
 
     def candidate() -> dict:
         merged = opt.merge(seq, {u: o["unit"] for u, o in accepted.items()})
@@ -417,13 +443,14 @@ def run_connected_learning(src: Source, decomposed: dict, call, save, result: Ru
             return None
         cand = candidate()
         report = v.validate(cand["sequence"])
-        save(f"cl{rnd}-validator.json", report.to_dict())
+        save(f"{p}{rnd}-validator.json", report.to_dict())
         try:
-            critic = call("critic", CRITIC, critic_values(src, cand, report, previous_issues, cards), f"cl{rnd}-critic")
+            critic = call("critic", CRITIC, critic_values(src, cand, report, previous_issues, review_cards),
+                          f"{p}{rnd}-critic")
         except StageError as e:
             revert(accepted, f"critic unusable: {e}")
             return None
-        save(f"cl{rnd}-critic.json", critic)
+        save(f"{p}{rnd}-critic.json", critic)
         verdict = critic.get("verdict")
         issues = _issues(critic)
         covered = {(i.get("where"), i.get("problem")) for i in issues}
@@ -432,10 +459,9 @@ def run_connected_learning(src: Source, decomposed: dict, call, save, result: Ru
         log["reviews"].append({"round": rnd, "verdict": verdict, "blocking_issues": len(blocking)})
 
         if verdict == "PASS" and report.passed:
-            result.sequence = cand["sequence"]
             if critic.get("source_flags") is not None:
                 result.source_flags = [f for f in critic["source_flags"] if isinstance(f, dict)]
-            return cand["source_trace"]
+            return cand
         if verdict not in ("PASS", "REVISE"):
             revert(accepted, f"critic verdict {verdict!r}: {critic.get('notes', '')}")
             return None
@@ -456,11 +482,9 @@ def run_connected_learning(src: Source, decomposed: dict, call, save, result: Ru
             revert(by_unit, "issues remained after revision")
             if not accepted:
                 return None
-            cand = candidate()  # the remaining edits had no issues in this review
-            result.sequence = cand["sequence"]
-            result.notes.append("connected learning: kept edits had no issues in the last review; "
+            result.notes.append(f"{stage.key}: kept edits had no issues in the last review; "
                                 "the sequence was not re-reviewed after the revert")
-            return cand["source_trace"]
+            return candidate()  # the remaining edits had no issues in this review
 
         for uid, unit_issues in by_unit.items():
             out = edit(uid, rnd + 1, accepted[uid], unit_issues)
@@ -476,7 +500,7 @@ def run_connected_learning(src: Source, decomposed: dict, call, save, result: Ru
 
 
 def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 2,
-                 connected_learning: bool = False, max_cl_revisions: int = 1) -> RunResult:
+                 stages: tuple[str, ...] = (), max_stage_revisions: int = 1) -> RunResult:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     def save(name: str, obj: Any) -> None:
@@ -575,15 +599,25 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         previous, feedback = decomposed, issues
         result.status = "revise_exhausted"
 
-    if connected_learning and result.status == "pass" and best_decomposed is not None:
+    if stages and result.status == "pass" and best_decomposed is not None:
         save("decomposed-sequence.json", result.sequence)
-        try:
-            final_trace = run_connected_learning(src, best_decomposed, call, save, result, max_cl_revisions)
-        except ModelUnavailable as e:
-            result.notes.append(f"connected learning: model unavailable; kept the decomposed sequence: {e}")
-        else:
-            if final_trace is not None:
-                save("source_trace.json", final_trace)
+        current = {"sequence": best_decomposed["sequence"], "source_trace": best_decomposed.get("source_trace") or []}
+        kept_cards: list[str] = []
+        for key in stages:
+            stage = STAGES[key]
+            try:
+                new = run_framework_stage(stage, src, current, call, save, result,
+                                          "\n\n".join(kept_cards), max_stage_revisions)
+            except ModelUnavailable as e:
+                result.notes.append(f"{stage.key}: model unavailable; stopped before finishing this stage, "
+                                    f"kept the sequence from the stages before it: {e}")
+                break
+            if new is not None:
+                current = new
+                kept_cards.append(stage.cards())
+        if current["sequence"] is not best_decomposed["sequence"]:
+            result.sequence = current["sequence"]
+            save("source_trace.json", current["source_trace"])
 
     if result.sequence is not None:
         save("sequence.json", result.sequence)
@@ -607,19 +641,19 @@ def dry_run(src: Source) -> int:
     problems = 0
     fake_decomposed = {"sequence": {}, "source_trace": []}
     fake_report = v.validate({})
-    cards = CL_CARDS_PATH.read_text(encoding="utf-8")
     for name, values in (
         (DECOMPOSE, decompose_values(src)),
         (CRITIC, critic_values(src, fake_decomposed, fake_report)),
-        (CONNECTED_LEARNING, cl_values(src, fake_decomposed, "MLS-X-01", cards)),
+        *((st.prompt, stage_values(st, src, fake_decomposed, "MLS-X-01")) for st in STAGES.values()),
     ):
         system, user, missing = build_request(name, values)
         chars = len(system[0]["text"]) + len(user)
         status = "OK" if not missing else f"MISSING {missing}"
         problems += bool(missing)
-        print(f"{name:26} ~{chars // 4:>6,} tokens  {status}")
+        print(f"{name:30} ~{chars // 4:>6,} tokens  {status}")
     print("\nA live run makes 2 calls per decompose attempt (decompose + critic), then, once the\n"
-          "sequence passes, 1 Connected Learning call per unit and 1 critic call per CL round.")
+          "sequence passes, per optimisation stage (CL, then PB): 1 call per unit and 1 critic\n"
+          "call per review round (none if every unit abstains).")
     return 1 if problems else 0
 
 
@@ -634,8 +668,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--backend", default="claude-code", choices=["claude-code", "api"],
                     help="claude-code: headless `claude -p` on your Claude Code login (default); api: Anthropic API key")
     ap.add_argument("--max-revisions", type=int, default=2)
-    ap.add_argument("--no-cl", action="store_true", help="stop after decompose; skip the Connected Learning stage")
-    ap.add_argument("--max-cl-revisions", type=int, default=1)
+    ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
+    ap.add_argument("--no-pb", action="store_true", help="skip the Participatory Budgeting stage")
+    ap.add_argument("--max-stage-revisions", type=int, default=1,
+                    help="critic-driven revision rounds per optimisation stage (default 1)")
     ap.add_argument("--out", type=Path, help="output directory (default runs/<timestamp>)")
     ap.add_argument("--dry-run", action="store_true", help="assemble and check the requests; no API calls")
     args = ap.parse_args(argv)
@@ -665,7 +701,8 @@ def main(argv: list[str] | None = None) -> int:
         api_errors = (anthropic.RateLimitError, anthropic.APIStatusError, anthropic.APIConnectionError)
     try:
         result = run_pipeline(src, model, out_dir, args.max_revisions,
-                              connected_learning=not args.no_cl, max_cl_revisions=args.max_cl_revisions)
+                              stages=tuple(k for k in STAGE_ORDER if not getattr(args, f"no_{k}")),
+                              max_stage_revisions=args.max_stage_revisions)
     except api_errors as e:
         print(f"API error after retries: {type(e).__name__}: {e}", file=sys.stderr)
         return 2
@@ -678,11 +715,11 @@ def main(argv: list[str] | None = None) -> int:
         mark = "  <- kept in sequence.json" if n == result.best_attempt else ""
         print(f"  attempt {n}: {score['blocker']} blocker, {score['major']} major, {score['minor']} minor"
               f"{' (REJECT)' if score.get('rejected') else ''}{mark}")
-    if result.optimisation:
-        print("connected learning:")
-        for uid, u in result.optimisation["units"].items():
+    for key, log in (result.optimisation or {}).items():
+        print(f"{key.replace('_', ' ')}:")
+        for uid, u in log["units"].items():
             print(f"  {uid}: {u['status']}" + (f" ({', '.join(u['cards'])})" if u.get("cards") else ""))
-        for r in result.optimisation["reviews"]:
+        for r in log["reviews"]:
             print(f"  review {r['round']}: {r['verdict']}, {r['blocking_issues']} blocking issue(s)")
     for note in result.notes:
         print(f"  {note}")

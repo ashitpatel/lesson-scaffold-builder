@@ -34,14 +34,15 @@ ISSUE = {"severity": "blocker", "source": "judgement", "where": "mls_units[0].ta
 class FakeModel:
     """Replies with the next scripted text for the stage named by the system prompt."""
 
-    def __init__(self, decompose, critic, cl=()):
-        self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl)}
+    def __init__(self, decompose, critic, cl=(), pb=()):
+        self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl), "pb": list(pb)}
         self.calls = []
 
     def complete(self, system, user):
         text = system[0]["text"]
         stage = ("decompose" if "Input Decomposition Layer" in text
-                 else "cl" if "Connected Learning stage" in text else "critic")
+                 else "cl" if "Connected Learning stage" in text
+                 else "pb" if "Participatory Budgeting stage" in text else "critic")
         self.calls.append((stage, user))
         reply = self.script[stage].pop(0)
         if isinstance(reply, Exception):
@@ -185,15 +186,15 @@ class Pipeline(unittest.TestCase):
         self.assertTrue((self.out / "summary.json").exists())
 
 
-def cl_reply(unit, apply=True):
-    """A Connected Learning reply for `unit`: one added CL-05 step, or an abstain."""
+def cl_reply(unit, apply=True, card="CL-05"):
+    """A stage reply for `unit`: one added step under `card`, or an abstain."""
     out = copy.deepcopy(unit)
     changes = []
     if apply:
         n = len(out["tasks"]) + 1
         out["tasks"].append({"step": n, "role": "Lead_Educator",
-                             "action": "Arrange a 10-minute session where pairs show the class chart to another class."})
-        changes = [{"step": n, "change": "added", "replaces_step": None, "card": "CL-05", "summary": "audience"}]
+                             "action": f"Run the {card} activity for 10 minutes with the whole class."})
+        changes = [{"step": n, "change": "added", "replaces_step": None, "card": card, "summary": "s"}]
     return json.dumps({"mls_id": unit["mls_id"], "decision": "APPLY" if apply else "ABSTAIN", "reason": "r",
                        "credit": [], "unit": out, "changes": changes, "deferred": []})
 
@@ -212,10 +213,10 @@ class ConnectedLearning(unittest.TestCase):
         self.tmp.cleanup()
 
     def go(self, model, **kw):
-        return run.run_pipeline(SOURCE, model, self.out, connected_learning=True, **kw)
+        return run.run_pipeline(SOURCE, model, self.out, stages=("cl",), **kw)
 
-    def units(self, r):
-        return {uid: u["status"] for uid, u in r.optimisation["units"].items()}
+    def units(self, r, stage="connected_learning"):
+        return {uid: u["status"] for uid, u in r.optimisation[stage]["units"].items()}
 
     def test_off_unless_asked(self):
         m = FakeModel([decomposed(VALID)], [critic("PASS")])
@@ -306,12 +307,60 @@ class ConnectedLearning(unittest.TestCase):
         self.assertEqual((r.status, r.sequence), ("pass", VALID))
 
 
+class StagesInOrder(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def go(self, model):
+        return run.run_pipeline(SOURCE, model, self.out, stages=("cl", "pb"))
+
+    def test_pb_works_on_the_cl_output_and_the_critic_sees_both_card_sets(self):
+        cl0 = json.loads(cl_reply(U0))["unit"]
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("PASS"), critic("PASS")],
+                      [cl_reply(U0), cl_reply(U1, False)], [cl_reply(cl0, True, "PB-04"), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic", "cl", "cl", "critic", "pb", "pb", "critic"])
+        self.assertIn("Run the CL-05 activity", m.calls[5][1])  # PB got the CL-edited unit
+        last_review = m.calls[-1][1]
+        self.assertIn("CL-G1 Mastery unchanged", last_review)
+        self.assertIn("PB-G1 Numbers only", last_review)
+        self.assertEqual([t["action"][:16] for t in r.sequence["mls_units"][0]["tasks"][-2:]],
+                         ["Run the CL-05 ac", "Run the PB-04 ac"])
+        self.assertEqual(r.optimisation["participatory_budgeting"]["units"]["MLS-HYDRO-01"]["status"], "applied")
+        trace = json.loads((self.out / "source_trace.json").read_text(encoding="utf-8"))
+        self.assertEqual({e.get("card") for e in trace if e.get("card")}, {"CL-05", "PB-04"})
+
+    def test_pb_may_not_use_cl_cards(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")], [cl_reply(U0, False), cl_reply(U1, False)],
+                      [cl_reply(U0), cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertIn("unknown card(s) CL-05", m.calls[5][1])
+        self.assertEqual(r.optimisation["participatory_budgeting"]["units"]["MLS-HYDRO-01"]["status"], "edit_rejected")
+        self.assertEqual(r.sequence, VALID)
+
+    def test_pb_abstaining_everywhere_keeps_the_cl_result(self):
+        cl0 = json.loads(cl_reply(U0))["unit"]
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("PASS")],
+                      [cl_reply(U0), cl_reply(U1, False)], [cl_reply(cl0, False), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(len(r.sequence["mls_units"][0]["tasks"]), 5)
+        self.assertEqual(set(self.units_pb(r).values()), {"abstained"})
+
+    def units_pb(self, r):
+        return {u: x["status"] for u, x in r.optimisation["participatory_budgeting"]["units"].items()}
+
+
 class Requests(unittest.TestCase):
     def test_every_placeholder_is_supplied(self):
         values = {
             run.DECOMPOSE: run.decompose_values(SOURCE),
             run.CRITIC: run.critic_values(SOURCE, {"sequence": VALID}, run.v.validate(VALID)),
-            run.CONNECTED_LEARNING: run.cl_values(SOURCE, {"sequence": VALID}, "MLS-HYDRO-01", "cards"),
+            **{st.prompt: run.stage_values(st, SOURCE, {"sequence": VALID}, "MLS-HYDRO-01")
+               for st in run.STAGES.values()},
         }
         for prompt, vals in values.items():
             with self.subTest(prompt=prompt):

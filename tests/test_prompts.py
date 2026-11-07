@@ -9,8 +9,11 @@ from lsb import validate as v
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPTS = ROOT / "prompts"
-ADAPTED = ("05-decompose.md", "30-connected-learning.md", "50-critic.md")
+ADAPTED = ("05-decompose.md", "30-connected-learning.md", "31-participatory-budgeting.md", "50-critic.md")
 CL_CARDS = ROOT / "frameworks/connected-learning.md"
+# (prompt, cards file, card-id prefix, code's card ids attribute)
+STAGES = (("30-connected-learning.md", CL_CARDS, "CL", "CL_CARDS"),
+          ("31-participatory-budgeting.md", ROOT / "frameworks/participatory-budgeting.md", "PB", "PB_CARDS"))
 
 
 def read(name):
@@ -81,29 +84,42 @@ class DecomposeExample(unittest.TestCase):
 class AdaptedPromptsAreRegionNeutral(unittest.TestCase):
     def test_no_regional_terms(self):
         texts = {p: read(p) for p in ADAPTED}
-        texts["connected-learning cards"] = CL_CARDS.read_text(encoding="utf-8")
+        for _, cards, prefix, _ in STAGES:
+            texts[f"{prefix} cards"] = cards.read_text(encoding="utf-8")
         report = v.check_regional_terms(texts, v.load_config()["regional_terms"])
         self.assertTrue(report.passed, [f"{i.where}: {i.problem}" for i in report.issues])
 
 
-class ConnectedLearningCards(unittest.TestCase):
+class FrameworkCards(unittest.TestCase):
     def test_cards_are_the_ones_the_code_accepts(self):
         from lsb import optimise
-        headings = re.findall(r"^## (CL-\d\d) ", CL_CARDS.read_text(encoding="utf-8"), re.M)
-        self.assertEqual(tuple(headings), optimise.CL_CARDS)
+        for prompt, cards, prefix, attr in STAGES:
+            with self.subTest(cards=prefix):
+                headings = re.findall(rf"^## ({prefix}-\d\d) ", cards.read_text(encoding="utf-8"), re.M)
+                self.assertEqual(tuple(headings), getattr(optimise, attr))
 
     def test_every_guardrail_the_prompt_cites_exists(self):
-        cards = CL_CARDS.read_text(encoding="utf-8")
-        cited = set(re.findall(r"CL-G\d", read("30-connected-learning.md")))
-        self.assertTrue(cited)
-        for g in sorted(cited):
-            self.assertIn(f"**{g} ", cards)
+        for prompt, cards, prefix, _ in STAGES:
+            text = cards.read_text(encoding="utf-8")
+            cited = set(re.findall(rf"{prefix}-G\d", read(prompt)))
+            self.assertTrue(cited, prompt)
+            for g in sorted(cited):
+                with self.subTest(prompt=prompt, guardrail=g):
+                    self.assertIn(f"**{g} ", text)
 
-    def test_limits_in_the_prompt_match_the_code(self):
+    def test_limits_in_the_prompts_match_the_code(self):
         from lsb import optimise
-        text = read("30-connected-learning.md")
-        self.assertIn(f"At most {optimise.MAX_ADDED_STEPS} added step", text)
-        self.assertIn(f"at most {optimise.MAX_CARDS} cards", text.lower())
+        for prompt, *_ in STAGES:
+            with self.subTest(prompt=prompt):
+                text = read(prompt)
+                self.assertIn(f"At most {optimise.MAX_ADDED_STEPS} added step", text)
+                self.assertIn(f"at most {optimise.MAX_CARDS} cards", text.lower())
+
+    def test_runner_stages_match(self):
+        from lsb import run
+        self.assertEqual([s.prompt for s in run.STAGES.values()], [p for p, *_ in STAGES])
+        for st in run.STAGES.values():
+            self.assertIn("{{%s}}" % st.cards_placeholder, read(st.prompt))
 
 
 if __name__ == "__main__":

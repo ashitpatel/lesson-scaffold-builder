@@ -151,6 +151,27 @@ class Rejected(unittest.TestCase):
                 self.assertTrue(problems(result))
 
 
+class PbExample(unittest.TestCase):
+    FIXTURE = json.loads((ROOT / "tests/fixtures/example-percent-valid.json").read_text(encoding="utf-8"))
+
+    def example(self):
+        text = (ROOT / "prompts/31-participatory-budgeting.md").read_text(encoding="utf-8")
+        return json.loads(re.findall(r"```json\n(.*?)```", text, re.S)[-1])
+
+    def test_fixture_passes_every_code_check(self):
+        self.assertTrue(v.validate(self.FIXTURE).passed)
+
+    def test_prompt_example_passes_the_check_with_pb_cards_only(self):
+        before = self.FIXTURE["mls_units"][1]
+        self.assertEqual(opt.check_unit_edit(before, self.example(), opt.PB_CARDS), [])
+        self.assertTrue(any("unknown card" in p for p in opt.check_unit_edit(before, self.example(), opt.CL_CARDS)))
+
+    def test_prompt_example_merged_passes_every_code_check(self):
+        ex = self.example()
+        report = v.validate(opt.merge(self.FIXTURE, {ex["mls_id"]: ex["unit"]}))
+        self.assertTrue(report.passed, v.format_text(report))
+
+
 class Trace(unittest.TestCase):
     TRACE = [{"mls_id": "MLS-PERSUADE-02", "step": s, "source_locator": f"para {s}"} for s in range(1, 5)]
 
