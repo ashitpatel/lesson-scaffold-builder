@@ -153,6 +153,15 @@ class Pipeline(unittest.TestCase):
         self.assertEqual((r.status, r.attempts), ("revise_exhausted", 3))
         self.assertFalse(r.passed)
 
+    def test_critic_reviews_the_fallbacks_from_decompose(self):
+        out = json.loads(decomposed(VALID))
+        out["environment_assumptions"] = [{"mls_id": "MLS-HYDRO-02", "assumes": "dry weeks",
+                                           "if_not": "extend the unit by one week"}]
+        m = FakeModel([json.dumps(out)], [critic("PASS")])
+        self.go(m)
+        self.assertIn("<ENVIRONMENT_ASSUMPTIONS>", m.calls[1][1])
+        self.assertIn("extend the unit by one week", m.calls[1][1])
+
     def test_a_passed_run_writes_checked_teacher_cards(self):
         r = self.go(FakeModel([decomposed(VALID)], [critic("PASS")]))
         self.assertEqual(r.cards_problems, [])
@@ -298,6 +307,15 @@ class ConnectedLearning(unittest.TestCase):
         self.assertIn("unit.dependencies changed", m.calls[3][1])  # the retry carries the problem
         self.assertEqual(self.units(r)["MLS-HYDRO-01"], "edit_rejected")
         self.assertEqual(r.sequence, VALID)
+
+    def test_stage_review_does_not_get_the_fallbacks(self):
+        out = json.loads(decomposed(VALID))
+        out["environment_assumptions"] = [{"mls_id": U0["mls_id"], "assumes": "a", "if_not": "fallback text"}]
+        m = FakeModel([json.dumps(out)], [critic("PASS"), critic("PASS")], [cl_reply(U0), cl_reply(U1, False)])
+        self.go(m)
+        self.assertIn("fallback text", m.calls[1][1])
+        self.assertNotIn("fallback text", m.calls[-1][1])
+        self.assertIn("<ENVIRONMENT_ASSUMPTIONS>\n(none)", m.calls[-1][1])
 
     def test_reject_reverts_every_edit(self):
         m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REJECT")], [cl_reply(U0), cl_reply(U1)])

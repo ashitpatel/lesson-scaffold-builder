@@ -291,6 +291,10 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
         "VALIDATOR_REPORT": _dump(report.to_dict()),
         "SOURCE_TEXT": src.text,
         "SOURCE_TRACE": _dump(decomposed["source_trace"]) if decomposed.get("source_trace") else NONE,
+        # The optimisation stages don't change the assumptions, so only the decompose
+        # loop's reviews get them; a stage's review can't send an issue in one back.
+        "ENVIRONMENT_ASSUMPTIONS": (_dump(decomposed["environment_assumptions"])
+                                    if decomposed.get("environment_assumptions") else NONE),
         "FRAMEWORK_CARDS": cards or NONE,
         "RENDERED_CARDS": NONE,
         "PREVIOUS_ISSUES": _dump(previous_issues) if previous_issues else NONE,

@@ -100,7 +100,7 @@ Return **only** one JSON object, with no text before or after it:
       {
         "step": 5,
         "role": "Lead_Educator",
-        "action": "Arrange a 10-minute session with another class. Pairs take turns reading their final letters aloud to a small group of listeners. A student who prefers not to read aloud lays the letter on the desk for listeners to read instead."
+        "action": "Arrange a 10-minute session with another class in the classroom, with the educator present. Pairs take turns reading their final letters aloud to a small group of listeners. Reading is a choice: a student may lay the letter on the desk for listeners to read, or keep it and just listen."
       }
     ]
   },
@@ -113,4 +113,4 @@ Return **only** one JSON object, with no text before or after it:
 Notes on this example:
 - CL-01 and CL-02 are already present, so they're credited, not applied.
 - The added step is short and comes after the final copy, so the two full writing lessons are untouched (CL-G1).
-- Reading aloud is optional for each student (CL-G6), and the session happens at school with the educator who arranged it (CL-G5).
+- Showing the letter at all is each student's choice, not just reading it aloud (CL-05 Never, CL-G6), and the step itself says the session is in the classroom with the educator present (CL-G5).
