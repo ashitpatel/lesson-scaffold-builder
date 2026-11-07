@@ -80,8 +80,8 @@ python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle
 ```
 A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, the Anthropic API with `--backend api`, or Google's Gemini with `--backend gemini` and a free key. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did. Add `--ask` to be asked which frameworks to run, then about the modules (one MLS or several, dimensions, timeframe) and each stage's limits (cards, cards per unit, added step), with suggestions drawn from your source; `--answers FILE` supplies those answers from JSON so sweeps don't stop.
 
-### 2b. No terminal? Run it in the browser (free)
-All you need is a Google account. Start at [Google AI](https://google.com/ai), then:
+### 2b. No terminal? Run the full pipeline in the browser (free, needs a key)
+If you want no key at all, use [Try it now](#try-it-now) instead: it runs the method as a chat in Google AI Mode with no key and no account, but without the code-checked limits and review. To run the real pipeline free in the browser you need a Google account and a free key. Start at [Google AI](https://google.com/ai), then:
 1. Get a free Gemini key at [Google AI Studio](https://aistudio.google.com/apikey) (no billing needed).
 2. Open a notebook at [Google Colab](https://colab.research.google.com) and run:
 ```bash
