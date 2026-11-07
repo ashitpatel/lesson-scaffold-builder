@@ -34,12 +34,14 @@ ISSUE = {"severity": "blocker", "source": "judgement", "where": "mls_units[0].ta
 class FakeModel:
     """Replies with the next scripted text for the stage named by the system prompt."""
 
-    def __init__(self, decompose, critic):
-        self.script = {"decompose": list(decompose), "critic": list(critic)}
+    def __init__(self, decompose, critic, cl=()):
+        self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl)}
         self.calls = []
 
     def complete(self, system, user):
-        stage = "decompose" if "Input Decomposition Layer" in system[0]["text"] else "critic"
+        text = system[0]["text"]
+        stage = ("decompose" if "Input Decomposition Layer" in text
+                 else "cl" if "Connected Learning stage" in text else "critic")
         self.calls.append((stage, user))
         reply = self.script[stage].pop(0)
         if isinstance(reply, Exception):
@@ -183,11 +185,133 @@ class Pipeline(unittest.TestCase):
         self.assertTrue((self.out / "summary.json").exists())
 
 
+def cl_reply(unit, apply=True):
+    """A Connected Learning reply for `unit`: one added CL-05 step, or an abstain."""
+    out = copy.deepcopy(unit)
+    changes = []
+    if apply:
+        n = len(out["tasks"]) + 1
+        out["tasks"].append({"step": n, "role": "Lead_Educator",
+                             "action": "Arrange a 10-minute session where pairs show the class chart to another class."})
+        changes = [{"step": n, "change": "added", "replaces_step": None, "card": "CL-05", "summary": "audience"}]
+    return json.dumps({"mls_id": unit["mls_id"], "decision": "APPLY" if apply else "ABSTAIN", "reason": "r",
+                       "credit": [], "unit": out, "changes": changes, "deferred": []})
+
+
+U0, U1 = VALID["mls_units"]
+CL_ISSUE = {"severity": "major", "source": "judgement", "where": "mls_units[0].tasks[4]",
+            "problem": "the showcase needs the educator present", "fix": "say the educator stays"}
+
+
+class ConnectedLearning(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def go(self, model, **kw):
+        return run.run_pipeline(SOURCE, model, self.out, connected_learning=True, **kw)
+
+    def units(self, r):
+        return {uid: u["status"] for uid, u in r.optimisation["units"].items()}
+
+    def test_off_unless_asked(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")])
+        r = run.run_pipeline(SOURCE, m, self.out)
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic"])
+        self.assertIsNone(r.optimisation)
+
+    def test_not_run_when_decompose_did_not_pass(self):
+        m = FakeModel([decomposed(VALID)] * 3, [critic("REVISE", [ISSUE])] * 3)
+        r = self.go(m)
+        self.assertNotIn("cl", [s for s, _ in m.calls])
+        self.assertIsNone(r.optimisation)
+
+    def test_all_abstain_skips_the_second_review(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")], [cl_reply(U0, False), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic", "cl", "cl"])
+        self.assertEqual(self.units(r), {"MLS-HYDRO-01": "abstained", "MLS-HYDRO-02": "abstained"})
+        self.assertEqual(r.sequence, VALID)
+
+    def test_applied_edit_is_reviewed_and_kept(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("PASS")], [cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(r.status, "pass")
+        self.assertEqual(self.units(r), {"MLS-HYDRO-01": "applied", "MLS-HYDRO-02": "abstained"})
+        self.assertEqual(len(r.sequence["mls_units"][0]["tasks"]), 5)
+        self.assertEqual(r.sequence["mls_units"][1], U1)
+        review = m.calls[-1][1]
+        self.assertIn("CL-G1 Mastery unchanged", review)  # the cards go to the critic
+        self.assertIn('"card": "CL-05"', review)  # and the trace names the card
+        saved = json.loads((self.out / "decomposed-sequence.json").read_text(encoding="utf-8"))
+        self.assertEqual(saved, VALID)
+        self.assertEqual(len(json.loads((self.out / "sequence.json").read_text())["mls_units"][0]["tasks"]), 5)
+
+    def test_unit_with_issues_is_revised_with_feedback(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REVISE", [CL_ISSUE]), critic("PASS")],
+                      [cl_reply(U0), cl_reply(U1, False), cl_reply(U0)])
+        r = self.go(m)
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic", "cl", "cl", "critic", "cl", "critic"])
+        revision = m.calls[5][1]
+        self.assertIn("the showcase needs the educator present", revision)
+        self.assertIn("the showcase needs the educator present", m.calls[6][1])  # previous issues to the critic
+        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "applied")
+        self.assertEqual(len(r.sequence["mls_units"][0]["tasks"]), 5)
+
+    def test_unit_still_failing_is_reverted_and_the_run_still_passes(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REVISE", [CL_ISSUE]), critic("REVISE", [CL_ISSUE])],
+                      [cl_reply(U0), cl_reply(U1, False), cl_reply(U0)])
+        r = self.go(m)
+        self.assertEqual(r.status, "pass")
+        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "reverted")
+        self.assertEqual(r.sequence, VALID)
+
+    def test_failing_unit_is_reverted_but_other_edits_are_kept(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REVISE", [CL_ISSUE]), critic("REVISE", [CL_ISSUE])],
+                      [cl_reply(U0), cl_reply(U1), cl_reply(U0)])
+        r = self.go(m)
+        self.assertEqual(self.units(r), {"MLS-HYDRO-01": "reverted", "MLS-HYDRO-02": "applied"})
+        self.assertEqual(r.sequence["mls_units"][0], U0)
+        self.assertEqual(len(r.sequence["mls_units"][1]["tasks"]), 5)
+
+    def test_edit_breaking_its_limits_is_retried_then_dropped(self):
+        bad = json.loads(cl_reply(U0))
+        bad["unit"]["dependencies"] = ["MLS-HYDRO-02"]
+        m = FakeModel([decomposed(VALID)], [critic("PASS")], [json.dumps(bad), json.dumps(bad), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertIn("unit.dependencies changed", m.calls[3][1])  # the retry carries the problem
+        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "edit_rejected")
+        self.assertEqual(r.sequence, VALID)
+
+    def test_reject_reverts_every_edit(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REJECT")], [cl_reply(U0), cl_reply(U1)])
+        r = self.go(m)
+        self.assertEqual((r.status, r.sequence), ("pass", VALID))
+        self.assertEqual(set(self.units(r).values()), {"reverted"})
+
+    def test_issue_outside_the_edited_units_reverts_every_edit(self):
+        other = {**CL_ISSUE, "where": "mls_units[1].tasks[0]"}
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("REVISE", [other])],
+                      [cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(r.sequence, VALID)
+        self.assertEqual(self.units(r)["MLS-HYDRO-01"], "reverted")
+
+    def test_usage_limit_keeps_the_decomposed_sequence(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")], [run.ModelUnavailable("You've hit your session limit")])
+        r = self.go(m)
+        self.assertEqual((r.status, r.sequence), ("pass", VALID))
+
+
 class Requests(unittest.TestCase):
     def test_every_placeholder_is_supplied(self):
         values = {
             run.DECOMPOSE: run.decompose_values(SOURCE),
             run.CRITIC: run.critic_values(SOURCE, {"sequence": VALID}, run.v.validate(VALID)),
+            run.CONNECTED_LEARNING: run.cl_values(SOURCE, {"sequence": VALID}, "MLS-HYDRO-01", "cards"),
         }
         for prompt, vals in values.items():
             with self.subTest(prompt=prompt):

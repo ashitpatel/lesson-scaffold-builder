@@ -9,7 +9,8 @@ from lsb import validate as v
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPTS = ROOT / "prompts"
-ADAPTED = ("05-decompose.md", "50-critic.md")
+ADAPTED = ("05-decompose.md", "30-connected-learning.md", "50-critic.md")
+CL_CARDS = ROOT / "frameworks/connected-learning.md"
 
 
 def read(name):
@@ -79,8 +80,30 @@ class DecomposeExample(unittest.TestCase):
 
 class AdaptedPromptsAreRegionNeutral(unittest.TestCase):
     def test_no_regional_terms(self):
-        report = v.check_regional_terms({p: read(p) for p in ADAPTED}, v.load_config()["regional_terms"])
+        texts = {p: read(p) for p in ADAPTED}
+        texts["connected-learning cards"] = CL_CARDS.read_text(encoding="utf-8")
+        report = v.check_regional_terms(texts, v.load_config()["regional_terms"])
         self.assertTrue(report.passed, [f"{i.where}: {i.problem}" for i in report.issues])
+
+
+class ConnectedLearningCards(unittest.TestCase):
+    def test_cards_are_the_ones_the_code_accepts(self):
+        from lsb import optimise
+        headings = re.findall(r"^## (CL-\d\d) ", CL_CARDS.read_text(encoding="utf-8"), re.M)
+        self.assertEqual(tuple(headings), optimise.CL_CARDS)
+
+    def test_every_guardrail_the_prompt_cites_exists(self):
+        cards = CL_CARDS.read_text(encoding="utf-8")
+        cited = set(re.findall(r"CL-G\d", read("30-connected-learning.md")))
+        self.assertTrue(cited)
+        for g in sorted(cited):
+            self.assertIn(f"**{g} ", cards)
+
+    def test_limits_in_the_prompt_match_the_code(self):
+        from lsb import optimise
+        text = read("30-connected-learning.md")
+        self.assertIn(f"At most {optimise.MAX_ADDED_STEPS} added step", text)
+        self.assertIn(f"at most {optimise.MAX_CARDS} cards", text.lower())
 
 
 if __name__ == "__main__":

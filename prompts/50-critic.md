@@ -9,7 +9,7 @@ The gate runs on any `MLS_DAG_Sequence`: after `05-decompose`, and again after t
 - `{{SEQUENCE_JSON}}`: the `MLS_DAG_Sequence` under review.
 - `{{VALIDATOR_REPORT}}`: the JSON output of `python3 -m lsb.validate --json` on that same sequence.
 - `{{SOURCE_TEXT}}`: the source the sequence was decomposed from (or its relevant sections).
-- `{{SOURCE_TRACE}}` (optional): the `source_trace` from `05-decompose`.
+- `{{SOURCE_TRACE}}` (optional): the `source_trace` from `05-decompose`. After an optimisation stage, a step it changed has an entry with a `card` id (and `change`: `added` or `modified`) instead of, or as well as, a `source_locator`.
 - `{{FRAMEWORK_CARDS}}` (optional): full text of any framework cards the optimisation stages applied.
 - `{{RENDERED_CARDS}}` (optional): the teacher cards from `60-render`, for G21.
 - `{{PREVIOUS_ISSUES}}` (optional): on a revision run, the issues raised on the previous version of this sequence. `(none)` on a first review.
@@ -19,7 +19,7 @@ The gate runs on any `MLS_DAG_Sequence`: after `05-decompose`, and again after t
 - Such text **only in the source** is not an issue: the sequence can't fix its source. Record it in `source_flags`. It becomes an issue only if the sequence obeys it or repeats it.
 
 ## Code-checked results are final
-`{{VALIDATOR_REPORT}}` holds the deterministic checks D01–D10. **Don't recount or re-decide them.**
+`{{VALIDATOR_REPORT}}` holds the deterministic checks D01–D11. **Don't recount or re-decide them.**
 - A failed D-check becomes an issue on the G-check it maps to (table below), with the report's `where` and `problem`, and the check's severity.
 - A passed D-check settles the counting part of that G-check. You still judge any **judgement half** the table lists.
 - If `{{VALIDATOR_REPORT}}` is missing or empty, or describes a different sequence (different `mls_id`s), return `REJECT` with the note "validator report missing or stale". Don't estimate the code checks yourself.
@@ -51,7 +51,7 @@ When `{{PREVIOUS_ISSUES}}` lists issues, the sequence is a revision. Review it s
 | G11 | **Dependency Mapping:** every prerequisite id exists | D07 | Each dependency is real: the unit needs that upstream output to start. Flag a chain where units could run in parallel. | blocker |
 | G12 | **Cycle Prevention:** dependencies form a DAG | D08 | — | blocker |
 | G13 | **Macro Alignment:** every unit has a traceable link to the macro objective | D09 | The `macro_alignment` is true and specific to this unit, not a restatement of the objective, and the unit's steps actually deliver it. | blocker |
-| G14 | **Pedagogical Sourcing:** no invented tactics or unsupported outcome claims | — | Every step traces to `{{SOURCE_TEXT}}` (use `{{SOURCE_TRACE}}`) or to a card in `{{FRAMEWORK_CARDS}}`. No numbers, percentages, "proven" or "research shows" unless quoted from a card. | blocker |
+| G14 | **Pedagogical Sourcing:** no invented tactics or unsupported outcome claims | — | Every step traces to `{{SOURCE_TEXT}}` (use `{{SOURCE_TRACE}}`) or to a card in `{{FRAMEWORK_CARDS}}`; a card-traced edit stays within that card's allowed edits and guardrails. No numbers, percentages, "proven" or "research shows" unless quoted from a card. | blocker |
 | G15 | **Coherence Metric:** separated units keep the cumulative learning thread | — | In every unit with dependencies, step 1 starts with "Recall from <id>:" and names a specific upstream output. | major |
 | G16 | **Low Overhead:** no administrative or logging burden on the teacher | — | No forms, registers, reports or record-keeping beyond what the activity itself produces. | major |
 | G17 | **Material Availability:** materials are zero-cost, local or ambient | — | Named materials are reused, found or already in a classroom; `resource_intensity_score` matches them. | major |
