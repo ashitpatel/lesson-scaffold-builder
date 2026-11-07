@@ -373,6 +373,17 @@ def _rank(score: dict) -> tuple:
     return (score.get("rejected", 0), score["blocker"], score["major"], score["minor"])
 
 
+def _update_flags(result: RunResult, critic: dict) -> None:
+    """A later review's source flags replace earlier ones only if it lists any.
+
+    Stage and repair reviews look at the sequence; some return no source flags at
+    all, which would otherwise erase what the decompose review found in the source.
+    """
+    flags = [f for f in critic.get("source_flags") or [] if isinstance(f, dict)]
+    if flags:
+        result.source_flags = flags
+
+
 def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call, save, result: RunResult,
                         earlier_cards: str = "", max_revisions: int = 1) -> dict | None:
     """Apply one stage's cards unit by unit to a sequence that passed the critic.
@@ -487,8 +498,7 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
         log["reviews"].append({"round": rnd, "verdict": verdict, "blocking_issues": len(blocking)})
 
         if verdict == "PASS" and report.passed:
-            if critic.get("source_flags") is not None:
-                result.source_flags = [f for f in critic["source_flags"] if isinstance(f, dict)]
+            _update_flags(result, critic)
             return cand
         if verdict not in ("PASS", "REVISE"):
             revert(accepted, f"critic verdict {verdict!r}: {critic.get('notes', '')}")
@@ -504,8 +514,7 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
                 result.late_issues.append({**i, "found_by": f"{stage.key} review {rnd}"})
                 known.add((i.get("where"), i.get("problem")))
         if not by_unit:  # nothing wrong with this stage's own edits
-            if critic.get("source_flags") is not None:
-                result.source_flags = [f for f in critic["source_flags"] if isinstance(f, dict)]
+            _update_flags(result, critic)
             return cand
         if rnd > max_revisions:
             revert(by_unit, "issues remained after revision")
@@ -585,8 +594,7 @@ def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: 
         issues_now += [i for i in _code_issues(report) if (i["where"], i["problem"]) not in covered]
         blocking = [i for i in issues_now if i.get("source") == "code" or i.get("severity") in ("blocker", "major")]
         log["rounds"].append({"round": rnd, "verdict": verdict, "blocking_issues": len(blocking)})
-        if critic.get("source_flags") is not None:
-            result.source_flags = [f for f in critic["source_flags"] if isinstance(f, dict)]
+        _update_flags(result, critic)
         if verdict == "PASS" and report.passed:
             return cand
         if verdict != "REVISE":

@@ -356,6 +356,15 @@ class ConnectedLearning(unittest.TestCase):
         self.assertEqual(r.sequence["mls_units"][0]["tasks"][1]["action"], "Fixed step.")
         self.assertEqual(r.status, "pass")
 
+    def test_a_later_review_without_source_flags_keeps_the_earlier_ones(self):
+        first = json.loads(critic("PASS"))
+        first["source_flags"] = [{"where": "§1", "problem": "unsafe trip"}]
+        later = json.loads(critic("PASS"))
+        later["source_flags"] = []  # the live failure: an empty list, not a missing key
+        m = FakeModel([decomposed(VALID)], [json.dumps(first), json.dumps(later)], [cl_reply(U0), cl_reply(U1, False)])
+        r = self.go(m)
+        self.assertEqual(r.source_flags, [{"where": "§1", "problem": "unsafe trip"}])
+
     def test_unrepairable_late_issue_means_the_run_does_not_pass(self):
         other = {**CL_ISSUE, "where": "mls_units[1].tasks[0]"}
         m = FakeModel([decomposed(VALID), self.repaired(1, 0, "Try 1."), self.repaired(1, 0, "Try 2.")],
