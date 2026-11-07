@@ -9,7 +9,7 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 2. [The end-to-end journey](ux/02-journey.md): from a chapter to printed teacher cards, and what happens at each stage
 3. [Decision points and edge cases](ux/03-decision-points.md): what the pipeline does with unsafe activities, child data, money, regional names, pure lecture, deep work, and problems found late; the principles and open questions
 
-## Walkthroughs: one per country
+## Walkthroughs: one per chapter
 
 | # | Walkthrough | Subject | What the stages applied | What was removed or ruled out |
 |---|---|---|---|---|
@@ -19,10 +19,11 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 | 4 | [Ghana: local government and community development](walkthroughs/04-ghana-local-government/) | JHS 2 social studies | A chalkboard diagram, a worked budget example, checks, recall; letters read to another class; **a mock vote counted two ways, with a report-back** | An unsupervised household survey with names and phone numbers; a real prefect election; pupils at a town hall alone; a cash fund with a pupil treasurer |
 | 5 | [Bangladesh: letters, sounds and first words](walkthroughs/05-bangladesh-letters-and-sounds/) | Class 1 reading | Thumbs and finger checks, letters from memory, spaced review. **Connected Learning and participatory budgeting: ruled out everywhere** | Back benches and colouring sheets for children who can't yet read; a "slow readers" chart; a workbook to buy; nightly phone videos |
 | 6 | [Mexico: migration stories, past and present](walkthroughs/06-mexico-migration/) | Grade 8 history | Finger and scrap-paper checks, recall; an unranked class book | Questions about families' legal documents; family photos with names; an unsupervised bus-terminal trip; paying for printing |
+| 7 | [Hydrology: tracking rainfall](walkthroughs/07-hydrology/) | Middle science | A reading check, a worked example. **Connected Learning and participatory budgeting: ruled out everywhere** | Backyard recording at home; cloud lectures; multi-season tracking |
+| 8 | [Ecosystems: energy flow and food webs](walkthroughs/08-ecosystems/) | Middle science | Checks, a worked example, a linked drawing; rotating pairs. **Participatory budgeting: ruled out everywhere** | Tablets; weekly photos for grading; insects in jars; field guides to buy; a planted instruction ignored |
+| 9 | [Civics: making decisions together](walkthroughs/09-civics/) | Upper-secondary civics | Checks, recall, a worked example; a pooled chart, a reading; **a class ballot with the rule stated first** | Named votes; neighbourhood interviews; real-money fundraising; social-media photos; a planted instruction ignored |
 
 Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source chapter (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after) and the complete final cards (`final.md`).
-
-Three more test chapters (hydrology, ecosystems and civics, not set in any one country) were run in the same sweep; their results are in the [README's live results](../README.md#live-results).
 
 ## Going deeper
 - How to run, check and extend it: [technical.md](technical.md)

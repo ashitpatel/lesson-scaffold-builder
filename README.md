@@ -128,9 +128,9 @@ On 7 November 2026 the full sweep (`python3 -m lsb.regress`) ran all nine test c
 
 | Case (country, subject) | Result | Units | Calls | Cost | Cards applied |
 |---|---|---|---|---|---|
-| Hydrology (generic, science) | PASS | 2 | 19 | $4.00 | EB-03, EB-04 |
-| Ecosystems (generic, science) | PASS | 4 | 24 | $5.08 | CL-02, EB-03, EB-04, EB-05 |
-| Civics (generic, civics) | PASS | 4 | 20 | $4.57 | CL-04, CL-05, EB-01, EB-03, EB-04, PB-02 |
+| [Hydrology (generic, science)](docs/walkthroughs/07-hydrology/) | PASS | 2 | 19 | $4.00 | EB-03, EB-04 |
+| [Ecosystems (generic, science)](docs/walkthroughs/08-ecosystems/) | PASS | 4 | 24 | $5.08 | CL-02, EB-03, EB-04, EB-05 |
+| [Civics (generic, civics)](docs/walkthroughs/09-civics/) | PASS | 4 | 20 | $4.57 | CL-04, CL-05, EB-01, EB-03, EB-04, PB-02 |
 | [Kenya, Grade 6 science](docs/walkthroughs/01-kenya-clean-water/) | PASS | 4 | 23 | $5.14 | CL-02, CL-05, EB-01, EB-04 |
 | [Peru, Grade 5 mathematics](docs/walkthroughs/02-peru-fractions/) | PASS | 3 | 17 | $3.60 | CL-05, EB-01, EB-04, PB-04 |
 | [Vietnam, Grade 6 literature](docs/walkthroughs/03-vietnam-folk-tales/) | PASS | 4 | 22 | $4.25 | CL-04, EB-01, EB-02, EB-04 |
@@ -170,7 +170,7 @@ lesson-scaffold-builder/
 ├── docs/                        READ FIRST if you're new
 │   ├── README.md                index
 │   ├── ux/                      who uses it, the end-to-end journey, decision points
-│   ├── walkthroughs/            six folders: walkthrough + source + decision trace + final cards each
+│   ├── walkthroughs/            nine folders: walkthrough + source + decision trace + final cards each
 │   ├── technical.md             every check, flag, output file and exit code
 │   └── regeneration-prompts.md  prompts to rebuild this project with an AI coding agent
 │
