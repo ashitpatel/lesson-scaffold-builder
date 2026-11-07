@@ -10,6 +10,13 @@ your Muse login instead. `--backend api` calls the Anthropic API directly and
 needs ANTHROPIC_API_KEY or an `ant auth login` profile.
 Every intermediate JSON is saved under runs/<timestamp>/.
 
+Choices: `--ask` pauses to ask how to break the source down (unit maximum,
+breakdown focus) and what each stage may do (cards, cards per unit, added
+step), with suggestions drawn from the source and the cards files.
+`--answers FILE` reads those answers from a JSON object instead, so sweeps
+answer without stopping; anything missing falls back to defaults. Without
+either flag nothing is asked. The values land in choices.json.
+
 Routing (prompts/README.md):
   critic PASS    -> done
   critic REVISE  -> re-run 05 with the critic's issues, up to --max-revisions times
@@ -37,10 +44,11 @@ import datetime as dt
 import json
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Protocol
 
+from lsb import ask
 from lsb import optimise as opt
 from lsb import render
 from lsb import validate as v
@@ -68,9 +76,10 @@ class FrameworkStage:
     cards_path: Path
     cards_placeholder: str
     card_ids: tuple[str, ...]
+    cards_text: str | None = None  # a user's subset of the cards file, if chosen
 
     def cards(self) -> str:
-        return self.cards_path.read_text(encoding="utf-8")
+        return self.cards_text if self.cards_text is not None else self.cards_path.read_text(encoding="utf-8")
 
 
 STAGES = {
@@ -363,13 +372,15 @@ class Source:
     context: str | None = None
 
 
-def decompose_values(src: Source, previous: dict | None = None, feedback: list | None = None) -> dict[str, str]:
+def decompose_values(src: Source, previous: dict | None = None, feedback: list | None = None,
+                     focus: str = "auto") -> dict[str, str]:
     return {
         "SOURCE_TEXT": src.text,
         "SOURCE_REF": src.ref,
         "GRADE_BAND": src.grade_band or NONE,
         "TIME_BLOCK_MINUTES": str(src.time_block_minutes) if src.time_block_minutes else NONE,
         "CONTEXT": src.context or NONE,
+        "USER_FOCUS": focus,
         "PREVIOUS_OUTPUT": _dump(previous) if previous is not None else NONE,
         "CRITIC_FEEDBACK": _dump(feedback) if feedback else NONE,
     }
@@ -473,12 +484,16 @@ def _update_flags(result: RunResult, critic: dict) -> None:
 
 
 def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call, save, result: RunResult,
-                        earlier_cards: str = "", max_revisions: int = 1) -> dict | None:
+                        earlier_cards: str = "", max_revisions: int = 1,
+                        allowed: tuple[str, ...] | None = None,
+                        max_cards: int = opt.MAX_CARDS, max_added: int = opt.MAX_ADDED_STEPS) -> dict | None:
     """Apply one stage's cards unit by unit to a sequence that passed the critic.
 
     `current` is {"sequence", "source_trace"}. Each unit's edit must pass
     `optimise.check_unit_edit` (one retry with the problems as feedback; then the
-    unit stays as it was). Accepted edits are merged and the whole sequence goes
+    unit stays as it was). `allowed` narrows the cards the stage may use (the
+    model sees only those sections of the cards file); `max_cards` and
+    `max_added` tighten the per-unit limits. Accepted edits are merged and the whole sequence goes
     back through the validator and the critic, with these cards and any from
     earlier stages. A unit the critic finds issues in is revised up to
     `max_revisions` times, then reverted to its input version. Anything the stage
@@ -491,6 +506,12 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
 
     Returns the new {"sequence", "source_trace"} if any edit was kept, else None.
     """
+    custom = (allowed is not None and tuple(allowed) != stage.card_ids
+              or max_cards != opt.MAX_CARDS or max_added != opt.MAX_ADDED_STEPS)
+    if custom:
+        allowed = tuple(allowed) if allowed is not None else stage.card_ids
+        stage = replace(stage, card_ids=allowed,
+                        cards_text=ask.filter_cards(stage.cards(), allowed, max_cards, max_added > 0))
     cards = stage.cards()
     review_cards = "\n\n".join(c for c in (earlier_cards, cards) if c)
     seq = current["sequence"]
@@ -507,7 +528,7 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
             label = f"{p}{rnd}-{uid}" + ("-retry" if tries == 2 else "")
             try:
                 out = call(stage.key, stage.prompt, stage_values(stage, src, current, uid, previous, feedback), label)
-                problems = opt.check_unit_edit(originals[uid], out, stage.card_ids)
+                problems = opt.check_unit_edit(originals[uid], out, stage.card_ids, max_cards, max_added)
             except StageError as e:
                 out, problems = None, [str(e)]
             if out is not None:
@@ -692,9 +713,48 @@ def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: 
     return None
 
 
+def _breakdown_choices(src: Source) -> list[ask.Choice]:
+    heads = ask.section_headers(src.text)
+    context = "The source has %d sections:\n%s" % (len(heads), "\n".join(f"  - {h}" for h in heads))
+    return [
+        ask.Choice("max_units", "Break into simpler modules? At most how many units?",
+                   ((2, "2 units", "simplest; milestones get merged"),
+                    (3, "3 units", ""),
+                    (4, "4 units", "the documented aim"),
+                    (5, "5 units", "whatever the critic gate allows")), 5, context=context),
+        ask.Choice("focus", "What should guide the breakdown?",
+                   (("auto", "Auto", "the pipeline decides"),
+                    ("one unit per source section", "One unit per source section",
+                     "the unit maximum still wins")), "auto", free_text=True, context=context),
+    ]
+
+
+def _stage_choices(stage: FrameworkStage, sequence: dict) -> list[ask.Choice]:
+    units = [u for u in sequence.get("mls_units", []) if isinstance(u, dict)]
+    context = "Units:\n" + "\n".join(
+        f"  - {u.get('mls_id')}: {u.get('title')} ({len(u.get('tasks') or [])} steps)" for u in units)
+    name = stage.key.replace("_", " ")
+    hints = ask.card_hints(stage.cards_path)
+    return [
+        ask.Choice(f"{stage.key}_cards", f"Which {name} cards may apply?",
+                   tuple((cid, f"{cid} {title}", targets) for cid, title, targets in hints),
+                   [cid for cid, _, _ in hints], multi=True, context=context),
+        ask.Choice(f"{stage.key}_max_cards", "At most how many cards per unit?",
+                   ((1, "1 card", ""), (2, "2 cards", "")), opt.MAX_CARDS),
+        ask.Choice(f"{stage.key}_added_step", "May the stage add a step?",
+                   ((True, "Yes", ""), (False, "No", "edit existing steps only")), True),
+    ]
+
+
 def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 2,
-                 stages: tuple[str, ...] = (), max_stage_revisions: int = 1) -> RunResult:
+                 stages: tuple[str, ...] = (), max_stage_revisions: int = 1,
+                 prompter: ask.Prompter | None = None) -> RunResult:
     out_dir.mkdir(parents=True, exist_ok=True)
+    prompter = prompter or ask.DefaultPrompter()
+    choices: dict[str, Any] = {}
+    for c in _breakdown_choices(src):
+        choices[c.key] = prompter.ask(c)
+    choices["max_units"] = int(choices["max_units"])
 
     def save(name: str, obj: Any) -> None:
         (out_dir / name).write_text(_dump(obj) + "\n", encoding="utf-8")
@@ -718,7 +778,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     for attempt in range(1, max_revisions + 2):
         result.attempts = attempt
         try:
-            decomposed = call("decompose", DECOMPOSE, decompose_values(src, previous, feedback), attempt)
+            decomposed = call("decompose", DECOMPOSE, decompose_values(src, previous, feedback, choices["focus"]),
+                              attempt)
         except ModelUnavailable as e:
             result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
             result.status = "error"
@@ -770,6 +831,16 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         issues = _issues(critic)
         covered = {(i.get("where"), i.get("problem")) for i in issues}
         issues += [i for i in _code_issues(report) if (i["where"], i["problem"]) not in covered]
+        n_units = len(sequence.get("mls_units") or [])
+        if n_units > choices["max_units"]:
+            issues.append({"check": "D02", "source": "code", "where": "$.mls_units",
+                           "problem": f"{n_units} units is more than your maximum of {choices['max_units']}",
+                           "fix": f"Merge milestones into at most {choices['max_units']} units."})
+            if verdict == "PASS":
+                result.notes.append(
+                    f"attempt {attempt}: {n_units} units exceeds your maximum of {choices['max_units']}; "
+                    "treated as REVISE")
+                verdict = "REVISE"
         score = {**_score(issues), "rejected": int(verdict == "REJECT")}
         result.attempt_scores[attempt] = score
         if result.best_attempt is None or _rank(score) < _rank(result.attempt_scores[result.best_attempt]) \
@@ -799,9 +870,15 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         kept_cards: list[str] = []
         for key in stages:
             stage = STAGES[key]
+            for c in _stage_choices(stage, current["sequence"]):
+                choices[c.key] = prompter.ask(c)
+            picked = tuple(choices[f"{stage.key}_cards"])
+            max_cards = int(choices[f"{stage.key}_max_cards"])
+            max_added = opt.MAX_ADDED_STEPS if choices[f"{stage.key}_added_step"] else 0
             try:
                 new = run_framework_stage(stage, src, current, call, save, result,
-                                          "\n\n".join(kept_cards), max_stage_revisions)
+                                          "\n\n".join(kept_cards), max_stage_revisions,
+                                          picked, max_cards, max_added)
             except ModelUnavailable as e:
                 result.notes.append(f"{stage.key}: model unavailable; stopped before finishing this stage, "
                                     f"kept the sequence from the stages before it: {e}")
@@ -840,6 +917,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
 
     if result.sequence is not None:
         save("sequence.json", result.sequence)
+    save("choices.json", choices)
     save("summary.json", {
         "status": result.status,
         "attempts": result.attempts,
@@ -892,6 +970,9 @@ def main(argv: list[str] | None = None) -> int:
                          "muse: headless `muse exec` on your Muse login; api: Anthropic API key")
     ap.add_argument("--model", default=None,
                     help="model id (default: claude-opus-5-5 for claude-code/api, the CLI default for muse)")
+    ap.add_argument("--ask", action="store_true", help="ask about the breakdown and each stage's limits")
+    ap.add_argument("--answers", type=Path, metavar="FILE",
+                    help="JSON answers for the --ask questions (sweeps answer without stopping)")
     ap.add_argument("--max-revisions", type=int, default=2)
     ap.add_argument("--no-eb", action="store_true", help="skip the Evidence-Based stage")
     ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
@@ -916,6 +997,15 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.dry_run:
         return 2 if dry_run(src) else 0
+    if args.ask and args.answers:
+        ap.error("--ask and --answers cannot be combined")
+    if args.answers and not args.answers.exists():
+        ap.error(f"answers file not found: {args.answers}")
+    try:
+        prompter = ask.FilePrompter(args.answers) if args.answers else (
+            ask.InteractivePrompter() if args.ask else ask.DefaultPrompter())
+    except (OSError, ValueError) as e:
+        ap.error(f"cannot read answers file: {e}")
 
     out_dir = args.out or RUNS / dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     if args.backend == "claude-code":
@@ -931,7 +1021,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = run_pipeline(src, model, out_dir, args.max_revisions,
                               stages=tuple(k for k in STAGE_ORDER if not getattr(args, f"no_{k}")),
-                              max_stage_revisions=args.max_stage_revisions)
+                              max_stage_revisions=args.max_stage_revisions, prompter=prompter)
     except api_errors as e:
         print(f"API error after retries: {type(e).__name__}: {e}", file=sys.stderr)
         return 2

@@ -47,8 +47,13 @@ def match_steps(before: dict, after: dict) -> list[int | None]:
     return out
 
 
-def check_unit_edit(before: dict, result: Any, cards: tuple[str, ...] = CL_CARDS) -> list[str]:
-    """Problems with an optimisation stage's output for one unit; [] means accepted."""
+def check_unit_edit(before: dict, result: Any, cards: tuple[str, ...] = CL_CARDS,
+                    max_cards: int = MAX_CARDS, max_added: int = MAX_ADDED_STEPS) -> list[str]:
+    """Problems with an optimisation stage's output for one unit; [] means accepted.
+
+    `cards` is the allowlist (a user's subset of the stage's cards); `max_cards`
+    and `max_added` tighten the per-unit limits below the code defaults.
+    """
     if not isinstance(result, dict):
         return ["output is not a JSON object"]
     problems: list[str] = []
@@ -84,15 +89,15 @@ def check_unit_edit(before: dict, result: Any, cards: tuple[str, ...] = CL_CARDS
     added = len(tasks) - n_before
     if added < 0:
         problems.append(f"{-added} step(s) removed; optimisation never removes a step")
-    elif added > MAX_ADDED_STEPS:
-        problems.append(f"{added} steps added; at most {MAX_ADDED_STEPS} may be added")
+    elif added > max_added:
+        problems.append(f"{added} steps added; at most {max_added} may be added")
 
     used_cards = {c.get("card") for c in changes}
     unknown = sorted(str(c) for c in used_cards if c not in cards)
     if unknown:
         problems.append(f"unknown card(s) {', '.join(unknown)}; use one of {', '.join(cards)}")
-    if len(used_cards) > MAX_CARDS:
-        problems.append(f"{len(used_cards)} cards applied; at most {MAX_CARDS}")
+    if len(used_cards) > max_cards:
+        problems.append(f"{len(used_cards)} cards applied; at most {max_cards}")
     if decision == "APPLY" and not changes:
         problems.append("decision is APPLY but 'changes' is empty")
 
@@ -135,8 +140,8 @@ def check_unit_edit(before: dict, result: Any, cards: tuple[str, ...] = CL_CARDS
         else:
             problems.append(f"step {pos}: change {kind!r} is not 'added' or 'modified'")
 
-    if n_added > MAX_ADDED_STEPS:
-        problems.append(f"{n_added} steps logged as added; at most {MAX_ADDED_STEPS}")
+    if n_added > max_added:
+        problems.append(f"{n_added} steps logged as added; at most {max_added}")
     kept = {i for i in matched if i is not None} | replaced
     for i in range(n_before):
         if i not in kept and added >= 0:

@@ -455,6 +455,48 @@ class AllStages(unittest.TestCase):
             self.assertIn("Evidence-Based, EB-01 Retrieval Practice", (Path(tmp) / "run/cards.txt").read_text())
 
 
+class Choices(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def file_prompter(self, answers):
+        f = Path(self.tmp.name) / "answers.json"
+        f.write_text(json.dumps(answers), encoding="utf-8")
+        return run.ask.FilePrompter(f)
+
+    def test_max_units_forces_a_revise(self):
+        three = copy.deepcopy(VALID)
+        extra = copy.deepcopy(VALID["mls_units"][1])
+        extra["mls_id"] = "MLS-HYDRO-03"
+        three["mls_units"].append(extra)
+        m = FakeModel([decomposed(three)] * 3, [critic("PASS")] * 3)
+        r = run.run_pipeline(SOURCE, m, self.out, prompter=self.file_prompter({"max_units": 2}))
+        self.assertEqual(r.status, "revise_exhausted")
+        self.assertTrue(any("maximum of 2" in n for n in r.notes), r.notes)
+        saved = json.loads((self.out / "choices.json").read_text(encoding="utf-8"))
+        self.assertEqual(saved["max_units"], 2)
+        self.assertEqual(saved["focus"], "auto")
+
+    def test_focus_reaches_decompose_values(self):
+        self.assertEqual(run.decompose_values(SOURCE)["USER_FOCUS"], "auto")
+        self.assertEqual(run.decompose_values(SOURCE, focus="by skill")["USER_FOCUS"], "by skill")
+
+    def test_stage_allowlist_drops_a_disallowed_card(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")],
+                      [cl_reply(U0), cl_reply(U0), cl_reply(U1, False)])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("cl",),
+                             prompter=self.file_prompter({"connected_learning_cards": ["CL-02"]}))
+        self.assertIn("unknown card", m.calls[3][1])  # the retry carries the problem
+        self.assertEqual(r.optimisation["connected_learning"]["units"]["MLS-HYDRO-01"]["status"], "edit_rejected")
+        self.assertEqual(r.sequence, VALID)
+        saved = json.loads((self.out / "choices.json").read_text(encoding="utf-8"))
+        self.assertEqual(saved["connected_learning_cards"], ["CL-02"])
+
+
 class Requests(unittest.TestCase):
     def test_every_placeholder_is_supplied(self):
         values = {

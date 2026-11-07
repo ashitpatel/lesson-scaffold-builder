@@ -144,6 +144,22 @@ class Rejected(unittest.TestCase):
             out["changes"].append({"step": step, "change": "modified", "replaces_step": step, "card": card, "summary": "s"})
         self.assertProblem(out, "3 cards applied")
 
+    def test_user_limits_tighten_cards_and_added_steps(self):
+        out = modified(step=1, card="CL-01")
+        out["unit"]["tasks"][1]["action"] += " More."
+        out["changes"].append({"step": 2, "change": "modified", "replaces_step": 2, "card": "CL-02", "summary": "s"})
+        self.assertEqual(opt.check_unit_edit(BEFORE, out), [])
+        found = opt.check_unit_edit(BEFORE, out, opt.CL_CARDS, max_cards=1)
+        self.assertTrue(any("at most 1" in p for p in found), found)
+        out["unit"]["tasks"].append({"step": 5, "role": "Lead_Educator", "action": "An added step."})
+        out["changes"].append({"step": 5, "change": "added", "replaces_step": None, "card": "CL-01", "summary": "s"})
+        found = opt.check_unit_edit(BEFORE, out, opt.CL_CARDS, max_added=0)
+        self.assertTrue(any("at most 0" in p for p in found), found)
+
+    def test_user_allowlist_rejects_other_stage_cards(self):
+        found = opt.check_unit_edit(BEFORE, modified(), ("CL-02",))
+        self.assertTrue(any("unknown card" in p for p in found), found)
+
     def test_garbage(self):
         for result in (None, [], {"mls_id": BEFORE["mls_id"]}, {**abstain(), "changes": "none"},
                        {**abstain(), "unit": {**BEFORE, "tasks": [1, 2]}}):
