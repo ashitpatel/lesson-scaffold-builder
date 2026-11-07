@@ -57,10 +57,11 @@ from lsb import ask
 from lsb import optimise as opt
 from lsb import render
 from lsb import validate as v
+from lsb._paths import is_checkout, resource_root
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = resource_root()
 PROMPTS = ROOT / "prompts"
-RUNS = ROOT / "runs"
+RUNS = (ROOT if is_checkout() else Path.cwd()) / "runs"
 
 MODEL = "claude-opus-5-5"
 FALLBACK_BETA = "server-side-fallback-2026-07-01"

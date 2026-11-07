@@ -31,8 +31,9 @@ from pathlib import Path
 from typing import Any
 
 from lsb import dag
+from lsb._paths import resource_root
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = resource_root()
 FRAMEWORKS = ROOT / "frameworks"
 CONFIG_PATH = ROOT / "config" / "taxonomy_mapping.json"
 

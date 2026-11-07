@@ -23,8 +23,9 @@ from typing import Any, Iterator
 from jsonschema import Draft202012Validator
 
 from lsb import dag
+from lsb._paths import resource_root
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = resource_root()
 SCHEMA_PATH = ROOT / "schemas" / "mls-dag.schema.json"
 CONFIG_PATH = ROOT / "config" / "taxonomy_mapping.json"
 

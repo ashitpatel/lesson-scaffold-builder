@@ -29,12 +29,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-CASES_PATH = ROOT / "tests" / "regression" / "cases.json"
-RUNS = ROOT / "runs"
+from lsb._paths import is_checkout, resource_root
+
+ROOT = resource_root()
+CASES_PATH = ROOT / "tests" / "regression" / "cases.json" if is_checkout() else None
+RUNS = (ROOT if is_checkout() else Path.cwd()) / "runs"
 
 
-def load_cases(path: Path = CASES_PATH) -> list[dict]:
+def load_cases(path: Path | None = CASES_PATH) -> list[dict]:
+    if path is None:
+        raise SystemExit("regression cases need a checkout (or pass --cases)")
     return json.loads(path.read_text(encoding="utf-8"))["cases"]
 
 
@@ -117,13 +121,14 @@ def evaluate(case: dict, run_dir: Path) -> dict:
 
 def run_case(case: dict, root: Path, extra: list[str], runner=None) -> Path:
     run_dir = root / case["name"]
-    cmd = [sys.executable, "-m", "lsb.run", str(ROOT / case["source"]), "--ref", case["ref"], "--out", str(run_dir)]
+    base = ROOT if is_checkout() else Path.cwd()
+    cmd = [sys.executable, "-m", "lsb.run", str(base / case["source"]), "--ref", case["ref"], "--out", str(run_dir)]
     if case.get("grade_band"):
         cmd += ["--grade-band", case["grade_band"]]
     cmd += extra
     root.mkdir(parents=True, exist_ok=True)
     with open(root / f"{case['name']}.log", "w", encoding="utf-8") as log:
-        (runner or subprocess.run)(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+        (runner or subprocess.run)(cmd, cwd=base, stdout=log, stderr=subprocess.STDOUT)
     return run_dir
 
 

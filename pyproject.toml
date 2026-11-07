@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lesson-scaffold-builder"
+version = "0.1.0"
+description = "Turn long teaching chapters into short, runnable Micro-Lesson Scaffolds, printed as offline teacher cards"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Ashit Patel" }]
+keywords = ["education", "lesson-planning", "offline", "teacher-cards"]
+dependencies = ["jsonschema", "anthropic"]
+
+[project.urls]
+Homepage = "https://github.com/ashitpatel/lesson-scaffold-builder"
+Blog = "https://ashitpatel.github.io/lesson-scaffold-builder/"
+
+[project.scripts]
+lsb-run = "lsb.run:main"
+lsb-validate = "lsb.validate:main"
+lsb-render = "lsb.render:main"
+lsb-regress = "lsb.regress:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lsb"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"prompts" = "lsb/data/prompts"
+"frameworks" = "lsb/data/frameworks"
+"schemas" = "lsb/data/schemas"
+"config" = "lsb/data/config"
+
+[tool.hatch.build.targets.sdist]
+include = ["lsb", "prompts", "frameworks", "schemas", "config", "pyproject.toml", "README.md", "LICENSE", "VERSION", "CHANGELOG.md"]
