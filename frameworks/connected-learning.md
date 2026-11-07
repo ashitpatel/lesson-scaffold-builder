@@ -76,7 +76,7 @@ The layer "optimizes [steps] using interest-driven, peer-supported, and contextu
 ## Guardrails (every card)
 - **CL-G1 Mastery unchanged.** Never remove, shorten or replace a mastery check, a skill-practice step, or a step that gives sustained time for writing, reasoning or synthesis. The unit's milestone and `macro_alignment` stay the same.
 - **CL-G2 Offline and zero-cost.** Edits use only paper, chalk, chart paper and reused or found materials. No devices, apps, internet or purchases.
-- **CL-G3 No child-level data.** No names, photos, individual scores or home details are collected or displayed. Shared results are class totals.
+- **CL-G3 No child-level data.** No photos, home or family details, or individual scores, marks, votes or attendance are collected or displayed, and no name is attached to any of them. Shared results are class totals. A student's name on their own work (a letter, a poster, a page in a class book) is fine; the student may leave it off.
 - **CL-G4 Rotation and balance.** Peer roles rotate, groups are mixed, and no student is permanently in charge of others.
 - **CL-G5 Safe audiences.** Showcases happen at school, in school hours, with the educator present. Adult visitors never work alone with students.
 - **CL-G6 Inclusive visibility.** No activity singles out a student or a group, and every student has a way to take part.
