@@ -2,7 +2,7 @@
 
 How to run, check and extend the pipeline. For what LSB is and why, start with the [README](../README.md); for how it's used, see [docs/README.md](README.md).
 
-Requirements: Python 3.10+, `pip install jsonschema anthropic`, and either a Claude Code login (the default backend) or an Anthropic API key (`--backend api`).
+Requirements: Python 3.10+, `pip install jsonschema anthropic`, and a model backend: a Claude Code login (the default), a Muse login (`--backend muse`), or an Anthropic API key (`--backend api`).
 
 ## Deterministic validator
 
@@ -42,7 +42,7 @@ python3 -m lsb.run tests/fixtures/hydrology-source.md --ref "Chapter 4 - Basic H
 python3 -m lsb.run tests/fixtures/hydrology-source.md --ref "Chapter 4 - Basic Hydrology Framework"
 ```
 
-`--dry-run` builds every request and checks each prompt placeholder has a value. It makes no model calls. A live run calls `claude-opus-5-5` (effort `high` by default, `--effort` to change). By default it goes through headless Claude Code (`claude -p`) on your Claude Code login, so no API key is needed; `--backend api` calls the Anthropic API instead and needs `ANTHROPIC_API_KEY` or an `ant auth login` profile.
+`--dry-run` builds every request and checks each prompt placeholder has a value. It makes no model calls. A live run calls `claude-opus-5-5` (effort `high` by default, `--effort` to change). By default it goes through headless Claude Code (`claude -p`) on your Claude Code login, so no API key is needed; `--backend api` calls the Anthropic API instead and needs `ANTHROPIC_API_KEY` or an `ant auth login` profile. `--backend muse` goes through headless Muse Code (`muse exec`) on your Muse login: `muse exec` has no system-prompt channel, so the prompt and the input go in one file, and each call is a single model step in an empty directory. It reports token counts but no USD cost, so Muse runs show $0.00 in cost sums. `--model` overrides the model id (default: `claude-opus-5-5`, or the CLI default for `muse`).
 
 **Decompose loop.** Each attempt is 2 calls: decompose, then the critic. The critic's PASS ends the loop. REVISE sends its issues and the previous output back to decompose, up to `--max-revisions` (default 2). REJECT starts again from the source once, and a second REJECT stops the run. Validator results are final, so a critic PASS on a sequence that fails a code check counts as REVISE. On a revision, the critic gets its previous issues: it confirms each one is fixed, judges the changed steps fully, and raises only new blockers elsewhere, so the loop converges.
 
@@ -70,9 +70,10 @@ python3 -m lsb.regress                                  # every case, 3 at a tim
 python3 -m lsb.regress --only kenya-water,civics
 python3 -m lsb.regress --check runs/regress-<timestamp>  # re-check saved runs; no model calls
 python3 -m lsb.regress --check runs/regress-new --baseline runs/regress-old
+python3 -m lsb.regress --backend muse                   # same sweep on Muse; extra flags pass to lsb.run
 ```
 
-[lsb/regress.py](../lsb/regress.py) runs every case in [tests/regression/cases.json](../tests/regression/cases.json) through the whole pipeline and checks **properties** of each result rather than a golden answer, because two good decompositions of the same chapter can differ: the run passes; the unit count is within its limit; planted traps and region-specific names are absent from the final sequence; terms a faithful sequence must keep are present; enough source flags were raised; a stage that must abstain (participatory budgeting on a reading drill) did; and the teacher cards pass G21. It writes `report.md` and `report.json` under the sweep folder. A full sweep of the nine cases costs roughly $25–35 at list price.
+[lsb/regress.py](../lsb/regress.py) runs every case in [tests/regression/cases.json](../tests/regression/cases.json) through the whole pipeline and checks **properties** of each result rather than a golden answer, because two good decompositions of the same chapter can differ: the run passes; the unit count is within its limit; planted traps and region-specific names are absent from the final sequence; terms a faithful sequence must keep are present; enough source flags were raised; a stage that must abstain (participatory budgeting on a reading drill) did; and the teacher cards pass G21. It writes `report.md` and `report.json` under the sweep folder. A full sweep of the nine cases costs roughly $25–35 at list price. The expectations are backend-agnostic, so the same sweep runs on any backend — but keep one backend per sweep folder so reports stay comparable. Validated: the Mexico case passes on `muse-spark-1.3` via `--backend muse` (13 calls, first-attempt pass, no repair).
 
 ## Tests
 

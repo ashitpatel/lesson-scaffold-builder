@@ -41,7 +41,7 @@ A sequence of prompts that rebuilds this repository from an empty folder with an
 
 ## Prompt 4: The runner
 
-> Write `lsb/run.py`: decompose → validate → critic, with REVISE (≤2, issues plus previous output sent back) and REJECT (restart once). A critic PASS on a sequence that fails a code check counts as REVISE. Keep the best attempt (rank by rejected, blockers, majors, minors; code failures count as blockers). Two backends: headless `claude -p` on the user's Claude Code login (default, no API key, prompt as system prompt file, tools off, empty temp cwd) and the Anthropic SDK with streaming and adaptive thinking. A usage limit stops the run cleanly and keeps the best attempt. Save every reply and intermediate JSON. Add `--dry-run`.
+> Write `lsb/run.py`: decompose → validate → critic, with REVISE (≤2, issues plus previous output sent back) and REJECT (restart once). A critic PASS on a sequence that fails a code check counts as REVISE. Keep the best attempt (rank by rejected, blockers, majors, minors; code failures count as blockers). Three backends behind one `complete(system, user)` method: headless `claude -p` on the user's Claude Code login (default, no API key, prompt as system prompt file, tools off, empty temp cwd), headless `muse exec` on the user's Muse login (prompt and input in one file, one model step, reminders off, empty temp cwd, token counts without USD), and the Anthropic SDK with streaming and adaptive thinking. A usage limit stops the run cleanly and keeps the best attempt. Save every reply and intermediate JSON. Add `--dry-run`.
 >
 > **Done when:** a scripted fake model drives every routing path in tests.
 

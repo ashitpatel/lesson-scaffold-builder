@@ -4,6 +4,7 @@
     python3 -m lsb.regress --only civics,kenya-water
     python3 -m lsb.regress --check runs/regress-<timestamp>      # re-check saved runs, no model calls
     python3 -m lsb.regress --check runs/regress-new --baseline runs/regress-old
+    python3 -m lsb.regress --backend muse                     # extra flags pass through to lsb.run
 
 The cases and their expectations are in tests/regression/cases.json. Each case
 names a source file, and states what a good result must show: the run passes,
@@ -113,7 +114,7 @@ def evaluate(case: dict, run_dir: Path) -> dict:
     return out
 
 
-def run_case(case: dict, root: Path, extra: list[str]) -> Path:
+def run_case(case: dict, root: Path, extra: list[str], runner=None) -> Path:
     run_dir = root / case["name"]
     cmd = [sys.executable, "-m", "lsb.run", str(ROOT / case["source"]), "--ref", case["ref"], "--out", str(run_dir)]
     if case.get("grade_band"):
@@ -121,7 +122,7 @@ def run_case(case: dict, root: Path, extra: list[str]) -> Path:
     cmd += extra
     root.mkdir(parents=True, exist_ok=True)
     with open(root / f"{case['name']}.log", "w", encoding="utf-8") as log:
-        subprocess.run(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+        (runner or subprocess.run)(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
     return run_dir
 
 

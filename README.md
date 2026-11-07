@@ -61,7 +61,7 @@ python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle 
 ```bash
 python3 -m lsb.run my-chapter.md --ref "Unit 3 - Fractions" --grade-band Middle
 ```
-A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), or the Anthropic API with `--backend api`. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did.
+A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, or the Anthropic API with `--backend api`. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did.
 
 ### 3. Develop or test it
 ```bash
@@ -186,7 +186,7 @@ lesson-scaffold-builder/
 │   └── 10, 15, 20, 40, 60       legacy single-project prompts from the MIP transformer, not used
 │
 ├── lsb/                         CODE
-│   ├── run.py                   the pipeline runner (Claude Code or API backend)
+│   ├── run.py                   the pipeline runner (Claude Code, Muse, or API backend)
 │   ├── validate.py  dag.py      deterministic checks D01–D11
 │   ├── optimise.py              edit limits for the optimisation stages; merge and trace
 │   ├── render.py                teacher cards and the G21 check

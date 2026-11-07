@@ -78,6 +78,15 @@ class Evaluate(unittest.TestCase):
 
 
 class Cli(unittest.TestCase):
+    def test_run_case_forwards_extra_args_to_lsb_run(self):
+        seen = {}
+
+        def fake_run(cmd, **kw):
+            seen["cmd"] = cmd
+        with tempfile.TemporaryDirectory() as tmp:
+            regress.run_case(CASE, Path(tmp), ["--backend", "muse", "--model", "m"], runner=fake_run)
+        self.assertEqual(seen["cmd"][-4:], ["--backend", "muse", "--model", "m"])
+
     def test_check_mode_writes_a_report(self):
         with tempfile.TemporaryDirectory() as tmp:
             save_run(tmp)
