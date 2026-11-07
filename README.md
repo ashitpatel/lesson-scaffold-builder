@@ -59,3 +59,7 @@ python3 -m lsb.render runs/<run>
 ```
 
 Every reply and intermediate JSON is saved under `runs/<timestamp>/` (gitignored): `NN-decompose.json`, `NN-validator.json`, `NN-critic.json`, `cl1-<mls_id>.json`, `clN-critic.json` and the `pb…` equivalents for the optimisation stages, `decomposed-sequence.json` (before them), `source_trace.json` (after them), `sequence.json` (the final sequence; if decompose never passed, its best attempt), `cards.txt` and `cards.html`, and `summary.json` with per-attempt issue counts, what each optimisation stage did per unit, source flags and token usage. Exit status: `0` passed, `1` didn't pass, `2` usage or API error.
+
+## Licence
+
+Copyright 2026 Ashit Patel. Licensed under the Apache License, Version 2.0; see [LICENSE](LICENSE). The prompts, framework cards and test sources are covered by the same licence.
