@@ -258,11 +258,11 @@ def check_step_size(payload: Any, limits: dict) -> CheckResult:
 
 
 def validate(payload: Any, schema: dict | None = None, config: dict | None = None,
-             single_span: bool = False) -> Report:
+             single_span: bool = False, skip_d10: bool = False) -> Report:
     schema = schema if schema is not None else load_json(SCHEMA_PATH)
     config = config if config is not None else load_config()
     limits = config["limits"]
-    return Report([
+    checks = [
         check_schema(payload, schema),
         check_unit_cap(payload, limits),
         check_task_granularity(payload, limits),
@@ -272,9 +272,11 @@ def validate(payload: Any, schema: dict | None = None, config: dict | None = Non
         check_dependency_mapping(payload),
         check_cycles(payload),
         check_macro_alignment(payload),
-        check_regional_terms(payload, config.get("regional_terms", [])),
-        check_step_size(payload, limits),
-    ])
+    ]
+    if not skip_d10:
+        checks.append(check_regional_terms(payload, config.get("regional_terms", [])))
+    checks.append(check_step_size(payload, limits))
+    return Report(checks)
 
 
 # ---------------------------------------------------------------- CLI
@@ -296,13 +298,14 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python3 -m lsb.validate", description=__doc__.split("\n\n")[0])
     ap.add_argument("payload", type=Path, help="MLS_DAG_Sequence JSON file")
     ap.add_argument("--json", action="store_true", help="print the report as JSON")
+    ap.add_argument("--skip-d10", action="store_true", help="skip the regional-terms check (kept/relocalized runs)")
     args = ap.parse_args(argv)
     try:
         payload = load_json(args.payload)
     except (OSError, json.JSONDecodeError) as e:
         print(f"cannot read {args.payload}: {e}", file=sys.stderr)
         return 2
-    report = validate(payload)
+    report = validate(payload, skip_d10=args.skip_d10)
     print(json.dumps(report.to_dict(), indent=2, ensure_ascii=False) if args.json else format_text(report))
     return 0 if report.passed else 1
 

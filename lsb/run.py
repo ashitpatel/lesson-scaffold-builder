@@ -21,6 +21,9 @@ the critic runs in `single` mode.
 `--answers FILE` reads those answers from a JSON object instead, so sweeps
 answer without stopping; anything missing falls back to defaults. Without
 either flag nothing is asked. The values land in choices.json.
+The outset also asks how to handle locale-specific content: strip to generic
+(the default), keep the source's locale, or strip and then relocalize to the
+`--locale` target, reviewing each proposed replacement first.
 
 Routing (prompts/README.md):
   critic PASS    -> done
@@ -54,6 +57,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from lsb import ask
+from lsb import locale as loc
 from lsb import optimise as opt
 from lsb import render
 from lsb import validate as v
@@ -71,6 +75,8 @@ NONE = "(none)"
 
 DECOMPOSE = "05-decompose.md"
 CRITIC = "50-critic.md"
+LOCALE_LOG = "55-locale-log.md"
+RELOCALIZE = "56-relocalize.md"
 
 
 @dataclass(frozen=True)
@@ -466,7 +472,7 @@ class Source:
 
 
 def decompose_values(src: Source, previous: dict | None = None, feedback: list | None = None,
-                     focus: str = "auto", single: str = "no") -> dict[str, str]:
+                     focus: str = "auto", single: str = "no", locale_mode: str = "strip") -> dict[str, str]:
     return {
         "SOURCE_TEXT": src.text,
         "SOURCE_REF": src.ref,
@@ -475,13 +481,15 @@ def decompose_values(src: Source, previous: dict | None = None, feedback: list |
         "CONTEXT": src.context or NONE,
         "USER_FOCUS": focus,
         "SINGLE_MODULE": single,
+        "LOCALE_RULE": loc.locale_rule(locale_mode),
         "PREVIOUS_OUTPUT": _dump(previous) if previous is not None else NONE,
         "CRITIC_FEEDBACK": _dump(feedback) if feedback else NONE,
     }
 
 
 def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issues: list | None = None,
-                  cards: str | None = None, mode: str = "multi") -> dict[str, str]:
+                  cards: str | None = None, mode: str = "multi",
+                  keep_locale: bool = False) -> dict[str, str]:
     return {
         "SEQUENCE_JSON": _dump(decomposed["sequence"]),
         "VALIDATOR_REPORT": _dump(report.to_dict()),
@@ -495,6 +503,7 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
         "RENDERED_CARDS": NONE,
         "PREVIOUS_ISSUES": _dump(previous_issues) if previous_issues else NONE,
         "MODE": mode,
+        "LOCALE_SCOPE": loc.locale_scope("keep" if keep_locale else "strip"),
     }
 
 
@@ -582,7 +591,7 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
                         earlier_cards: str = "", max_revisions: int = 1,
                         allowed: tuple[str, ...] | None = None,
                         max_cards: int = opt.MAX_CARDS, max_added: int = opt.MAX_ADDED_STEPS,
-                        single_span: bool = False) -> dict | None:
+                        single_span: bool = False, keep_locale: bool = False) -> dict | None:
     """Apply one stage's cards unit by unit to a sequence that passed the critic.
 
     `current` is {"sequence", "source_trace"}. Each unit's edit must pass
@@ -686,12 +695,13 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
         if not accepted:
             return None
         cand = candidate()
-        report = v.validate(cand["sequence"], single_span=single_span)
+        report = v.validate(cand["sequence"], single_span=single_span, skip_d10=keep_locale)
         save(f"{p}{rnd}-validator.json", report.to_dict())
         try:
             critic = call("critic", CRITIC,
                           critic_values(src, cand, report, previous_issues, review_cards,
-                                        "single" if single_span else "multi"),
+                                        "single" if single_span else "multi",
+                                        keep_locale=keep_locale),
                           f"{p}{rnd}-critic")
         except StageError as e:
             revert(accepted, f"critic unusable: {e}")
@@ -752,7 +762,8 @@ REPAIR_NOTE = {"check": "repair", "source": "orchestrator",
 
 
 def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: RunResult,
-               cards: str = "", max_rounds: int = 2, single_span: bool = False) -> dict | None:
+               cards: str = "", max_rounds: int = 2, single_span: bool = False,
+               locale_mode: str = "strip") -> dict | None:
     """Fix problems a stage's review found in content no stage changed.
 
     `full` is a decompose-shaped output holding the current sequence and trace.
@@ -771,7 +782,8 @@ def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: 
         for tries in (1, 2):
             label = f"repair{rnd}" + ("-retry" if tries == 2 else "")
             try:
-                out = call("repair", DECOMPOSE, decompose_values(src, current, feedback), label)
+                out = call("repair", DECOMPOSE, decompose_values(src, current, feedback,
+                                                              locale_mode=locale_mode), label)
                 problems = opt.check_repair(current, out, previous_issues)
             except StageError as e:
                 out, problems = None, [str(e)]
@@ -787,12 +799,14 @@ def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: 
             return None
         # Steps are edited in place, so the current trace (with card ids) still lines up.
         cand = {**out, "source_trace": current.get("source_trace") or []}
-        report = v.validate(cand["sequence"], single_span=single_span)
+        keep = locale_mode == "keep"
+        report = v.validate(cand["sequence"], single_span=single_span, skip_d10=keep)
         save(f"repair{rnd}-validator.json", report.to_dict())
         try:
             critic = call("critic", CRITIC,
                           critic_values(src, cand, report, previous_issues, cards,
-                                        "single" if single_span else "multi"),
+                                        "single" if single_span else "multi",
+                                        keep_locale=keep),
                           f"repair{rnd}-critic")
         except StageError as e:
             result.notes.append(f"repair {rnd}: critic unusable: {e}")
@@ -825,6 +839,30 @@ def _framework_choices() -> list[ask.Choice]:
         [], multi=True,
         context="The optimisation stages improve each unit after it passes review; "
                 "excluded frameworks are skipped entirely. Blank excludes nothing.")]
+
+
+def _locale_choice() -> ask.Choice:
+    return ask.Choice("locale_mode", "How should locale-specific content be handled?",
+                      (("strip", "Strip to generic", "region-neutral cards; today's behavior"),
+                       ("keep", "Keep the source's locale", "names, currencies, places stay as written"),
+                       ("relocalize", "Strip, then relocalize to my locale",
+                        "review each replacement before it is applied")),
+                      "strip")
+
+
+def _target_locale_choice() -> ask.Choice:
+    return ask.Choice("target_locale", "Relocalize to which locale?",
+                      (("", "Skip relocalization", "leave the cards generic"),), "",
+                      free_text=True,
+                      context="Name your locale in your own words (a place, a system, or both).")
+
+
+def _locale_notes_choice() -> ask.Choice:
+    return ask.Choice("locale_notes", "Anything to know about your locale's specificities?",
+                      (("", "Nothing to add", "propose from the locale name alone"),), "",
+                      free_text=True,
+                      context="Overall input and feedback: what to prefer, what to avoid, "
+                              "what doesn't exist where you teach. The proposals must follow it.")
 
 
 def _single_choice() -> ask.Choice:
@@ -870,15 +908,99 @@ def _stage_choices(stage: FrameworkStage, sequence: dict) -> list[ask.Choice]:
     ]
 
 
+def run_relocalize(src: Source, target: str, result: RunResult, best: dict,
+                   call, save, prompter: ask.Prompter, choices: dict,
+                   locale_notes: str = "") -> dict:
+    """Strip-then-relocalize: log removals, propose equivalents, apply reviewed ones.
+
+    Two model calls (log, proposals), then one ask-layer review per proposal.
+    Replacements that would newly break a code check are reverted as a whole.
+    Never fails the run: every failure mode keeps the generic cards and notes why.
+    Returns the info block recorded in summary.json under "locale".
+    """
+    info: dict[str, Any] = {"target": target, "logged": 0, "applied": [], "skipped": []}
+    try:
+        logged = call("locale-log", LOCALE_LOG,
+                      {"SOURCE_TEXT": src.text, "SEQUENCE_JSON": _dump(result.sequence)},
+                      "locale-log")
+    except (StageError, ModelUnavailable) as e:
+        result.notes.append(f"locale: log unavailable ({e}); cards stay generic")
+        return info
+    problems = loc.check_locale_log(logged)
+    if problems:
+        result.notes.append(f"locale: log unusable ({problems[0]}); cards stay generic")
+        return info
+    log = logged["locale_log"]
+    save("locale-log.json", logged)
+    info["logged"] = len(log)
+    if not log:
+        result.notes.append("locale: nothing locale-specific to relocalize")
+        return info
+    try:
+        props = call("relocalize", RELOCALIZE,
+                     {"LOCALE_LOG": _dump(log), "TARGET_LOCALE": target,
+                      "LOCALE_NOTES": locale_notes or NONE,
+                      "SEQUENCE_JSON": _dump(result.sequence)},
+                     "locale-proposals")
+    except (StageError, ModelUnavailable) as e:
+        result.notes.append(f"locale: proposals unavailable ({e}); cards stay generic")
+        return info
+    problems = loc.check_proposals(props, len(log))
+    if problems:
+        result.notes.append(f"locale: proposals unusable ({problems[0]}); cards stay generic")
+        return info
+    proposals = props["proposals"]
+    save("locale-proposals.json", props)
+    if not proposals:
+        result.notes.append("locale: no proposals for the target locale; cards stay generic")
+        return info
+    decisions: dict[int, str] = {}
+    for c in loc.review_choices(proposals, log):
+        answer = prompter.ask(c)
+        choices[c.key] = answer
+        decisions[int(c.key.split("_")[1])] = answer or ""
+    save("locale-decisions.json", decisions)
+    new_seq, new_assump, notes = loc.apply_locale(
+        result.sequence, log, decisions, best.get("environment_assumptions"))
+    result.notes.extend(f"locale: {n}" for n in notes)
+    pre = set(v.validate(result.sequence, skip_d10=True).failed_ids())
+    post = set(v.validate(new_seq, skip_d10=True).failed_ids())
+    if post - pre:
+        result.notes.append(f"locale: replacements newly broke {sorted(post - pre)}; cards stay generic")
+        info["reverted"] = True
+        return info
+    result.sequence = new_seq
+    if new_assump is not None:
+        best["environment_assumptions"] = new_assump
+    info["applied"] = sorted(i for i, want in decisions.items() if want)
+    info["skipped"] = sorted(set(range(len(log))) - set(info["applied"]))
+    return info
+
+
 def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 2,
                  stages: tuple[str, ...] = (), max_stage_revisions: int = 1,
-                 prompter: ask.Prompter | None = None) -> RunResult:
+                 prompter: ask.Prompter | None = None, locale: str | None = None) -> RunResult:
     out_dir.mkdir(parents=True, exist_ok=True)
     prompter = prompter or ask.DefaultPrompter()
     choices: dict[str, Any] = {}
     for c in _framework_choices():
         choices[c.key] = prompter.ask(c)
     excluded = set(choices["frameworks_excluded"])
+    choices["locale_mode"] = prompter.ask(_locale_choice())
+    if choices["locale_mode"] not in loc.MODES:
+        choices["locale_mode"] = "strip"
+    keep_locale = choices["locale_mode"] == "keep"
+    target_locale = ""
+    if choices["locale_mode"] == "relocalize":
+        target_locale = (locale or "").strip()
+        if not target_locale:
+            target_locale = (prompter.ask(_target_locale_choice()) or "").strip()
+        choices["target_locale"] = target_locale
+        if not target_locale:
+            choices["locale_mode"] = "strip"
+            choices["locale_downgraded"] = "empty target locale; stayed generic"
+        else:
+            choices["locale_notes"] = prompter.ask(_locale_notes_choice()) or ""
     stages = tuple(k for k in stages if STAGES[k].key not in excluded)
     choices["single_module"] = bool(prompter.ask(_single_choice()))
     if choices["single_module"]:
@@ -914,7 +1036,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         try:
             decomposed = call("decompose", DECOMPOSE,
                               decompose_values(src, previous, feedback, choices["focus"],
-                                               "yes" if single_span else "no"),
+                                               "yes" if single_span else "no",
+                                               choices["locale_mode"]),
                               attempt)
         except ModelUnavailable as e:
             result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
@@ -933,14 +1056,15 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                                                "fix": "Wrap the MLS_DAG_Sequence in a top-level 'sequence' key."}]
             continue
 
-        report = v.validate(sequence, single_span=single_span)
+        report = v.validate(sequence, single_span=single_span, skip_d10=keep_locale)
         save(f"{attempt:02d}-validator.json", report.to_dict())
 
         reviewed_issues = feedback if previous is not None else None  # a revision of `previous`
         try:
             critic = call("critic", CRITIC,
                           critic_values(src, decomposed, report, reviewed_issues,
-                                        mode="single" if single_span else "multi"),
+                                        mode="single" if single_span else "multi",
+                                        keep_locale=keep_locale),
                           attempt)
         except ModelUnavailable as e:
             result.notes.append(f"attempt {attempt}: model unavailable, run stopped: {e}")
@@ -1033,7 +1157,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             try:
                 new = run_framework_stage(stage, src, current, call, save, result,
                                           "\n\n".join(kept_cards), max_stage_revisions,
-                                          picked, max_cards, max_added, single_span)
+                                          picked, max_cards, max_added, single_span,
+                                          keep_locale)
             except ModelUnavailable as e:
                 result.notes.append(f"{stage.key}: model unavailable; stopped before finishing this stage, "
                                     f"kept the sequence from the stages before it: {e}")
@@ -1051,7 +1176,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             full = {**best_decomposed, "sequence": result.sequence, "source_trace": final_trace}
             try:
                 repaired = run_repair(src, full, result.late_issues, call, save, result, "\n\n".join(kept_cards),
-                                          single_span=single_span)
+                                          single_span=single_span, locale_mode=choices["locale_mode"])
             except ModelUnavailable as e:
                 result.notes.append(f"repair: model unavailable: {e}")
                 repaired = None
@@ -1064,6 +1189,12 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                 result.status = "issues_open"
                 result.notes.append(f"{len(result.late_issues)} issue(s) found after decompose could not be "
                                     "repaired; see late-issues.json. No cards were rendered.")
+
+    locale_info: dict[str, Any] = {"mode": choices["locale_mode"]}
+    if choices["locale_mode"] == "relocalize" and result.status == "pass" and best_decomposed is not None:
+        locale_info.update(run_relocalize(src, target_locale, result, best_decomposed,
+                                          call, save, prompter, choices,
+                                          choices.get("locale_notes") or ""))
 
     if result.status == "pass" and best_decomposed is not None:
         deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
@@ -1085,6 +1216,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "cards_g21": None if result.cards_problems is None else (result.cards_problems or "pass"),
         "source_flags": result.source_flags,
         "source_ref": src.ref,
+        "locale": locale_info,
         "notes": result.notes,
         "usage": result.usage,
     })
@@ -1131,6 +1263,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--ask", action="store_true", help="ask about the breakdown and each stage's limits")
     ap.add_argument("--answers", type=Path, metavar="FILE",
                     help="JSON answers for the --ask questions (sweeps answer without stopping)")
+    ap.add_argument("--locale", default=None, metavar="LOCALE",
+                    help="target locale for relocalize mode (skips asking for it)")
     ap.add_argument("--max-revisions", type=int, default=2)
     ap.add_argument("--no-eb", action="store_true", help="skip the Evidence-Based stage")
     ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
@@ -1182,7 +1316,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = run_pipeline(src, model, out_dir, args.max_revisions,
                               stages=tuple(k for k in STAGE_ORDER if not getattr(args, f"no_{k}")),
-                              max_stage_revisions=args.max_stage_revisions, prompter=prompter)
+                              max_stage_revisions=args.max_stage_revisions, prompter=prompter,
+                              locale=args.locale)
     except api_errors as e:
         print(f"API error after retries: {type(e).__name__}: {e}", file=sys.stderr)
         return 2

@@ -800,5 +800,47 @@ class GeminiBackend(unittest.TestCase):
                 [{"text": "s"}], "u")
 
 
+class Relocalize(unittest.TestCase):
+    """run_relocalize never fails the run, even with degenerate model replies."""
+
+    LOG = {"locale_log": [{"original": "pond", "generic": "small lake",
+                            "category": "place"}]}
+
+    def _run(self, proposals, prompter):
+        script = iter([self.LOG, {"proposals": proposals}])
+        saved = {}
+        result = run.RunResult("pass", 1, copy.deepcopy(VALID), Path("."))
+        info = run.run_relocalize(
+            SOURCE, "Nowhere", result, {"environment_assumptions": []},
+            lambda *a: next(script), lambda n, o: saved.update({n: o}),
+            prompter, {})
+        return result, info, saved
+
+    def test_empty_proposals_keeps_generic(self):
+        result, info, _ = self._run([], run.ask.DefaultPrompter())
+        self.assertEqual(result.sequence, VALID)
+        self.assertEqual(info["applied"], [])
+        self.assertTrue(any("no proposals" in n for n in result.notes),
+                        result.notes)
+
+    def test_skipped_proposal_keeps_generic(self):
+        class Skip:
+            def ask(self, choice):
+                return ""
+        result, info, saved = self._run(
+            [{"id": 0, "proposed": "tarn", "reason": "fits"}], Skip())
+        self.assertEqual(result.sequence, VALID)
+        self.assertEqual(info["applied"], [])
+        self.assertEqual(info["skipped"], [0])
+        self.assertIn("locale-decisions.json", saved)
+
+    def test_approved_proposal_missing_generic_keeps_generic(self):
+        result, info, _ = self._run(
+            [{"id": 0, "proposed": "tarn", "reason": "fits"}],
+            run.ask.DefaultPrompter())
+        self.assertEqual(result.sequence, VALID)
+        self.assertEqual(info["applied"], [0])
+
+
 if __name__ == "__main__":
     unittest.main()
