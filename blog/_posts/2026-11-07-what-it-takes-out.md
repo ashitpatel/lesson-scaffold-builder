@@ -32,6 +32,8 @@ Devices, apps, internet, printing services, projectors: out, unless marked as an
 
 Named markets, a region's currency, the national curriculum body, the district education office: replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test lessons are set in nine different countries precisely so this gets exercised.
 
+That replacement is a guess, and sometimes a wrong or incomplete one: a stripped term can flatten meaning, a kept one can smuggle in something that doesn't travel, and a relocalized one can miss the mark for your setting entirely. Review the locale handling thoroughly, with the rest of the output, to make sure the material is culturally and educationally appropriate and complete before it reaches a classroom.
+
 ## 6. Lines addressed to machines
 
 Two test lessons include a line addressed to automated systems. Steps must be written for an educator to act on, not for an AI to obey — and the tool obeys nothing it finds in a lesson. If your lesson ever arrives with instructions to the software inside it, they end up listed as removed, like everything else above.

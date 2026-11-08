@@ -233,6 +233,37 @@
           "minerals"
         ]
       }
+    },
+    {
+      "name": "snail-water-mapping",
+      "source": "tests/fixtures/snail-water-mapping-source.md",
+      "ref": "Grade 6 Environmental Studies - Water Source Mapping",
+      "expect": {
+        "status": "pass",
+        "max_units": 4,
+        "forbidden": [],
+        "required": [
+          "map"
+        ]
+      }
+    },
+    {
+      "name": "snail-pond-management",
+      "source": "tests/fixtures/snail-pond-management-source.md",
+      "ref": "Grade 9 Environmental Studies - Pond Management",
+      "expect": {
+        "status": "pass",
+        "max_units": 4,
+        "forbidden": [
+          "puja",
+          "South 24 Parganas",
+          "ENRE",
+          "ipomoea"
+        ],
+        "required": [
+          "management"
+        ]
+      }
     }
   ]
 }

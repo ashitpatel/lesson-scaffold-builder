@@ -87,7 +87,7 @@ Or install the package, which provides the `lsb-run`, `lsb-validate`, `lsb-rende
 python3 -m pip install git+https://github.com/ashitpatel/lesson-scaffold-builder.git
 lsb-run my-lesson.md --ref "Unit 3 - Fractions" --grade-band Middle
 ```
-A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, the Anthropic API with `--backend api`, or Google's Gemini with `--backend gemini` and a free key. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did. Add `--ask` to be asked which frameworks to run, how to handle locale-specific content (strip to generic, keep, or strip-then-relocalize to your `--locale` with per-item review), then about the modules (one MLS or several, dimensions, timeframe) and each stage's limits (cards, cards per unit, added step), with suggestions drawn from your source; `--answers FILE` supplies those answers from JSON so sweeps don't stop.
+A live run uses `claude-opus-5-5` through your **Claude Code login** (no API key needed), `muse-spark` through your **Muse login** with `--backend muse`, the Anthropic API with `--backend api`, or Google's Gemini with `--backend gemini` and a free key. Everything is saved under `runs/<timestamp>/`: open `cards.html` for the teacher cards and `summary.json` for the source flags and what each stage did. Add `--ask` to be asked which frameworks to run, how to handle locale-specific content (strip to generic, keep, or strip-then-relocalize to your `--locale` with per-item review), then about the modules (one MLS or several, dimensions, timeframe) and each stage's limits (cards, cards per unit, added step), with suggestions drawn from your source; `--answers FILE` supplies those answers from JSON so sweeps don't stop. Locale handling may be incorrect or incomplete: review the locale settings thoroughly, with the rest of the output, to make sure the material is culturally and educationally appropriate and complete before classroom use.
 
 ### 2b. No terminal? Run the full pipeline in the browser (free, needs a key)
 If you want no key at all, use [Try it now](#try-it-now) instead: it runs the method as a chat in Google AI Mode with no key and no account, but without the code-checked limits and review. To run the real pipeline free in the browser you need a Google account and a free key. Start at [Google AI](https://google.com/ai), then:
@@ -187,12 +187,14 @@ On 7 November 2026 the full sweep (`python3 -m lsb.regress`) ran all nine test l
 | [Mexico, Grade 8 history](docs/walkthroughs/06-mexico-migration/) | PASS | 3 | 13 | 191,189 / 58,178 | CL-04, EB-01, EB-04 |
 | **Total (9 of 9)** | | **31** | **178** | **2,980,692 / 982,161** | |
 
-Two further walkthroughs run single lessons on the Muse backend to exercise the newer cards (EB-06 to EB-09); they are live runs, not sweep cases:
+Four further walkthroughs are single-lesson live runs on the Muse backend rather than sweep runs: two exercising the newer cards (EB-06 to EB-09), and two adapting real SNAIL/DRCSC environment lessons:
 
 | Case (country, subject) | Result | Units | Calls | Tokens in/out | Cards applied |
 |---|---|---|---|---|---|
 | [Tanzania, Grade 4 mathematics](docs/walkthroughs/10-tanzania-multiplication-division/) | PASS | 3 | 23 | 799,999 / 178,051 | CL-01, CL-03, CL-04, EB-01, EB-03, EB-04, EB-06, PB-01 |
 | [Philippines, Grade 5 science](docs/walkthroughs/11-philippines-how-plants-grow/) | PASS | 4 | 16 | 538,116 / 80,346 | CL-02, CL-04, EB-04, EB-09 |
+| [SNAIL water mapping, Grade 6 environmental studies](docs/walkthroughs/12-snail-water-source-mapping/) | PASS | 3 | 13 | 438,089 / 75,287 | CL-02, EB-01, EB-03, EB-04 |
+| [SNAIL pond management, Grade 9 environmental studies](docs/walkthroughs/13-snail-pond-management/) | PASS | 4 | 18 | 616,068 / 99,924 | CL-02, EB-01, EB-04 |
 
 What the sweep shows:
 - **Eight of nine runs needed the repair round.** The review after each optimisation stage catches what the decompose review missed: problems in steps no stage changed (a lake-shore assumption in Kenya, chart paper in Bangladesh, a ranked list that was never ranked in Ghana). One repair round fixed them; hydrology and Vietnam needed a second. Mexico is the exception: it passed its stage reviews clean and needed no repair.

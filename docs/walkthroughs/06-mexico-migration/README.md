@@ -3,6 +3,8 @@
 > **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/mexico-migration`). The source chapter is an original test input written for this project and set in a Mexican lower-secondary history class: [tests/fixtures/mexico-migration-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/mexico-migration-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
 > Decision trace: [decisions.md](./decisions.md) · Full final cards: [final.md](./final.md)
 
+> **Locale note:** The stripped, kept, or relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
+
 | | |
 |---|---|
 | **Source** | An 8-week Grade 8 history block, "Migration Stories, Past and Present" |

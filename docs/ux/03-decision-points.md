@@ -31,7 +31,7 @@
 4. **Never worse than before.** An optimisation that can't pass review is undone, never shipped.
 5. **Deep work survives.** Practice, mastery checks and sustained writing are never cut or replaced.
 6. **Offline, zero-cost, no child data.** Paper, chalk and reused materials; class totals only; adults handle any money and any outside contact.
-7. **Region-neutral output.** Cards use generic labels so they travel between systems; the adapter localises names afterwards if they want to.
+7. **Region-neutral output.** Cards use generic labels so they travel between systems; the adapter localises names afterwards if they want to. Locale handling may be incorrect or incomplete: review it with the rest of the output to make sure the material is culturally and educationally appropriate and complete.
 8. **Honest about evidence.** Steps never claim what a practice achieves; the cards' evidence notes are for reviewers.
 
 ## Open questions (to settle with practitioners)
