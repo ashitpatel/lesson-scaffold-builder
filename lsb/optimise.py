@@ -17,7 +17,7 @@ from typing import Any
 
 CL_CARDS = ("CL-01", "CL-02", "CL-03", "CL-04", "CL-05")
 PB_CARDS = ("PB-01", "PB-02", "PB-03", "PB-04", "PB-05")
-EB_CARDS = ("EB-01", "EB-02", "EB-03", "EB-04", "EB-05")
+EB_CARDS = ("EB-01", "EB-02", "EB-03", "EB-04", "EB-05", "EB-06", "EB-07", "EB-08", "EB-09")
 FIXED_FIELDS = ("mls_id", "title", "dependencies", "macro_alignment", "duration_weeks")
 DECISIONS = ("APPLY", "ABSTAIN")
 MAX_ADDED_STEPS = 1
