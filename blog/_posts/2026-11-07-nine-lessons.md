@@ -19,8 +19,8 @@ The [last post]({{ site.baseurl }}/what-it-adds/) described the nineteen methods
 | [3](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/03-vietnam-folk-tales) | Vietnam, Grade 6 literature: Folk Tales and Retelling | 4 units |
 | [4](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/04-ghana-local-government) | Ghana, JHS 2 social studies: District Assembly and Community Development | 3 units |
 | [5](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/05-bangladesh-letters-and-sounds) | Bangladesh, Class 1 language: Letters, Sounds and First Words | 4 units in 6 weeks |
-| [6](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/06-mexico-migration) | Mexico, Grade 8 history: Migration Stories, Past and Present | 3 units, first-attempt pass |
-| [7](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/07-hydrology) | Basic Hydrology Framework (three-line brief) | 2 units in a chain |
+| [6](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/06-mexico-migration) | Mexico, Grade 8 history: Migration Stories, Past and Present | 3 units, 7 weeks |
+| [7](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/07-hydrology) | Basic Hydrology Framework (three-line brief) | 2 units, 6 weeks |
 | [8](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/08-ecosystems) | Middle-grades ecosystems: Energy Flow and Food Webs | 4 units |
 | [9](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/09-civics) | Upper-secondary civics: Making Decisions Together | 4 units |
 | [10](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/10-tanzania-multiplication-division) | Tanzania, Grade 4 maths: Multiplication and Division Practice | 3 units |
