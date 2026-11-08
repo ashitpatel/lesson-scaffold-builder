@@ -1,5 +1,7 @@
 # Lesson Scaffold Builder (LSB)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24048998.svg)](https://doi.org/10.5281/zenodo.24048998)
+
 **A pipeline that turns long, lecture-heavy teaching material (a textbook lesson, a syllabus section, a teacher's guide) into a small set of 2-to-4-week Micro-Lesson Scaffolds, printed as offline teacher cards. Along the way it removes what is unsafe, costly or region-specific, and adds evidence-based practices, Connected Learning and participatory budgeting only where they genuinely fit.**
 
 > **Status (November 2026): working prototype, run live.** The whole pipeline runs from the command line: decompose → code checks → a 21-check reviewer → three optimisation stages → teacher cards. It has been run on nine original test lessons set in different countries (see [live results](#live-results)). **No teacher or curriculum specialist has reviewed its output yet**, and nothing here shows that the cards improve learning. The evidence-based practice list is a project choice that needs review by the people who own the content.

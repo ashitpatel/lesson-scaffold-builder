@@ -97,8 +97,8 @@ authors:
   - family-names: "{family}"
     given-names: "{given}"
 version: "{version}"
-# No DOI yet: enable Zenodo archiving for this repository, then add the
-# concept DOI here so it always resolves to the latest archived release.
+# Zenodo concept DOI: always resolves to the latest archived release.
+doi: 10.5281/zenodo.24048998
 license: Apache-2.0
 repository-code: "{repo}"
 url: "{repo}"
