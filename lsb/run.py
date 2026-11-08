@@ -16,7 +16,7 @@ Choices: `--ask` pauses to ask, first, which frameworks to exclude, then
 the MLS decisions (one module or several; if several, unit maximum, breakdown
 focus, max weeks per module) and what each remaining stage may do (cards,
 cards per unit, added step), with suggestions drawn from the source and the
-cards files. A single MLS spans the chapter: D04 yields its upper bound and
+cards files. A single MLS spans the lesson: D04 yields its upper bound and
 the critic runs in `single` mode.
 `--answers FILE` reads those answers from a JSON object instead, so sweeps
 answer without stopping; anything missing falls back to defaults. Without
@@ -830,7 +830,7 @@ def _framework_choices() -> list[ask.Choice]:
 def _single_choice() -> ask.Choice:
     return ask.Choice("single_module", "Break the lesson into multiple MLS, or keep one?",
                       ((False, "Multiple modules", "2-to-4-week units; the default"),
-                       (True, "One MLS", "a single unit spanning the whole chapter")), False)
+                       (True, "One MLS", "a single unit spanning the whole lesson")), False)
 
 
 def _breakdown_choices(src: Source) -> list[ask.Choice]:

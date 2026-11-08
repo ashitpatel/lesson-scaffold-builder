@@ -11,7 +11,7 @@ names a source file, and states what a good result must show: the run passes,
 the number of units stays within a limit, the planted traps (forbidden terms) don't
 appear anywhere in the final sequence, terms that must survive do appear, and the
 teacher cards pass G21. These are properties, not a golden answer, because two
-good decompositions of the same chapter can differ.
+good decompositions of the same lesson can differ.
 
 Results go to <root>/report.md and report.json. Exit status: 0 every expectation
 met, 1 at least one failed or a run is missing, 2 bad arguments.

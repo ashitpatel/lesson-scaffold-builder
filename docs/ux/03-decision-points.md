@@ -1,6 +1,6 @@
 # Decision points and edge cases
 
-> **Status:** each row describes behaviour seen in live runs. The linked walkthroughs show it on a real chapter.
+> **Status:** each row describes behaviour seen in live runs. The linked walkthroughs show it on a real lesson.
 
 ## What the pipeline does in each situation
 
@@ -36,6 +36,6 @@
 
 ## Open questions (to settle with practitioners)
 - Should teacher cards be localised back into the region's own names (and language) after the pipeline, and by whom?
-- Is four units the right ceiling for a long chapter, or should the adapter be able to ask for a follow-on set?
-- Which source flags should stop an adapter from using a chapter at all?
+- Is four units the right ceiling for a long lesson, or should the adapter be able to ask for a follow-on set?
+- Which source flags should stop an adapter from using a lesson at all?
 - The evidence-based cards are a project choice (see the [cards file](../../frameworks/evidence-based-practices.md)). Who should own that list?

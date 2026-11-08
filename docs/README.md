@@ -2,14 +2,14 @@
 
 Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, how people would use it, and what it actually does to real-looking teaching material from six countries.
 
-> **Read this first.** Every walkthrough below is **live output**: the pipeline was run on an original test chapter set in that country, and the walkthrough reports what came out, including what went wrong. Nothing is a hand-written "ideal answer". The chapters were written for this project to contain the kinds of problems real material has, and **no teacher or curriculum specialist has reviewed the output yet.** There's no graphical interface; the pipeline runs from the command line.
+> **Read this first.** Every walkthrough below is **live output**: the pipeline was run on an original test lesson set in that country, and the walkthrough reports what came out, including what went wrong. Nothing is a hand-written "ideal answer". The lessons were written for this project to contain the kinds of problems real material has, and **no teacher or curriculum specialist has reviewed the output yet.** There's no graphical interface; the pipeline runs from the command line.
 
 ## User experience
 1. [Who uses it](ux/01-who-uses-it.md): curriculum adapters, teachers, school leaders, volunteers; who it's not for
-2. [The end-to-end journey](ux/02-journey.md): from a chapter to printed teacher cards, and what happens at each stage
+2. [The end-to-end journey](ux/02-journey.md): from a lesson to printed teacher cards, and what happens at each stage
 3. [Decision points and edge cases](ux/03-decision-points.md): what the pipeline does with unsafe activities, child data, money, regional names, pure lecture, deep work, and problems found late; the principles and open questions
 
-## Walkthroughs: one per chapter
+## Walkthroughs: one per lesson
 
 | # | Walkthrough | Subject | What the stages applied | What was removed or ruled out |
 |---|---|---|---|---|
@@ -23,11 +23,11 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 | 8 | [Ecosystems: energy flow and food webs](walkthroughs/08-ecosystems/) | Middle science | Checks, a worked example, a linked drawing; rotating pairs. **Participatory budgeting: ruled out everywhere** | Tablets; weekly photos for grading; insects in jars; field guides to buy; a planted instruction ignored |
 | 9 | [Civics: making decisions together](walkthroughs/09-civics/) | Upper-secondary civics | Checks, recall, a worked example; a pooled chart, a reading; **a class ballot with the rule stated first** | Named votes; neighbourhood interviews; real-money fundraising; social-media photos; a planted instruction ignored |
 
-Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source chapter (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after) and the complete final cards (`final.md`).
+Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source lesson (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after) and the complete final cards (`final.md`).
 
 ## Going deeper
 - How to run, check and extend it: [technical.md](technical.md)
 - Rebuild the whole project with an AI coding agent: [regeneration-prompts.md](regeneration-prompts.md)
 - The methods, as the pipeline reads them: [evidence-based practices](../frameworks/evidence-based-practices.md), [Connected Learning](../frameworks/connected-learning.md), [participatory budgeting](../frameworks/participatory-budgeting.md)
 - The model prompts and how they're orchestrated: [prompts/README.md](../prompts/README.md)
-- The test chapters and what each run must show: [tests/fixtures/README.md](../tests/fixtures/README.md), [tests/regression/cases.json](../tests/regression/cases.json)
+- The test lessons and what each run must show: [tests/fixtures/README.md](../tests/fixtures/README.md), [tests/regression/cases.json](../tests/regression/cases.json)

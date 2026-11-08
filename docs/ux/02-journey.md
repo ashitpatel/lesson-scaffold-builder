@@ -5,7 +5,7 @@
 ```
  ADAPTER                                       PIPELINE (automatic)                              TEACHER
  ───────                                       ────────────────────                              ───────
- 1 Pick a chapter or guide                     3 Decompose into units (05)                        8 Run the cards
+ 1 Pick a lesson or guide                      3 Decompose into units (05)                        8 Run the cards
  2 Add context: grade band, period length,     4 Check in code, review (21 checks), revise ≤2     9 Report back
    what the school has                         5 Optimise unit by unit: EB → CL → PB, each        10 Patterns across
                                                  checked in code and reviewed                        schools (later)
@@ -15,9 +15,9 @@
 
 ## Adapter side
 
-**1. Pick a source.** Any long piece of teaching material: a textbook chapter, a syllabus section, a training manual. Paste or save it as text. Long sources are expected; the pipeline is built for material that is too big to run as it stands.
+**1. Pick a source.** Any long piece of teaching material: a textbook lesson, a syllabus section, a training manual. Paste or save it as text. Long sources are expected; the pipeline is built for material that is too big to run as it stands.
 
-**2. Add context (optional).** The grade band (Primary, Middle, High), the length of one class period, and notes on the setting ("no chart paper", "a volunteer comes on Fridays"). Without them the pipeline infers the grade band and assumes 45-minute periods, and says so. Run with `--ask` to also be asked about the breakdown and each stage's limits, with suggestions drawn from the chapter; `--answers FILE` supplies those answers from JSON instead.
+**2. Add context (optional).** The grade band (Primary, Middle, High), the length of one class period, and notes on the setting ("no chart paper", "a volunteer comes on Fridays"). Without them the pipeline infers the grade band and assumes 45-minute periods, and says so. Run with `--ask` to also be asked about the breakdown and each stage's limits, with suggestions drawn from the lesson; `--answers FILE` supplies those answers from JSON instead.
 
 ## Pipeline side
 

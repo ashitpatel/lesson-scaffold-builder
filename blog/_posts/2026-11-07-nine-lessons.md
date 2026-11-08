@@ -1,6 +1,6 @@
 ---
-title: "Nine chapters, nine sets of cards"
-description: "A tour of the nine test chapters, from Kenyan clean water to Peruvian fractions: what went in, what the cards kept, removed and added, with two before-and-after deep dives."
+title: "Nine lessons, nine sets of cards"
+description: "A tour of the nine test lessons, from Kenyan clean water to Peruvian fractions: what went in, what the cards kept, removed and added, with two before-and-after deep dives."
 layout: post
 series: scaffold
 date: 2026-11-07 00:04:00 +0000
@@ -8,11 +8,11 @@ date: 2026-11-07 00:04:00 +0000
 
 *Part 5 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
-The [last post]({{ site.baseurl }}/what-it-adds/) described the fifteen methods. This one shows them at work. The project keeps [nine walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs), each with the full source chapter, the decision trace and the final cards. Every walkthrough below passed its run. None has been reviewed by a teacher yet.
+The [last post]({{ site.baseurl }}/what-it-adds/) described the fifteen methods. This one shows them at work. The project keeps [nine walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs), each with the full source lesson, the decision trace and the final cards. Every walkthrough below passed its run. None has been reviewed by a teacher yet.
 
 ## The nine at a glance
 
-| # | Chapter | Result |
+| # | Lesson | Result |
 |---|---|---|
 | [1](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/01-kenya-clean-water) | Kenya, Grade 6 science: Clean Water and Health | 4 units |
 | [2](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/02-peru-fractions) | Peru, Grade 5 maths: Fractions in the Market and the Garden | 3 units, 6 weeks |

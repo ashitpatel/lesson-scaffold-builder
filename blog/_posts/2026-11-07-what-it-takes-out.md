@@ -1,6 +1,6 @@
 ---
-title: "What it takes out of your chapter, and why"
-description: "Boiling water, wall charts of slow readers, scores posted by name, family income as homework: the things chapters ask for that cards must not, and the classroom reason for each removal."
+title: "What it takes out of your lesson, and why"
+description: "Boiling water, wall charts of slow readers, scores posted by name, family income as homework: the things lessons ask for that cards must not, and the classroom reason for each removal."
 layout: post
 series: scaffold
 date: 2026-11-07 00:02:00 +0000
@@ -8,11 +8,11 @@ date: 2026-11-07 00:02:00 +0000
 
 *Part 3 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
-The [last post]({{ site.baseurl }}/seven-questions/) covered the questions the tool asks. This one covers the deletions, because they are half the value. Every test chapter behind this project was written carrying the things real chapters carry, and every removal below comes from a real run, listed in the [walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs). The tool removes in six groups. Each has a classroom reason, not just a rule.
+The [last post]({{ site.baseurl }}/seven-questions/) covered the questions the tool asks. This one covers the deletions, because they are half the value. Every test lesson behind this project was written carrying the things real lessons carry, and every removal below comes from a real run, listed in the [walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs). The tool removes in six groups. Each has a classroom reason, not just a rule.
 
 ## 1. What can hurt a child
 
-A science chapter sends learners to collect water alone and pour boiling water. A trip leaves the classroom with no adult assigned to every group. These go first, unconditionally: a step that takes learners out of the classroom must say the whole class goes together with the educator staying with all groups, and near water, animals, tools or heavy objects it must say what not to touch or lift. A step that leaves this out fails review even if another step says it.
+A science lesson sends learners to collect water alone and pour boiling water. A trip leaves the classroom with no adult assigned to every group. These go first, unconditionally: a step that takes learners out of the classroom must say the whole class goes together with the educator staying with all groups, and near water, animals, tools or heavy objects it must say what not to touch or lift. A step that leaves this out fails review even if another step says it.
 
 ## 2. What singles a child out
 
@@ -30,14 +30,14 @@ Devices, apps, internet, printing services, projectors: out, unless marked as an
 
 ## 5. What only fits one place
 
-Named markets, a region's currency, the national curriculum body, the district education office: replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test chapters are set in nine different countries precisely so this gets exercised.
+Named markets, a region's currency, the national curriculum body, the district education office: replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test lessons are set in nine different countries precisely so this gets exercised.
 
 ## 6. Lines addressed to machines
 
-Two test chapters include a line addressed to automated systems. Steps must be written for an educator to act on, not for an AI to obey — and the tool obeys nothing it finds in a chapter. If your chapter ever arrives with instructions to the software inside it, they end up listed as removed, like everything else above.
+Two test lessons include a line addressed to automated systems. Steps must be written for an educator to act on, not for an AI to obey — and the tool obeys nothing it finds in a lesson. If your lesson ever arrives with instructions to the software inside it, they end up listed as removed, like everything else above.
 
 ## Removed, not hidden
 
-Every removal is listed with its reason, in the run's summary and on the walkthrough pages. That list is the point: a teacher deciding whether to trust a card should see exactly what the chapter asked for that the card refused. The [next post]({{ site.baseurl }}/what-it-adds/) covers the other half — what gets added, and the cases where the honest answer is nothing.
+Every removal is listed with its reason, in the run's summary and on the walkthrough pages. That list is the point: a teacher deciding whether to trust a card should see exactly what the lesson asked for that the card refused. The [next post]({{ site.baseurl }}/what-it-adds/) covers the other half — what gets added, and the cases where the honest answer is nothing.
 
 {% include series.html %}

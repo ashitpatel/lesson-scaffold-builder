@@ -1,5 +1,5 @@
 ---
-title: "What it adds to your chapter, and only where it fits"
+title: "What it adds to your lesson, and only where it fits"
 description: "Fifteen small teaching methods in plain language: five memory and practice techniques, five peer and interest designs, five class-vote formats, each with strict conditions, and abstention as the most common answer."
 layout: post
 series: scaffold
@@ -20,7 +20,7 @@ These are the only additions with broad, replicated evidence about learning, dra
 - **Check every learner.** Ask a question the whole class answers at once — slates, fingers, scrap paper — look at every answer, and re-explain if many are wrong before moving on.
 - **Show it with the words.** Put the picture or model next to the words or symbols, and state the link between them.
 
-That evidence comes mostly from laboratories and classrooms in high-income countries. It supports the techniques as generally effective; **it doesn't predict an effect size for your chapter, school or system**, and no card may claim one.
+That evidence comes mostly from laboratories and classrooms in high-income countries. It supports the techniques as generally effective; **it doesn't predict an effect size for your lesson, school or system**, and no card may claim one.
 
 ## Peers and interest: five designs for engagement
 
@@ -48,6 +48,6 @@ Like the peer designs, these are engagement and civic-reasoning designs, not lev
 
 Per unit, at most two cards and one added step — and "doesn't apply" is normal. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
 
-The [next post]({{ site.baseurl }}/nine-chapters/) walks through all nine test chapters, before and after.
+The [next post]({{ site.baseurl }}/nine-lessons/) walks through all nine test lessons, before and after.
 
 {% include series.html %}
