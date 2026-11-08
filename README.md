@@ -124,7 +124,7 @@ The tests are offline (a scripted fake model drives the whole pipeline). The reg
 
 ### 1. Evidence-based practices (run first)
 
-**What they are.** Five practices with broad, replicated support across well-known research syntheses, chosen because each works offline with paper or chalk and fits inside an existing classroom step. Each is applied **only with all its non-negotiables**; a hollow version ("a quiz" that is graded) is worse than none. Full cards: [frameworks/evidence-based-practices.md](frameworks/evidence-based-practices.md).
+**What they are.** Five practices with broad, replicated support across well-known research syntheses, chosen because each works offline with paper or chalk and fits inside an existing classroom step. Each is applied **only with all its non-negotiables**; a hollow version ("a quiz" that is graded) is worse than none. Full cards: [frameworks/evidence-based-practices.md](frameworks/evidence-based-practices.md). Plain-language guide (what, when, evidence): [docs/evidence-guide.md](docs/evidence-guide.md).
 
 | Practice | What it adds to a unit | Non-negotiables | Basis |
 |---|---|---|---|

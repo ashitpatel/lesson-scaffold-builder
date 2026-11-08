@@ -26,6 +26,7 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source lesson (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after) and the complete final cards (`final.md`).
 
 ## Going deeper
+- What the five evidence-based practices are, when they fit, and what supports them: [evidence-guide.md](evidence-guide.md)
 - How to run, check and extend it: [technical.md](technical.md)
 - Rebuild the whole project with an AI coding agent: [regeneration-prompts.md](regeneration-prompts.md)
 - The methods, as the pipeline reads them: [evidence-based practices](../frameworks/evidence-based-practices.md), [Connected Learning](../frameworks/connected-learning.md), [participatory budgeting](../frameworks/participatory-budgeting.md)
