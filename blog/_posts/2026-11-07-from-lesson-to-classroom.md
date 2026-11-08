@@ -27,7 +27,7 @@ A teacher reading any of these makes a hundred quiet decisions: skip that, repla
 - **adds** teaching methods only where they genuinely fit — memory and practice techniques with trial support, peer and interest-driven designs, class votes on real trade-offs — or abstains;
 - **checks** the result against 21 checks, including safety, money, offline use and whether deep work survived, and refuses to print cards that fail.
 
-Every step is traced to the lesson section it came from, every change is tagged with the method that made it, and every unit says what it relies on and what to do if that doesn't hold. Nothing is hidden: the [nine walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs) show full inputs and outputs.
+Every step is traced to the lesson section it came from, every change is tagged with the method that made it, and every unit says what it relies on and what to do if that doesn't hold. Nothing is hidden: the [thirteen walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs) show full inputs and outputs.
 
 The scaffold's shape — small, time-bound, owned by the teacher — is borrowed from [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan, from the movement now running over a million micro-improvements across India's public schools.
 
@@ -39,7 +39,7 @@ I wrote this series the same way the tool works: I set the direction and made th
 
 ## What's next
 
-The rest of the series covers the questions the tool asks before planning anything, what it takes out of a lesson and why, what it adds and when it refuses, the nine test lessons with before-and-after cards, and how to run it or adapt it to your school — free, including in a browser with no account.
+The rest of the series covers the questions the tool asks before planning anything, what it takes out of a lesson and why, what it adds and when it refuses, the thirteen test lessons with before-and-after cards, and how to run it or adapt it to your school — free, including in a browser with no account.
 
 **Try it now**, no setup needed: open it in [ChatGPT]({{ site.data.try_links.chatgpt }}), [Claude]({{ site.data.try_links.claude }}) or [Google AI Mode]({{ site.data.try_links.google_ai_mode }}).
 

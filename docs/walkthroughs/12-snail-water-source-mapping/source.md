@@ -1,6 +1,6 @@
 > © 2026 Ashit Patel. Lesson prose adapted from DRCSC's 'Creative Lesson Plan on Water' (2003); this adaptation is covered by the repo's [Apache 2.0 LICENSE](../../../LICENSE). Original booklet terms: © 2003 ENRE project / DRCSC. No restrictions on copying for educational and non-commercial purposes.
 > **Canonical origin:** https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/snail-water-mapping-source.md — a copy for ease of access; the fixture is canonical, and if the two ever differ, the fixture wins (a test checks they match).
-> SNAIL resource: https://snailnetwork.org/resources/creative-lesson-plan-on-water-27 — also archived at https://archive.org/details/CreativeLessonPlansOnWater-Drcsc/mode/2up.
+> ATREE S.N.A.I.L. resource: https://snailnetwork.org/resources/creative-lesson-plan-on-water-27 — also archived at https://archive.org/details/CreativeLessonPlansOnWater-Drcsc/mode/2up.
 
 ---
 

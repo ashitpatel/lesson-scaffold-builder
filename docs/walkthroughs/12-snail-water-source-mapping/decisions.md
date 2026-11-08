@@ -1,4 +1,4 @@
-# Engine decisions — Snail: water source mapping
+# Engine decisions — ATREE S.N.A.I.L.: water source mapping
 
 > Run `runs/snail-mapping-live-1` on 8 November 2026 via Muse (`muse exec`) (13 model calls). Run without `--ask`: nothing was asked; every choice below is the pipeline default. The run folder is gitignored; this file and `final.md` are the durable record.
 

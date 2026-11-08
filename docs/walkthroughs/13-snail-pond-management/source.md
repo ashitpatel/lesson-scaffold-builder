@@ -1,6 +1,6 @@
 > © 2026 Ashit Patel. Lesson prose adapted for this project from the DRCSC booklet below; this walkthrough's commentary is covered by the repo's [Apache 2.0 LICENSE](../../../LICENSE).
 > **Canonical origin:** https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/snail-pond-management-source.md — a copy for ease of access; the fixture is canonical, and if the two ever differ, the fixture wins (a test checks they match).
-> Adapted (not verbatim) from DRCSC's 'Creative Lesson Plan on Water' (2003), a SNAIL resource: https://snailnetwork.org/resources/creative-lesson-plan-on-water-27 (also https://archive.org/details/CreativeLessonPlansOnWater-Drcsc/mode/2up). Booklet terms: '© 2003 ENRE project / DRCSC. No restrictions on copying for educational and non-commercial purposes.'
+> Adapted (not verbatim) from DRCSC's 'Creative Lesson Plan on Water' (2003), an ATREE S.N.A.I.L. resource: https://snailnetwork.org/resources/creative-lesson-plan-on-water-27 (also https://archive.org/details/CreativeLessonPlansOnWater-Drcsc/mode/2up). Booklet terms: '© 2003 ENRE project / DRCSC. No restrictions on copying for educational and non-commercial purposes.'
 
 ---
 

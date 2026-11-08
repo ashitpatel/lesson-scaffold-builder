@@ -52,6 +52,6 @@ Like the peer designs, these are engagement and civic-reasoning designs, not lev
 
 Per unit, at most two cards and one added step — and "doesn't apply" is normal. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
 
-The [next post]({{ site.baseurl }}/nine-lessons/) walks through all nine test lessons, before and after.
+The [next post]({{ site.baseurl }}/nine-lessons/) walks through all thirteen test lessons, before and after.
 
 {% include series.html %}

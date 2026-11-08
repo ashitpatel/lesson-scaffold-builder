@@ -187,14 +187,14 @@ On 7 November 2026 the full sweep (`python3 -m lsb.regress`) ran all nine test l
 | [Mexico, Grade 8 history](docs/walkthroughs/06-mexico-migration/) | PASS | 3 | 13 | 191,189 / 58,178 | CL-04, EB-01, EB-04 |
 | **Total (9 of 9)** | | **31** | **178** | **2,980,692 / 982,161** | |
 
-Four further walkthroughs are single-lesson live runs on the Muse backend rather than sweep runs: two exercising the newer cards (EB-06 to EB-09), and two adapting real SNAIL/DRCSC environment lessons:
+Four further walkthroughs are single-lesson live runs on the Muse backend rather than sweep runs: two exercising the newer cards (EB-06 to EB-09), and two adapting real ATREE S.N.A.I.L. environment lessons from DRCSC:
 
 | Case (country, subject) | Result | Units | Calls | Tokens in/out | Cards applied |
 |---|---|---|---|---|---|
 | [Tanzania, Grade 4 mathematics](docs/walkthroughs/10-tanzania-multiplication-division/) | PASS | 3 | 23 | 799,999 / 178,051 | CL-01, CL-03, CL-04, EB-01, EB-03, EB-04, EB-06, PB-01 |
 | [Philippines, Grade 5 science](docs/walkthroughs/11-philippines-how-plants-grow/) | PASS | 4 | 16 | 538,116 / 80,346 | CL-02, CL-04, EB-04, EB-09 |
-| [SNAIL water mapping, Grade 6 environmental studies](docs/walkthroughs/12-snail-water-source-mapping/) | PASS | 3 | 13 | 438,089 / 75,287 | CL-02, EB-01, EB-03, EB-04 |
-| [SNAIL pond management, Grade 9 environmental studies](docs/walkthroughs/13-snail-pond-management/) | PASS | 4 | 18 | 616,068 / 99,924 | CL-02, EB-01, EB-04 |
+| [ATREE S.N.A.I.L. water mapping, Grade 6 environmental studies](docs/walkthroughs/12-snail-water-source-mapping/) | PASS | 3 | 13 | 438,089 / 75,287 | CL-02, EB-01, EB-03, EB-04 |
+| [ATREE S.N.A.I.L. pond management, Grade 9 environmental studies](docs/walkthroughs/13-snail-pond-management/) | PASS | 4 | 18 | 616,068 / 99,924 | CL-02, EB-01, EB-04 |
 
 What the sweep shows:
 - **Eight of nine runs needed the repair round.** The review after each optimisation stage catches what the decompose review missed: problems in steps no stage changed (a lake-shore assumption in Kenya, chart paper in Bangladesh, a ranked list that was never ranked in Ghana). One repair round fixed them; hydrology and Vietnam needed a second. Mexico is the exception: it passed its stage reviews clean and needed no repair.

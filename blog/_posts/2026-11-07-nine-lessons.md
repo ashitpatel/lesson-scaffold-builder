@@ -1,6 +1,6 @@
 ---
-title: "Nine lessons, nine sets of cards"
-description: "A tour of the nine test lessons, from Kenyan clean water to Peruvian fractions: what went in, what the cards kept, removed and added, with two before-and-after deep dives."
+title: "Thirteen lessons, thirteen sets of cards"
+description: "A tour of the thirteen test lessons, from Kenyan clean water to Peruvian fractions: what went in, what the cards kept, removed and added, with two before-and-after deep dives."
 layout: post
 series: scaffold
 date: 2026-11-07 00:04:00 +0000
@@ -8,9 +8,9 @@ date: 2026-11-07 00:04:00 +0000
 
 *Part 5 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
-The [last post]({{ site.baseurl }}/what-it-adds/) described the nineteen methods. This one shows them at work. The project keeps [nine walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs), each with the full source lesson, the decision trace and the final cards. Every walkthrough below passed its run. None has been reviewed by a teacher yet.
+The [last post]({{ site.baseurl }}/what-it-adds/) described the nineteen methods. This one shows them at work. The project keeps [thirteen walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs), each with the full source lesson, the decision trace and the final cards. Every walkthrough below passed its run. None has been reviewed by a teacher yet.
 
-## The nine at a glance
+## The thirteen at a glance
 
 | # | Lesson | Result |
 |---|---|---|
@@ -23,6 +23,10 @@ The [last post]({{ site.baseurl }}/what-it-adds/) described the nineteen methods
 | [7](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/07-hydrology) | Basic Hydrology Framework (three-line brief) | 2 units in a chain |
 | [8](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/08-ecosystems) | Middle-grades ecosystems: Energy Flow and Food Webs | 4 units |
 | [9](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/09-civics) | Upper-secondary civics: Making Decisions Together | 4 units |
+| [10](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/10-tanzania-multiplication-division) | Tanzania, Grade 4 maths: Multiplication and Division Practice | 3 units |
+| [11](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/11-philippines-how-plants-grow) | Philippines, Grade 5 science: How Plants Grow | 4 units, 9 weeks |
+| [12](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/12-snail-water-source-mapping) | ATREE S.N.A.I.L., Grade 6 environmental studies: Water Source Mapping | 3 units, 7 weeks |
+| [13](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs/13-snail-pond-management) | ATREE S.N.A.I.L., Grade 9 environmental studies: Pond Management | 4 units, 10 weeks |
 
 Two deep dives, before and after.
 

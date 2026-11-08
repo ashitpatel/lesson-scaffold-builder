@@ -1,4 +1,4 @@
-# Localizations — Snail: pond management
+# Localizations — ATREE S.N.A.I.L.: pond management
 
 > **Live output, not a hand-written answer.** Each section below comes from one relocalize run of the pipeline on 8 November 2026 (`python3 -m lsb.run --backend muse` with `--locale`, `locale_mode: relocalize`, and locale notes; per-item review approved every proposal). The run folders are gitignored; this file is the durable record.
 > **Locale note:** The relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
