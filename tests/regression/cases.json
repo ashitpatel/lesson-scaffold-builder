@@ -197,6 +197,42 @@
           "participatory_budgeting"
         ]
       }
+    },
+    {
+      "name": "tanzania-tables",
+      "source": "tests/fixtures/tanzania-tables-source.md",
+      "ref": "Grade 4 Mathematics - Multiplication and Division Practice",
+      "expect": {
+        "status": "pass",
+        "max_units": 4,
+        "forbidden": [
+          "Kariakoo",
+          "Dar es Salaam",
+          "shillings",
+          "workbook"
+        ],
+        "required": [
+          "multiplication"
+        ]
+      }
+    },
+    {
+      "name": "philippines-plants",
+      "source": "tests/fixtures/philippines-plants-source.md",
+      "ref": "Grade 5 Science - How Plants Grow",
+      "expect": {
+        "status": "pass",
+        "max_units": 4,
+        "forbidden": [
+          "Laguna",
+          "pesos",
+          "barangay",
+          "dark cupboard"
+        ],
+        "required": [
+          "minerals"
+        ]
+      }
     }
   ]
 }
