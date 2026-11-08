@@ -2,6 +2,13 @@
 
 Each release on GitHub attaches the ready-to-use files from `dist/`. The version lives in [`VERSION`](VERSION). The pipeline is also installable: `pip install git+https://github.com/ashitpatel/lesson-scaffold-builder.git`.
 
+## 0.2.0 — 2026-11-08
+
+- **"Lesson" everywhere.** The input is now consistently called a lesson, not a chapter, across the README, docs, prompts, browser-assistant kickoff and blog posts (including two renamed post URLs). Test fixtures, walkthrough records and validated model prompts keep the original term.
+- **Better evidence coverage.** Each evidence-based practice now cites its own reviews: Rowland (2014) and Karpicke & Roediger (2008) for retrieval, Cepeda et al. (2006) for spacing, Atkinson et al. (2000) for worked examples, and Kingston & Nash (2011) — with its modest 0.20 mean effect as an honest caution — for checking understanding. All references carry DOI/ERIC/IES links.
+- **Shikshagraha acknowledgment.** The README, first blog post and about page credit Shikshagraha's Micro-Improvement Plan as the inspiration for the Micro-Lesson Scaffold.
+- **Discoverability.** Repository topics, homepage and description; a generated `CITATION.cff` (GitHub's "Cite this repository" button); a social preview image.
+
 ## 0.1.0 — 2026-11-07
 
 First release. A pipeline that turns a long, lecture-heavy teaching chapter into at most four 2-to-4-week Micro-Lesson Scaffolds (or one spanning the chapter), printed as offline teacher cards.

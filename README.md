@@ -215,7 +215,8 @@ lesson-scaffold-builder/
 │   ├── ux/                      who uses it, the end-to-end journey, decision points
 │   ├── walkthroughs/            nine folders: walkthrough + source + decision trace + final cards each
 │   ├── technical.md             every check, flag, output file and exit code
-│   └── regeneration-prompts.md  prompts to rebuild this project with an AI coding agent
+│   ├── regeneration-prompts.md  prompts to rebuild this project with an AI coding agent
+│   └── assets/                  social preview image + its HTML source
 │
 ├── frameworks/                  THE METHOD: the cards the stages may apply
 │   ├── evidence-based-practices.md   EB-01 to EB-05, non-negotiables, guardrails
@@ -283,4 +284,4 @@ lesson-scaffold-builder/
 
 ## Licence
 
-Copyright 2026 Ashit Patel. Licensed under the [Apache License, Version 2.0](LICENSE). The prompts, framework cards, docs and test lessons are covered by the same licence. Research cited in the cards and docs belongs to its authors and is summarised, not reproduced.
+Copyright 2026 Ashit Patel. Licensed under the [Apache License, Version 2.0](LICENSE). The prompts, framework cards, docs and test lessons are covered by the same licence. Research cited in the cards and docs belongs to its authors and is summarised, not reproduced. To cite this project, use [CITATION.cff](CITATION.cff) (GitHub's "Cite this repository" button).

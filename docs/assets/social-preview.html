@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- Source for social-preview.png (1280x640). Render with:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless \
+       --screenshot=social-preview.png --window-size=1280,640 --hide-scrollbars social-preview.html -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    background: #0f2a3d;
+    color: #f4f1ea;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-sizing: border-box; padding: 64px 80px 56px;
+  }
+  .name { font-size: 30px; font-weight: 600; letter-spacing: 0.04em; color: #f2b84b; }
+  h1 { font-size: 58px; line-height: 1.12; margin: 14px 0 0; font-weight: 700; max-width: 1060px; }
+  ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 14px 24px; }
+  li { font-size: 21px; display: flex; align-items: baseline; gap: 12px; color: #d9e3ea; }
+  li b {
+    flex: none; width: 32px; height: 32px; border-radius: 50%;
+    background: #f2b84b; color: #0f2a3d; font-size: 17px;
+    display: inline-flex; align-items: center; justify-content: center; transform: translateY(5px);
+  }
+  li.none b { background: none; border: 2px solid #f2b84b; color: #f2b84b; box-sizing: border-box; }
+  .foot { display: flex; justify-content: space-between; font-size: 22px; color: #9fb4c3; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="name">LESSON SCAFFOLD BUILDER</div>
+    <h1>Turn a long lesson into short, safe teacher cards.</h1>
+  </div>
+  <ol>
+    <li><b>1</b>Decompose</li>
+    <li><b>2</b>Check in code</li>
+    <li><b>3</b>21-check review</li>
+    <li><b>4</b>Evidence-based</li>
+    <li><b>5</b>Connected Learning</li>
+    <li><b>6</b>Class votes</li>
+    <li><b>7</b>Repair &amp; render</li>
+    <li class="none"><b>–</b>Or: abstains</li>
+  </ol>
+  <div class="foot">
+    <span>CLI · pip · browser chat · Apache 2.0</span>
+    <span>github.com/ashitpatel/lesson-scaffold-builder</span>
+  </div>
+</body>
+</html>
