@@ -30,7 +30,7 @@ Devices, apps, internet, printing services, projectors: out, unless marked as an
 
 ## 5. What only fits one place
 
-Named markets, a region's currency, the national curriculum body, the district education office: replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test lessons are set in nine different countries precisely so this gets exercised.
+Named markets, a region's currency, the national curriculum body, the district education office: by default, replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test lessons are set in nine different countries precisely so this gets exercised. But stripping is a choice, not a rule: at the outset you can keep the lesson's own locale instead, or strip and then relocalize to your setting — naming the target locale, adding notes about it, and reviewing each proposed replacement before it reaches a card.
 
 That replacement is a guess, and sometimes a wrong or incomplete one: a stripped term can flatten meaning, a kept one can smuggle in something that doesn't travel, and a relocalized one can miss the mark for your setting entirely. Review the locale handling thoroughly, with the rest of the output, to make sure the material is culturally and educationally appropriate and complete before it reaches a classroom.
 

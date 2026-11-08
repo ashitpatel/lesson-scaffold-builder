@@ -22,6 +22,8 @@ The tool shows the lesson's goal and a table of its sections — what each cover
 
 A long lesson can become one scaffold spanning the whole thing, or up to four smaller ones. If several, the tool suggests breakdown lines drawn from the lesson's own sections — by topic, by skill, by week — and asks how many units at most, and how many weeks each may take (2 to 4). Small sequences with clear handoffs are easier to teach, to lose a week from, and to hand to a colleague. But splitting has a cost: every boundary needs a "recall what came before" step, or the thread breaks. So one unbroken sequence is always on the table.
 
+In the same round, the tool asks how to handle region-specific content: strip it to generic labels (the default), keep the lesson's own locale, or strip it and then relocalize to your setting. Relocalizing means naming your target locale, adding notes about it (what to prefer, what to avoid), and reviewing each proposed replacement — approve, skip, or write your own — before it reaches a card.
+
 ## 4. Which approaches should it leave out?
 
 Three families of methods are available, each summarized in one line:
