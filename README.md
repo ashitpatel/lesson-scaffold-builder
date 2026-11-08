@@ -38,7 +38,7 @@ It does that by:
 4. **never making things worse:** an optimisation that can't pass review is undone, and a problem any later review finds must be repaired before cards are printed;
 5. **delivering** teacher cards (plain text and a printable black-and-white page) plus a list of what in the source was unsafe or unusable.
 
-It generalises the [Shikshagraha MIP Transformer](https://github.com/ashitpatel/shikshagraha-mip-transformer), which revises single Micro-Improvement Projects for Indian public schools, to any K-12 material in any system, with region-neutral output.
+It generalises the [Shikshagraha MIP Transformer](https://github.com/ashitpatel/shikshagraha-mip-transformer), which revises single Micro-Improvement Projects for Indian public schools, to any K-12 material in any system, with region-neutral output. The Micro-Lesson Scaffold itself is inspired by [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan: the movement's idea that big school goals become achievable when broken into small, time-bound, locally owned units — over 1.3 million of them so far across some 177,000 schools. LSB applies that idea to lesson content: a 2-to-4-week classroom sequence a teacher can run with the materials they have.
 
 ### What the source usually asks for that a card must not
 Every one of the nine test lessons contains things a real lesson might: trips without an adult, learners pouring boiling water, a "slow readers" wall chart, scores posted by name, family migration status, children's videos in a parents' group, students collecting money, purchases, devices, and region-specific bodies and currencies. Two include a line addressed to automated systems. The pipeline must remove all of them, say what it removed, and still deliver the lesson's goal.
@@ -126,13 +126,13 @@ The tests are offline (a scripted fake model drives the whole pipeline). The reg
 
 | Practice | What it adds to a unit | Non-negotiables | Basis |
 |---|---|---|---|
-| **EB-01 Retrieval practice** | A few questions answered from memory at the start of a later lesson | Notes away; answers shown straight after; nothing marked or recorded | Rated high utility [E1]; an IES practice-guide recommendation [E2] |
-| **EB-02 Spaced practice** | A short review of earlier content in a later week | At least a week after first teaching; students do something with it | Rated high utility [E1]; IES recommendation [E2] |
-| **EB-03 Worked examples, then practice** | A complete example, then one students finish, before solving alone | A full example first; students then solve similar problems | IES recommendation [E2]; Rosenshine's principles [E3] |
-| **EB-04 Checking for understanding** | A question every student answers at once, on slates or with fingers, before moving on | Every student answers; the educator looks; what happens next depends on it | Rosenshine's principles [E3]; formative-assessment review [E4] |
+| **EB-01 Retrieval practice** | A few questions answered from memory at the start of a later lesson | Notes away; answers shown straight after; nothing marked or recorded | Rated high utility [E1]; an IES practice-guide recommendation [E2]; testing-effect meta-analysis [E5]; Science 2008 study [E9] |
+| **EB-02 Spaced practice** | A short review of earlier content in a later week | At least a week after first teaching; students do something with it | Rated high utility [E1]; IES recommendation [E2]; spacing meta-analysis [E6] |
+| **EB-03 Worked examples, then practice** | A complete example, then one students finish, before solving alone | A full example first; students then solve similar problems | IES recommendation [E2]; Rosenshine's principles [E3]; worked-examples review [E7] |
+| **EB-04 Checking for understanding** | A question every student answers at once, on slates or with fingers, before moving on | Every student answers; the educator looks; what happens next depends on it | Rosenshine's principles [E3]; formative-assessment review [E4]; but a 2011 meta-analysis found only a 0.20 mean effect [E8] |
 | **EB-05 Concrete and visual representations** | A drawing or model linked explicitly to the abstract idea | Shown with the words or symbols; the link is stated | IES recommendations [E2] |
 
-**What the evidence does and doesn't say.** These syntheses mostly draw on laboratory and classroom studies in high-income countries. They support the practices as generally effective ways to learn and remember; **they don't predict an effect size for a given lesson, school or system**, and no step on a card may claim one.
+**What the evidence does and doesn't say.** These syntheses mostly draw on laboratory and classroom studies in high-income countries. They support the practices as generally effective ways to learn and remember; **they don't predict an effect size for a given lesson, school or system**, and no step on a card may claim one. For checking understanding specifically, a later meta-analysis across 42 effect sizes found a weighted mean of 0.20 — real but modest, and a reminder not to promise a result [E8].
 
 ### 2. Connected Learning (Mizuko Ito and the Connected Learning Research Network)
 
@@ -258,10 +258,15 @@ lesson-scaffold-builder/
 - [R2] World Bank, UNESCO, UNICEF, FCDO, USAID & Bill & Melinda Gates Foundation (2022). *The State of Global Learning Poverty: 2022 Update.*
 
 **Evidence-based practices**
-- [E1] Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students' learning with effective learning techniques. *Psychological Science in the Public Interest*, 14(1), 4–58.
-- [E2] Pashler, H., Bain, P. M., Bottge, B. A., Graesser, A., Koedinger, K., McDaniel, M., & Metcalfe, J. (2007). *Organizing Instruction and Study to Improve Student Learning* (NCER 2007-2004). Institute of Education Sciences, U.S. Department of Education.
-- [E3] Rosenshine, B. (2012). Principles of Instruction: Research-based strategies that all teachers should know. *American Educator*, 36(1), 12–19, 39.
-- [E4] Black, P., & Wiliam, D. (1998). Inside the Black Box: Raising standards through classroom assessment. *Phi Delta Kappan*, 80(2), 139–148.
+- [E1] Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students' learning with effective learning techniques. *Psychological Science in the Public Interest*, 14(1), 4–58. [doi](https://doi.org/10.1177/1529100612453266)
+- [E2] Pashler, H., Bain, P. M., Bottge, B. A., Graesser, A., Koedinger, K., McDaniel, M., & Metcalfe, J. (2007). *Organizing Instruction and Study to Improve Student Learning* (NCER 2007-2004). Institute of Education Sciences, U.S. Department of Education. [guide](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)
+- [E3] Rosenshine, B. (2012). Principles of Instruction: Research-based strategies that all teachers should know. *American Educator*, 36(1), 12–19, 39. [ERIC](https://eric.ed.gov/?id=EJ971753)
+- [E4] Black, P., & Wiliam, D. (1998). Inside the Black Box: Raising standards through classroom assessment. *Phi Delta Kappan*, 80(2), 139–148. [doi](https://doi.org/10.1177/003172171009200119) (2010 Kappan Classic reprint)
+- [E5] Rowland, C. A. (2014). The effect of testing versus restudy on retention: A meta-analytic review of the testing effect. *Psychological Bulletin*, 140(6), 1432–1463. [doi](https://doi.org/10.1037/a0037559)
+- [E6] Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin*, 132(3), 354–380. [doi](https://doi.org/10.1037/0033-2909.132.3.354)
+- [E7] Atkinson, R. K., Derry, S. J., Renkl, A., & Wortham, D. (2000). Learning from examples: Instructional principles from the worked examples research. *Review of Educational Research*, 70(2), 181–214. [ERIC](https://eric.ed.gov/?id=EJ627412)
+- [E8] Kingston, N., & Nash, B. (2011). Formative assessment: A meta-analysis and a call for research. *Educational Measurement: Issues and Practice*, 30(4), 28–37. [doi](https://doi.org/10.1111/j.1745-3992.2011.00220.x)
+- [E9] Karpicke, J. D., & Roediger, H. L., III. (2008). The critical importance of retrieval for learning. *Science*, 319(5865), 966–968. [doi](https://doi.org/10.1126/science.1152408)
 
 **Connected Learning**
 - [C1] Ito, M., Gutiérrez, K., Livingstone, S., Penuel, B., Rhodes, J., Salen, K., Schor, J., Sefton-Green, J., & Watkins, S. C. (2013). *Connected Learning: An Agenda for Research and Design.* Digital Media and Learning Research Hub.

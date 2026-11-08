@@ -28,6 +28,8 @@ A teacher reading any of these makes a hundred quiet decisions: skip that, repla
 
 Every step is traced to the lesson section it came from, every change is tagged with the method that made it, and every unit says what it relies on and what to do if that doesn't hold. Nothing is hidden: the [nine walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs) show full inputs and outputs.
 
+The scaffold's shape — small, time-bound, owned by the teacher — is borrowed from [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan, from the movement now running over a million micro-improvements across India's public schools.
+
 ## What it doesn't do
 
 It is a working prototype, and this series will keep saying so. **No teacher or curriculum specialist has reviewed its output yet**, and nothing here shows the cards improve learning. The list of teaching methods is a project choice that needs review by the people who own the content. The cards are a starting draft for a teacher's judgment, not a replacement for it.
