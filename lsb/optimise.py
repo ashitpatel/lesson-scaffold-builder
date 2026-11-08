@@ -213,7 +213,9 @@ def check_repair(before: dict, after: Any, issues: list[dict]) -> list[str]:
 
     A repair may change only what an issue points at: a flagged step, a flagged
     unit field, a flagged fallback, or anything in a unit flagged as a whole. A
-    repaired unit's fallbacks may also be updated to match the fix. It
+    repaired unit's fallbacks may also be updated to match the fix. Adding a
+    dependency obliges the G15 "Recall from" opener on that unit's first step,
+    so a flagged dependencies field also allows editing tasks[0]. It
     never adds, removes or reorders units, steps or fallbacks, so the source trace
     and every optimisation edit elsewhere stay valid.
     """
@@ -222,6 +224,9 @@ def check_repair(before: dict, after: Any, issues: list[dict]) -> list[str]:
     flagged = [loc for i in issues for loc in locations(i.get("where"))]
     tasks_ok = {(loc[1], loc[2]) for loc in flagged if loc[0] == "task"}
     fields_ok = {(loc[1], loc[2]) for loc in flagged if loc[0] == "field"}
+    for i, key in fields_ok:
+        if key == "dependencies":
+            tasks_ok.add((i, 0))
     units_ok = {loc[1] for loc in flagged if loc[0] == "unit"}
     assumptions_ok = {loc[1] for loc in flagged if loc[0] == "assumption"}
     problems: list[str] = []

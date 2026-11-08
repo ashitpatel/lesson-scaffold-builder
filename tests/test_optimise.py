@@ -276,6 +276,16 @@ class Repair(unittest.TestCase):
         after["sequence"]["mls_units"][1]["tasks"][0]["action"] = "x"
         self.assertEqual(opt.check_repair(before, after, [{"where": "mls_units[1]"}]), [])
 
+    def test_dependencies_flag_allows_the_recall_opener_only(self):
+        before, after = self.full(), self.full()
+        after["sequence"]["mls_units"][1]["dependencies"] = ["MLS-PERSUADE-01"]
+        after["sequence"]["mls_units"][1]["tasks"][0]["action"] = "Recall from MLS-PERSUADE-01: x"
+        self.assertEqual(opt.check_repair(before, after, [{"where": "mls_units[1].dependencies"}]), [])
+        after["sequence"]["mls_units"][1]["tasks"][1]["action"] = "x"
+        found = opt.check_repair(before, after, [{"where": "mls_units[1].dependencies"}])
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("tasks[1]", found[0])
+
 
 if __name__ == "__main__":
     unittest.main()
