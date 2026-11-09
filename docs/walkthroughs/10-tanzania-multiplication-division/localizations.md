@@ -3,7 +3,7 @@
 > **Live output, not a hand-written answer.** Each section below comes from one relocalize run of the pipeline on 8 November 2026 (`python3 -m lsb.run --backend muse` with `--locale`, `locale_mode: relocalize`, locale notes, and `locale_additions: true`; per-item review approved every proposal and addition as proposed). The run folders are gitignored; this file is the durable record.
 > **Locale note:** The relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
 
-The base walkthrough ([README.md](./README.md)) strips the Tanzanian lesson to generic cards. These three runs instead strip and then relocalize to a French primary school, a Mongolian steppe pastoralist school, and Seoul. All three passed. The trader story, workbook price, Kariakoo earnings homework, and ward officer return all drop during stripping, so France — where every generic died with its segment — runs on additions alone; Mongolia and Seoul each keep enough generic fabric to land real replacements.
+The base walkthrough ([README.md](./README.md)) generalizes the Tanzanian lesson to generic cards. These three runs instead generalize, then relocalize to a French primary school, a Mongolian steppe pastoralist school, and Seoul. All three passed. The trader story, workbook price, Kariakoo earnings homework, and ward officer return are all dropped when the lesson is generalized, so France — where every generic died with its segment — runs on additions alone; Mongolia and Seoul each keep enough generic fabric to land real replacements.
 
 ## 1. French primary school, France
 
@@ -35,4 +35,4 @@ Final cards: [final-seoul.md](./final-seoul.md).
 
 ## What this trio shows
 
-Arithmetic strips clean — stories, prices, and homework all drop — so the localizations live in the counting objects and classroom rhythms: bûchettes and calcul mental, sheep counted indoors by Thursday, gyul shared from teacher-given figures. Mongolia's 31-call run also shows the pipeline absorbing genuine difficulty (extra repair rounds) without losing the locale work at the end. Seoul's Flesch 56.2 is the sweep's floor and illustrates the policy: readability is recorded, never a gate, since locale terms legitimately lower scores.
+Arithmetic generalizes cleanly — stories, prices, and homework all drop — so the localizations live in the counting objects and classroom rhythms: bûchettes and calcul mental, sheep counted indoors by Thursday, gyul shared from teacher-given figures. Mongolia's 31-call run also shows the pipeline absorbing genuine difficulty (extra repair rounds) without losing the locale work at the end. Seoul's Flesch 56.2 is the sweep's floor and illustrates the policy: readability is recorded, never a gate, since locale terms legitimately lower scores.

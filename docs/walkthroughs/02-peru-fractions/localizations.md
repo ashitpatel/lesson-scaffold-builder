@@ -3,7 +3,7 @@
 > **Live output, not a hand-written answer.** Each section below comes from one relocalize run of the pipeline on 8 November 2026 (`python3 -m lsb.run --backend muse` with `--locale`, `locale_mode: relocalize`, locale notes, and `locale_additions: true`; per-item review approved every proposal and addition as proposed). The run folders are gitignored; this file is the durable record.
 > **Locale note:** The relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
 
-The base walkthrough ([README.md](./README.md)) strips the Peruvian lesson to generic cards. These three runs instead strip and then relocalize to a rural Malawian village, the Marrakech medina, and urban Tokyo. All three passed. Malawi shows a replacement landing; Marrakech shows approved replacements being reverted as a set when they newly break a check, with additions still landing; Tokyo shows the empty-proposals path with additions carrying all the locale color.
+The base walkthrough ([README.md](./README.md)) generalizes the Peruvian lesson to generic cards. These three runs instead generalize, then relocalize to a rural Malawian village, the Marrakech medina, and urban Tokyo. All three passed. Malawi shows a replacement landing; Marrakech shows approved replacements being reverted as a set when they newly break a check, with additions still landing; Tokyo shows the empty-proposals path with additions carrying all the locale color.
 
 ## 1. Rural village in Malawi
 

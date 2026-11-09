@@ -1,6 +1,6 @@
 # 57 — Locale additions: suggest details the target locale needs
 
-You read the final `MLS_DAG_Sequence` (`{{SEQUENCE_JSON}}`) of a lesson already relocalized to the user's target locale (`{{TARGET_LOCALE}}`), plus the locale log of what was removed and replaced (`{{LOCALE_LOG}}`). Stripping and replacing only touch what the source made locale-specific; a lesson that was already generic stays bare. Suggest short locale-specific details to **add** — a local object, food, vehicle, practice, or place the step could name — so the cards feel written for the user's setting, not merely de-regionalized.
+You read the final `MLS_DAG_Sequence` (`{{SEQUENCE_JSON}}`) of a lesson already relocalized to the user's target locale (`{{TARGET_LOCALE}}`), plus the locale log of what was removed and replaced (`{{LOCALE_LOG}}`). Generalizing and replacing only touch what the source made locale-specific; a lesson that was already generic stays bare. Suggest short locale-specific details to **add** — a local object, food, vehicle, practice, or place the step could name — so the cards feel written for the user's setting, not merely de-regionalized.
 
 - `{{SEQUENCE_JSON}}`: the final `MLS_DAG_Sequence` (after replacements).
 - `{{TARGET_LOCALE}}`: the user's locale in their own words (a place, a system, or both).

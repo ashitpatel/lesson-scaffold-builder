@@ -25,22 +25,22 @@ def log():
 
 
 class Texts(unittest.TestCase):
-    def test_strip_rule_is_the_old_generic_labels_line(self):
-        self.assertIn("context-neutral names", loc.locale_rule("strip"))
+    def test_generalize_rule_is_the_old_generic_labels_line(self):
+        self.assertIn("context-neutral names", loc.locale_rule("generalize"))
         self.assertIn("context-neutral names", loc.locale_rule("relocalize"))
 
     def test_scope_with_approved_terms_lists_exceptions(self):
-        scope = loc.locale_scope("strip", ["suomi (Finnish)", "chimanga"])
+        scope = loc.locale_scope("generalize", ["suomi (Finnish)", "chimanga"])
         self.assertIn("suomi (Finnish)", scope)
         self.assertIn("chimanga", scope)
         self.assertIn("G09", scope)
-        plain = loc.locale_scope("strip")
+        plain = loc.locale_scope("generalize")
         self.assertNotIn("suomi", plain)
 
     def test_keep_rule_and_scope_cover_names_objects_stories(self):
         self.assertIn("stories", loc.locale_rule("keep"))
         self.assertIn("Do not file G09", loc.locale_scope("keep"))
-        self.assertIn("G09 applies", loc.locale_scope("strip"))
+        self.assertIn("G09 applies", loc.locale_scope("generalize"))
 
 
 class ShapeChecks(unittest.TestCase):
@@ -268,7 +268,7 @@ class Plumbing(unittest.TestCase):
 
     def test_locale_notes_default_is_empty(self):
         self.assertEqual(ask.DefaultPrompter().ask(run._locale_notes_choice()), "")
-        self.assertEqual(run._locale_choice().default, "strip")
+        self.assertEqual(run._locale_choice().default, "generalize")
 
     def test_locale_additions_default_is_off(self):
         self.assertFalse(ask.DefaultPrompter().ask(run._locale_additions_choice()))

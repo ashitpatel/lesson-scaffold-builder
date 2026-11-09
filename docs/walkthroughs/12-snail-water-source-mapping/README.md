@@ -3,7 +3,7 @@
 > **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 8 November 2026 (`python3 -m lsb.run --backend muse`, folder `runs/snail-mapping-live-1`). The source is a real ATREE S.N.A.I.L. lesson, DRCSC's 'Creative Lesson Plan on Water' (2003), adapted into lesson prose as a test input: [tests/fixtures/snail-water-mapping-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/snail-water-mapping-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
 > Decision trace: [decisions.md](./decisions.md) · Full final cards: [final.md](./final.md) · Localizations: [localizations.md](./localizations.md)
 
-> **Locale note:** The stripped, kept, or relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
+> **Locale note:** The generalized, kept, or relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
 
 | | |
 |---|---|

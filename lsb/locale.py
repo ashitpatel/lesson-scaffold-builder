@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Locale handling: strip to generic, keep the source's locale, or relocalize.
+"""Locale handling: generalize, keep the source's locale, or relocalize.
 
-The pipeline strips locale-specific content by default: places and polities,
+The pipeline generalizes locale-specific content by default: places and polities,
 subject and strand names, everyday objects that vary by locale, and stories
 with cultural or religious weight. The user may instead keep the source's
-locale, or strip and then relocalize: the run logs every removed item, proposes
+locale, or generalize, then relocalize: the run logs every removed item, proposes
 an equivalent in the user's target locale, and applies only what the user
 reviews.
 """
@@ -15,7 +15,7 @@ from typing import Any
 
 from lsb import ask
 
-MODES = ("strip", "keep", "relocalize")
+MODES = ("generalize", "keep", "relocalize")
 
 GENERIC_RULE = ("Generic labels: use context-neutral names (e.g. `Community_Governance_Body`, "
                 '"the local market", "a nearby clinic"), not names of specific countries, laws, '

@@ -25,7 +25,7 @@ Defaults: no exclusions, multi-MLS up to 5 units, `auto` focus, up to 4 weeks pe
 
 ## Decisions the engine made from those answers
 
-- Decompose built 4 units from the seven sections, grouping by phase: uses+values, field sketching+survey, pooling+analysis, design+action. It deferred the town-schools variant (§7) as a follow-on candidate, converted home-pond study to supervised whole-class visits with class totals, and stripped locale names to generic labels.
+- Decompose built 4 units from the seven sections, grouping by phase: uses+values, field sketching+survey, pooling+analysis, design+action. It deferred the town-schools variant (§7) as a follow-on candidate, converted home-pond study to supervised whole-class visits with class totals, and replaced locale names with generic labels.
 - The EB stage put a slate check (EB-04) on every explanation in all four units and added self-checked week-2 recall (EB-01) in units 1 and 3; it credited EB-05 twice and EB-02 once, and deferred the rest for card/step limits or lack of targets.
 - The CL stage added rotating peer roles in units 1–2 and abstained units 3–4 with credits for work already shared; PB found no trade-off anywhere and abstained throughout.
 

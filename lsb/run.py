@@ -21,8 +21,8 @@ the critic runs in `single` mode.
 `--answers FILE` reads those answers from a JSON object instead, so sweeps
 answer without stopping; anything missing falls back to defaults. Without
 either flag nothing is asked. The values land in choices.json.
-The outset also asks how to handle locale-specific content: strip to generic
-(the default), keep the source's locale, or strip and then relocalize to the
+The outset also asks how to handle locale-specific content: generalize
+(the default), keep the source's locale, or generalize, then relocalize to the
 `--locale` target, reviewing each proposed replacement first. Relocalize runs
 may also suggest new locale details to insert, reviewed one by one.
 
@@ -482,7 +482,7 @@ class Source:
 
 
 def decompose_values(src: Source, previous: dict | None = None, feedback: list | None = None,
-                     focus: str = "auto", single: str = "no", locale_mode: str = "strip") -> dict[str, str]:
+                     focus: str = "auto", single: str = "no", locale_mode: str = "generalize") -> dict[str, str]:
     return {
         "SOURCE_TEXT": src.text,
         "SOURCE_REF": src.ref,
@@ -513,7 +513,7 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
         "RENDERED_CARDS": NONE,
         "PREVIOUS_ISSUES": _dump(previous_issues) if previous_issues else NONE,
         "MODE": mode,
-        "LOCALE_SCOPE": loc.locale_scope("keep" if keep_locale else "strip", approved_terms),
+        "LOCALE_SCOPE": loc.locale_scope("keep" if keep_locale else "generalize", approved_terms),
     }
 
 
@@ -773,7 +773,7 @@ REPAIR_NOTE = {"check": "repair", "source": "orchestrator",
 
 def run_repair(src: Source, full: dict, issues: list[dict], call, save, result: RunResult,
                cards: str = "", max_rounds: int = 2, single_span: bool = False,
-               locale_mode: str = "strip") -> dict | None:
+               locale_mode: str = "generalize") -> dict | None:
     """Fix problems a stage's review found in content no stage changed.
 
     `full` is a decompose-shaped output holding the current sequence and trace.
@@ -853,11 +853,11 @@ def _framework_choices() -> list[ask.Choice]:
 
 def _locale_choice() -> ask.Choice:
     return ask.Choice("locale_mode", "How should locale-specific content be handled?",
-                      (("strip", "Strip to generic", "region-neutral cards; today's behavior"),
+                      (("generalize", "Generalize", "region-neutral cards; today's behavior"),
                        ("keep", "Keep the source's locale", "names, currencies, places stay as written"),
-                       ("relocalize", "Strip, then relocalize to my locale",
+                       ("relocalize", "Generalize, then relocalize to my locale",
                         "review each replacement before it is applied")),
-                      "strip")
+                      "generalize")
 
 
 def _target_locale_choice() -> ask.Choice:
@@ -879,7 +879,7 @@ def _locale_additions_choice() -> ask.Choice:
     return ask.Choice("locale_additions", "Also suggest new locale-specific details to add?",
                       ((True, "Yes, suggest additions",
                         "short insertions reviewed one by one, like replacements"),
-                       (False, "No", "only replace what stripping removed")), False)
+                       (False, "No", "only replace removed locale terms")), False)
 
 
 def _output_language_choice() -> ask.Choice:
@@ -936,7 +936,7 @@ def _stage_choices(stage: FrameworkStage, sequence: dict) -> list[ask.Choice]:
 def run_relocalize(src: Source, target: str, result: RunResult, best: dict,
                    call, save, prompter: ask.Prompter, choices: dict,
                    locale_notes: str = "", want_additions: bool = False) -> dict:
-    """Strip-then-relocalize: log removals, propose equivalents, apply reviewed ones.
+    """Generalize-then-relocalize: log removals, propose equivalents, apply reviewed ones.
 
     Two model calls (log, proposals), then one ask-layer review per proposal.
     Replacements that would newly break a code check are reverted as a whole.
@@ -1126,7 +1126,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     excluded = set(choices["frameworks_excluded"])
     choices["locale_mode"] = prompter.ask(_locale_choice())
     if choices["locale_mode"] not in loc.MODES:
-        choices["locale_mode"] = "strip"
+        choices["locale_mode"] = "generalize"
     keep_locale = choices["locale_mode"] == "keep"
     target_locale = ""
     if choices["locale_mode"] == "relocalize":
@@ -1135,7 +1135,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             target_locale = (prompter.ask(_target_locale_choice()) or "").strip()
         choices["target_locale"] = target_locale
         if not target_locale:
-            choices["locale_mode"] = "strip"
+            choices["locale_mode"] = "generalize"
             choices["locale_downgraded"] = "empty target locale; stayed generic"
         else:
             choices["locale_notes"] = prompter.ask(_locale_notes_choice()) or ""

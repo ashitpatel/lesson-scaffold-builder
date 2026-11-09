@@ -3,7 +3,7 @@
 > **Live output, not a hand-written answer.** Each section below comes from one relocalize run of the pipeline on 8 November 2026 (`python3 -m lsb.run --backend muse` with `--locale`, `locale_mode: relocalize`, locale notes, and `locale_additions: true`; per-item review approved every proposal and addition as proposed). The run folders are gitignored; this file is the durable record.
 > **Locale note:** The relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
 
-The base walkthrough ([README.md](./README.md)) strips the civics lesson to generic cards. These three runs instead strip and then relocalize to a Chinese city residents' committee, a Kerala panchayat, and a US council-manager city. All three passed. The lesson's single running example — the Gram Panchayat — survives stripping as a generic council in every run, so each trio member lands exactly one replacement naming its own local body; the additions then tune the harder question of what pupil decision-making means under three different civic systems.
+The base walkthrough ([README.md](./README.md)) generalizes the civics lesson to generic cards. These three runs instead generalize, then relocalize to a Chinese city residents' committee, a Kerala panchayat, and a US council-manager city. All three passed. The lesson's single running example — the Gram Panchayat — survives generalizing as a generic council in every run, so each trio member lands exactly one replacement naming its own local body; the additions then tune the harder question of what pupil decision-making means under three different civic systems.
 
 ## 1. Chinese city residents' committee
 

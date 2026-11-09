@@ -3,7 +3,7 @@
 > **Live output, not a hand-written answer.** Each section below comes from one relocalize run of the pipeline on 8 November 2026 (`python3 -m lsb.run --backend muse` with `--locale`, `locale_mode: relocalize`, locale notes, and `locale_additions: true`; per-item review approved every proposal and addition as proposed). The run folders are gitignored; this file is the durable record.
 > **Locale note:** The relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
 
-The base walkthrough ([README.md](./README.md)) strips the Bangladeshi lesson to generic cards. These three runs instead strip and then relocalize to Finland, Morocco, and Thailand. All three passed. Early-reading steps run close to their word caps, so this trio leans hard on the safety nets: Finland lands one replacement while a second matches nothing; Morocco and Thailand approve two and three replacements respectively, then revert all of them when the longer terms newly break check D11 — while every addition lands.
+The base walkthrough ([README.md](./README.md)) generalizes the Bangladeshi lesson to generic cards. These three runs instead generalize, then relocalize to Finland, Morocco, and Thailand. All three passed. Early-reading steps run close to their word caps, so this trio leans hard on the safety nets: Finland lands one replacement while a second matches nothing; Morocco and Thailand approve two and three replacements respectively, then revert all of them when the longer terms newly break check D11 — while every addition lands.
 
 ## 1. Finland (Finnish)
 
