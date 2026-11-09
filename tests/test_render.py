@@ -144,5 +144,26 @@ class Files(unittest.TestCase):
                 self.assertEqual(render.main([tmp]), 2)
 
 
+class Readability(unittest.TestCase):
+    def test_plain_text_scores_high_and_reports_counts(self):
+        seq = {"mls_units": [{"mls_id": "U1", "title": "Map the taps.",
+                                          "tasks": [{"action": "Walk to each tap. Mark it on the map."}]}]}
+        got = render.readability(seq, [{"assumes": "Paper is ready.", "if_not": "Use slates."}])
+        self.assertGreater(got["flesch"], 80)
+        self.assertEqual(got["sentences"], 5)
+        self.assertLessEqual(got["longest_sentence_words"], 6)
+
+    def test_dense_text_scores_low(self):
+        seq = {"mls_units": [{"mls_id": "U1", "title": "T.",
+                                          "tasks": [{"action": "Operationalize the comprehensive multi-stakeholder facilitation methodology."}]}]}
+        got = render.readability(seq)
+        self.assertLess(got["flesch"], 30)
+
+    def test_empty_sequence_is_safe(self):
+        got = render.readability(None)
+        self.assertEqual(got["words"], 0)
+        self.assertEqual(got["sentences"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

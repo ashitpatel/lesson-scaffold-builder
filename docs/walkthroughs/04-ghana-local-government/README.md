@@ -1,7 +1,7 @@
 # Walkthrough 4 — Ghana: local government and community development
 
 > **Live output, not a hand-written answer.** Everything below comes from one run of the pipeline on 7 November 2026 (`python3 -m lsb.regress`, folder `runs/regress-3/ghana-assembly`). The source chapter is an original test input written for this project and set in a Ghanaian junior high school: [tests/fixtures/ghana-assembly-source.md](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/tests/fixtures/ghana-assembly-source.md) (copied into this folder as [source.md](./source.md)). No teacher has reviewed the result yet.
-> Decision trace: [decisions.md](./decisions.md) · Full final cards: [final.md](./final.md)
+> Decision trace: [decisions.md](./decisions.md) · Full final cards: [final.md](./final.md) · Localizations: [localizations.md](./localizations.md)
 
 > **Locale note:** The stripped, kept, or relocalized terms shown below may be incorrect or incomplete — review them with the rest of this output to make sure the material is culturally and educationally appropriate and complete.
 

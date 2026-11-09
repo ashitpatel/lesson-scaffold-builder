@@ -23,7 +23,8 @@ answer without stopping; anything missing falls back to defaults. Without
 either flag nothing is asked. The values land in choices.json.
 The outset also asks how to handle locale-specific content: strip to generic
 (the default), keep the source's locale, or strip and then relocalize to the
-`--locale` target, reviewing each proposed replacement first.
+`--locale` target, reviewing each proposed replacement first. Relocalize runs
+may also suggest new locale details to insert, reviewed one by one.
 
 Routing (prompts/README.md):
   critic PASS    -> done
@@ -77,6 +78,7 @@ DECOMPOSE = "05-decompose.md"
 CRITIC = "50-critic.md"
 LOCALE_LOG = "55-locale-log.md"
 RELOCALIZE = "56-relocalize.md"
+LOCALE_ADD = "57-locale-add.md"
 
 
 @dataclass(frozen=True)
@@ -865,6 +867,13 @@ def _locale_notes_choice() -> ask.Choice:
                               "what doesn't exist where you teach. The proposals must follow it.")
 
 
+def _locale_additions_choice() -> ask.Choice:
+    return ask.Choice("locale_additions", "Also suggest new locale-specific details to add?",
+                      ((True, "Yes, suggest additions",
+                        "short insertions reviewed one by one, like replacements"),
+                       (False, "No", "only replace what stripping removed")), False)
+
+
 def _single_choice() -> ask.Choice:
     return ask.Choice("single_module", "Break the lesson into multiple MLS, or keep one?",
                       ((False, "Multiple modules", "2-to-4-week units; the default"),
@@ -910,32 +919,47 @@ def _stage_choices(stage: FrameworkStage, sequence: dict) -> list[ask.Choice]:
 
 def run_relocalize(src: Source, target: str, result: RunResult, best: dict,
                    call, save, prompter: ask.Prompter, choices: dict,
-                   locale_notes: str = "") -> dict:
+                   locale_notes: str = "", want_additions: bool = False) -> dict:
     """Strip-then-relocalize: log removals, propose equivalents, apply reviewed ones.
 
     Two model calls (log, proposals), then one ask-layer review per proposal.
     Replacements that would newly break a code check are reverted as a whole.
+    With want_additions, a third call suggests new locale details to insert,
+    reviewed the same way; each approved addition lands unless it would newly
+    break a code check, in which case only it is dropped.
     Never fails the run: every failure mode keeps the generic cards and notes why.
     Returns the info block recorded in summary.json under "locale".
     """
     info: dict[str, Any] = {"target": target, "logged": 0, "applied": [], "skipped": []}
+    log = _apply_replacements(src, target, result, best, call, save, prompter,
+                              choices, locale_notes, info)
+    if want_additions:
+        _apply_additions(src, target, result, call, save, prompter, choices,
+                         locale_notes, log, info)
+    return info
+
+
+def _apply_replacements(src: Source, target: str, result: RunResult, best: dict,
+                        call, save, prompter: ask.Prompter, choices: dict,
+                        locale_notes: str, info: dict) -> list:
+    """The replacement phase; returns the locale log (possibly empty)."""
     try:
         logged = call("locale-log", LOCALE_LOG,
                       {"SOURCE_TEXT": src.text, "SEQUENCE_JSON": _dump(result.sequence)},
                       "locale-log")
     except (StageError, ModelUnavailable) as e:
         result.notes.append(f"locale: log unavailable ({e}); cards stay generic")
-        return info
+        return []
     problems = loc.check_locale_log(logged)
     if problems:
         result.notes.append(f"locale: log unusable ({problems[0]}); cards stay generic")
-        return info
+        return []
     log = logged["locale_log"]
     save("locale-log.json", logged)
     info["logged"] = len(log)
     if not log:
         result.notes.append("locale: nothing locale-specific to relocalize")
-        return info
+        return []
     try:
         props = call("relocalize", RELOCALIZE,
                      {"LOCALE_LOG": _dump(log), "TARGET_LOCALE": target,
@@ -944,16 +968,16 @@ def run_relocalize(src: Source, target: str, result: RunResult, best: dict,
                      "locale-proposals")
     except (StageError, ModelUnavailable) as e:
         result.notes.append(f"locale: proposals unavailable ({e}); cards stay generic")
-        return info
+        return log
     problems = loc.check_proposals(props, len(log))
     if problems:
         result.notes.append(f"locale: proposals unusable ({problems[0]}); cards stay generic")
-        return info
+        return log
     proposals = props["proposals"]
     save("locale-proposals.json", props)
     if not proposals:
         result.notes.append("locale: no proposals for the target locale; cards stay generic")
-        return info
+        return log
     decisions: dict[int, str] = {}
     for c in loc.review_choices(proposals, log):
         answer = prompter.ask(c)
@@ -968,13 +992,65 @@ def run_relocalize(src: Source, target: str, result: RunResult, best: dict,
     if post - pre:
         result.notes.append(f"locale: replacements newly broke {sorted(post - pre)}; cards stay generic")
         info["reverted"] = True
-        return info
+        return log
     result.sequence = new_seq
     if new_assump is not None:
         best["environment_assumptions"] = new_assump
     info["applied"] = sorted(i for i, want in decisions.items() if want)
     info["skipped"] = sorted(set(range(len(log))) - set(info["applied"]))
-    return info
+    return log
+
+
+def _apply_additions(src: Source, target: str, result: RunResult,
+                     call, save, prompter: ask.Prompter, choices: dict,
+                     locale_notes: str, log: list, info: dict) -> None:
+    """The additions phase; mutates result, info and choices in place."""
+    try:
+        added = call("locale-add", LOCALE_ADD,
+                     {"SEQUENCE_JSON": _dump(result.sequence), "TARGET_LOCALE": target,
+                      "LOCALE_NOTES": locale_notes or NONE, "LOCALE_LOG": _dump(log)},
+                     "locale-additions")
+    except (StageError, ModelUnavailable) as e:
+        result.notes.append(f"locale: additions unavailable ({e}); cards unchanged")
+        return
+    problems = loc.check_additions(added)
+    if problems:
+        result.notes.append(f"locale: additions unusable ({problems[0]}); cards unchanged")
+        return
+    additions = added["additions"]
+    save("locale-additions.json", added)
+    info["add_logged"] = len(additions)
+    if not additions:
+        result.notes.append("locale: no additions suggested; cards unchanged")
+        return
+    decisions: dict[int, str] = {}
+    for c in loc.addition_choices(additions):
+        answer = prompter.ask(c)
+        choices[c.key] = answer
+        decisions[int(c.key.split("_")[2])] = answer or ""
+    save("locale-add-decisions.json", decisions)
+    # Keep each approved addition that fits; drop only the ones that would
+    # newly break a code check (usually D11: the step was already near its
+    # word cap). Trial applications accumulate so same-step additions interact.
+    pre = set(v.validate(result.sequence, skip_d10=True).failed_ids())
+    trial_seq, kept = result.sequence, {}
+    for n, a in enumerate(additions):
+        want = decisions.get(n, "")
+        if not want:
+            continue
+        cand, _ = loc.apply_additions(trial_seq, [a], {0: want})
+        new_failures = set(v.validate(cand, skip_d10=True).failed_ids()) - pre
+        if new_failures:
+            result.notes.append(
+                f"locale: addition {n} dropped, would newly break {sorted(new_failures)}")
+            continue
+        kept[n] = want
+        trial_seq = cand
+    new_seq, notes = loc.apply_additions(result.sequence, additions, kept)
+    result.notes.extend(f"locale: {n}" for n in notes)
+    result.sequence = new_seq
+    info["added"] = sorted(kept)
+    info["add_skipped"] = sorted(set(range(len(additions))) - set(info["added"]))
 
 
 def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 2,
@@ -1001,6 +1077,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
             choices["locale_downgraded"] = "empty target locale; stayed generic"
         else:
             choices["locale_notes"] = prompter.ask(_locale_notes_choice()) or ""
+            choices["locale_additions"] = bool(prompter.ask(_locale_additions_choice()))
     stages = tuple(k for k in stages if STAGES[k].key not in excluded)
     choices["single_module"] = bool(prompter.ask(_single_choice()))
     if choices["single_module"]:
@@ -1194,7 +1271,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     if choices["locale_mode"] == "relocalize" and result.status == "pass" and best_decomposed is not None:
         locale_info.update(run_relocalize(src, target_locale, result, best_decomposed,
                                           call, save, prompter, choices,
-                                          choices.get("locale_notes") or ""))
+                                          choices.get("locale_notes") or "",
+                                          bool(choices.get("locale_additions"))))
 
     if result.status == "pass" and best_decomposed is not None:
         deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
@@ -1202,6 +1280,10 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         for problem in result.cards_problems:
             result.notes.append(f"cards: G21 check failed: {problem}")
 
+    readability = None
+    if result.sequence is not None:
+        assumptions = best_decomposed.get("environment_assumptions") if best_decomposed else None
+        readability = render.readability(result.sequence, assumptions)
     if result.sequence is not None:
         save("sequence.json", result.sequence)
     save("choices.json", choices)
@@ -1214,6 +1296,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "late_issues": result.late_issues,
         "repair": result.repair,
         "cards_g21": None if result.cards_problems is None else (result.cards_problems or "pass"),
+        "readability": readability,
         "source_flags": result.source_flags,
         "source_ref": src.ref,
         "locale": locale_info,

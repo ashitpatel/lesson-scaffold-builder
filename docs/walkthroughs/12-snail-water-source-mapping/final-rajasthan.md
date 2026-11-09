@@ -1,5 +1,5 @@
 > © 2026 Ashit Patel. Final teacher cards for the desert village in western Rajasthan, India localization, covered by the repo's [Apache 2.0 LICENSE](../../../LICENSE).
-> Run `runs/snail-mapping-rajasthan-1` (gitignored; this file is the durable copy, byte-identical to its `cards.txt`).
+> Run `runs/snail-mapping-rajasthan-2` (gitignored; this file is the durable copy, byte-identical to its `cards.txt`).
 
 ---
 
@@ -7,19 +7,17 @@
 ==============================================================================
 LESSON SCAFFOLD: Grade 6 Environmental Studies - Water Source Mapping
 ==============================================================================
-Goal: Students map the domestic water sources their families use, observe the
-condition of those sources, and combine class reports into shared percentages
-and a village water facilities map.
+Goal: Students map the domestic water sources their households and village
+use, observe the surroundings of those sources, and summarize class patterns
+in reports, percentages and a village facilities map.
 Grade band: Middle. Period: 45 minutes.
 
 UNIT                  WHAT IT IS
 ------------------------------------------------------------------------------
-MLS-WATER-01          Mapping Home Water Sources with Shared Signs (2 weeks).
-                      Starts fresh (no earlier unit needed).
-MLS-WATER-02          Visiting Sources and Reporting Problems (3 weeks).
-                      Builds on MLS-WATER-01.
-MLS-WATER-03          Class Percentages and Village Facilities Map (2 weeks).
-                      Builds on MLS-WATER-02.
+MLS-WATER-01          Mapping Household Water Sources with Signs and Visits (3
+                      weeks). Starts fresh (no earlier unit needed).
+MLS-WATER-02          Reporting Sources, Percentages and Village Facilities
+                      Map (3 weeks). Builds on MLS-WATER-01.
 
 Units that build on the same earlier unit, or start fresh, can run at the same
 time.
@@ -30,179 +28,129 @@ classroom routines, behavior management habits, or physical school rules.
 
 
 ==============================================================================
-MLS-WATER-01: Mapping Home Water Sources with Shared Signs
-2 weeks. Starts fresh (no earlier unit needed).
+MLS-WATER-01: Mapping Household Water Sources with Signs and Visits
+3 weeks. Starts fresh (no earlier unit needed).
 ==============================================================================
-Goal: Builds the household-level maps of sources, distances and uses that all
-later observation and pooling work starts from.
+Goal: Produces each child's home water-source map with signs, distances, uses
+and visit observations that later reporting and totals build on.
 
 WHO                   WHAT TO DO
 ------------------------------------------------------------------------------
-1. Lead Educator      Discuss where domestic water comes from in the village.
-                      Explain the source types: hand pump, well, tubewell,
-                      community tap, river, pond, stored rainwater. Each child
-                      draws a simple map of their house and surroundings in
-                      their notebook and marks every source the family uses.
+1. Lead Educator      Explain the domestic sources named in the source: hand
+                      pump, well, tubewell, community tap, river, pond and
+                      stored rainwater, including the baoli stepwell and
+                      household tanka. Each child lists sources their family
+                      uses and what each is used for. Use chalkboard list and
+                      notebooks.
 
-2. Lead Educator      Each child measures the distance from home to each
-                      source in walking steps. Each child notes the distance
-                      beside each source on the map. Each child notes what
-                      each source is used for: drinking, cooking, bathing,
-                      washing clothes.
+2. Lead Educator      Each child draws a simple map of their house and
+                      surroundings in their notebook. Mark every family water
+                      source with walking-step distance from home along sandy
+                      paths, counting steps to the baoli or tanka and its use
+                      for drinking, cooking, bathing or washing clothes.
 
-3. Lead Educator      Introduce the shared signs: tap, well, tubewell, pot for
-[changed: EB-04]      stored rainwater. Mark a summer drinking source
-                      separately from a year-round one. Each child draws each
-                      sign on a slate and holds it up at the same time while
-                      you look at all the slates, and re-explain any sign many
-                      miss before continuing. Then each child re-marks every
-                      source on their map using only these signs.
+3. Lead Educator      Teach the shared signs for tap, well, tubewell and pot
+[changed: EB-04]      for stored rainwater called matka or tanka here. Show
+                      how to mark a summer drinking source separately from a
+                      year-round one. Each child draws each sign on a slate
+                      and holds it up together, and the educator looks at all
+                      slates and re-explains any sign many miss before moving
+                      on. Children redraw their map marks using only these
+                      signs.
 
-4. Peer Facilitator   In mixed pairs, read each other's map using only the
-                      signs. Each reader notes what is unclear or missing on
-                      the partner's map. Partners swap roles, then each child
-                      fixes their own map.
+4. Peer Facilitator   In pairs, read each other's map using only the signs.
+                      Each partner says what each mark means and notes
+                      anything unreadable. Partners then correct their own
+                      maps.
 
-5. Lead Educator      In week 2, call out three source types and have each
-[changed: EB-01]      child draw the matching sign from memory on scrap paper
-                      with notebooks and charts out of sight. Then show each
-                      sign on the board so each child checks their own.
-                      Nothing is collected or marked.
+5. Lead Educator      Take the whole class together to visit the mapped
+[changed: CL-02]      sources with the educator staying with all groups. In
+                      mixed pairs, one child observes and names pollution
+                      sources, waterlogging, garbage and animal waste like
+                      dust, goat droppings and plastic near the baoli steps
+                      while the other records them, then partners swap roles
+                      at the next source and each updates their own map. Near
+                      water, plants, animals or tools, children must not
+                      touch, pick up or lift anything.
+
+6. Lead Educator      In week 3, open a lesson with four short questions on
+[changed: EB-01]      source types, signs and uses answered from memory on
+                      scrap paper, with maps and notebooks put away. Then show
+                      the answers so each student checks their own. Nothing is
+                      collected or marked.
 
 ------------------------------------------------------------------------------
 BEFORE YOU START
-- Needs: Notebooks, pencils and chart paper are available for maps and signs.
-  If not: Use slates, chalk or reused paper; combine steps 2 and 3 into one
-  period and shorten the pair check to unclear marks only.
+- Needs: Paths to nearby sources are walkable and the class can visit in one
+  period with notebooks and pencils.
+  If not: If a visit week is lost, combine two nearby sources into one period
+  and shorten observation to three warning signs, or use children's existing
+  maps for the missed source. Do not extend past 3 weeks.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every child shows each
-  shared sign at the same time for the educator to check, with re-explanation
-  before re-marking maps
-- Evidence-Based, EB-01 Retrieval Practice: low-stakes recall of shared signs
-  from memory in week 2, self-checked
+  sign on slates together, educator looks at all and re-explains missed signs
+  before map redrawing
+- Evidence-Based, EB-01 Retrieval Practice: low-stakes recall of sources,
+  signs and uses from memory in week 3, self-checked
+- Connected Learning, CL-02 Structural Peer Roles: visit recording changed to
+  mixed observer and recorder pairs swapping each source
 
 
 ==============================================================================
-MLS-WATER-02: Visiting Sources and Reporting Problems
+MLS-WATER-02: Reporting Sources, Percentages and Village Facilities Map
 3 weeks. Builds on MLS-WATER-01.
 ==============================================================================
-Goal: Turns the home maps into checked field observations and shared class
-reports that name the area's water problems and access difficulties.
+Goal: Turns the household maps and visit notes into shared class reports,
+percentage totals and a wall village facilities map.
 
 WHO                   WHAT TO DO
 ------------------------------------------------------------------------------
-1. Lead Educator      Recall from MLS-WATER-01: bring the home water maps and
-                      list the sources the class will visit. Agree the route
-                      and the order of sources with the class. Each child
-                      brings their map, pencil and notebook.
+1. Lead Educator      Recall from MLS-WATER-01: use the home maps with signs
+                      and visit notes. Each child makes a short water source
+                      report from their own map and visit. Each report names
+                      sources, uses and observed surroundings.
 
-2. Lead Educator      The whole class goes together and the educator stays
-                      with all the groups. At each source, observe the
-                      surroundings: pollution near the pond, waterlogging near
-                      the tap or hand pump, garbage or animal waste nearby.
-                      Children must not touch water, garbage, animal waste, or
-                      pick up or lift any objects.
+2. Lead Educator      Hear all reports together in class turn by turn. Record
+                      source types and access difficulties named in reports on
+                      chart paper.Name the long summer walk to the baoli as
+                      one difficulty. Identify together what kinds of water
+                      problems exist in the area.
 
-3. Peer Facilitator   The whole class goes together and the educator stays
-[changed: CL-02]      with all the groups. In mixed pairs at each source, one
-                      partner describes the surroundings aloud while the other
-                      adds the observations to their own map with a pencil,
-                      then they swap roles at the next source. Children must
-                      not touch water, garbage, animal waste, or pick up or
-                      lift any objects.
+3. Lead Educator      Work one source-type percentage fully on chart paper,
+[changed: EB-03]      saying each counting and dividing step aloud. Write a
+                      second with its last step blank for students to finish
+                      in notebooks, then show the answer. Students then work
+                      the remaining source-type and domestic-use percentages
+                      themselves to finish the class totals on chart paper.
 
-4. Lead Educator      Discuss what a clean surrounding looks like and what
-[changed: EB-04]      warning signs to record. Each child holds up a slate
-                      naming one warning sign at the same time, the educator
-                      looks at all slates and re-explains unclear signs before
-                      moving on. Each child adds the agreed warning signs to
-                      their own map and prepares a short water source report
-                      from their map and visit.
+4. Peer Facilitator   In pairs, compare each household's mix with the class
+                      average on the chart paper. Each student writes in their
+                      notebook one sentence on how their household differs.
+                      Swap notebooks to check the comparison.
 
-5. Lead Educator      Each child shares their water source report with the
-                      class. Hearing all the reports together, list the
-                      water-related problems and the sources with difficult
-                      access on chart paper. Keep the class list for the next
-                      unit.
-
-6. Lead Educator      In week 3, open a lesson with four short questions on
-[changed: EB-01]      clean surroundings and warning signs from step 4,
-                      answered from memory on scrap paper with maps and
-                      notebooks put away. Show the answers straight after so
-                      each child checks their own. Nothing is collected,
-                      marked or recorded.
+5. Lead Educator      Show how to place the shared signs on the village
+[changed: EB-04]      outline with only main roads drawn. Ask every child to
+                      show on slates or scrap paper where one named facility
+                      goes,such as the baoli, tanka or hand pump, look at all
+                      answers, and re-explain placing if many are wrong or
+                      continue if most are right. Then mark the water tank,
+                      well, pump, tap, canal and pond together and keep the
+                      finished map on the classroom wall.
 
 ------------------------------------------------------------------------------
 BEFORE YOU START
-- Needs: Safe foot access to nearby sources and dry weather during the visit
-  weeks.
-  If not: If a visit week is lost, visit only the two nearest sources together
-  in one period and use existing maps for the rest; drop the farthest source
-  rather than extending the unit.
-------------------------------------------------------------------------------
-CHANGES FROM THE SOURCE
-- Evidence-Based, EB-04 Checking for Understanding: every child answers at the
-  same time on slates during the clean and warning-sign explanation, educator
-  looks and re-explains before moving on
-- Evidence-Based, EB-01 Retrieval Practice: low-stakes recall of clean
-  criteria and warning signs from memory in week 3, self-checked
-- Connected Learning, CL-02 Structural Peer Roles: map recording done in mixed
-  pairs with describe-and-record roles swapping each source
-
-
-==============================================================================
-MLS-WATER-03: Class Percentages and Village Facilities Map
-2 weeks. Builds on MLS-WATER-02.
-==============================================================================
-Goal: Converts the pooled household reports into class percentages and a
-shared wall map of village water facilities.
-
-WHO                   WHAT TO DO
-------------------------------------------------------------------------------
-1. Peer Facilitator   Recall from MLS-WATER-02: use the class list of water
-[changed: CL-02]      reports and the problem list. In mixed groups, pool the
-                      reports into class totals on chart paper by source type,
-                      with rotating Counter, Recorder and Checker roles
-                      swapping for each source type. Count what share of
-                      domestic water comes from each source.
-
-2. Lead Educator      Work one source-type percentage step by step on chart
-[changed: EB-03]      paper, saying each step aloud. Each child then works a
-                      second source type in their notebook while the chart
-                      example stays visible. Each child copies the class
-                      averages and compares their household mix with the class
-                      average in two written sentences.
-
-3. Lead Educator      Draw a simplified chart of water facilities with only
-[changed: EB-04]      main roads. Mark the water tank, well, pump, tap, canal
-                      and pond on the chart, with children who know the
-                      village outline helping those who do not. Name three
-                      facilities one by one and have every child hold up their
-                      slate showing its shared sign at the same time, look at
-                      all slates, and re-explain any sign many miss before
-                      moving on.
-
-4. Lead Educator      Finish the village water facilities map in class. Check
-                      that each mark is readable using the shared signs. Keep
-                      the finished map on the classroom wall for the next
-                      activities.
-
-------------------------------------------------------------------------------
-BEFORE YOU START
-- Needs: Classroom wall space to keep the village facilities map for later
-  activities.
-  If not: Keep the map folded in the classroom and bring it out per lesson;
-  combine steps 3 and 4 into one period by drawing only main roads and main
-  sources.
+- Needs: Chart paper, chalkboard space and wall space for the village map are
+  available for pooled totals.
+  If not: If chart paper is short, keep one class table reused across
+  percentages and the village map, and drop the pair comparison writing to an
+  oral turn. Do not extend past 3 weeks.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-03 Worked Examples, then Practice: one percentage worked
-  step by step aloud, then each child solves a second source type before
-  copying averages
-- Evidence-Based, EB-04 Checking for Understanding: every child shows the
-  shared sign on slates at the same time, educator looks and re-explains
-  missed signs
-- Connected Learning, CL-02 Structural Peer Roles: pooling into class totals
-  done in mixed groups with rotating Counter, Recorder and Checker roles
+  fully step by step, a second left for students to finish, then students
+  calculate the remaining totals themselves
+- Evidence-Based, EB-04 Checking for Understanding: every child shows one
+  facility placement at the same time on slates, educator looks and
+  re-explains or continues before joint marking
 ```

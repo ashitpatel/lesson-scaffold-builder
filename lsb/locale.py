@@ -76,6 +76,79 @@ def check_proposals(obj: Any, n_log: int) -> list[str]:
     return problems
 
 
+def check_additions(obj: Any) -> list[str]:
+    """Shape-check a 57-locale-add reply: unit/step/anchor/addition entries."""
+    if not isinstance(obj, dict) or not isinstance(obj.get("additions"), list):
+        return ["output has no 'additions' list"]
+    problems = []
+    for n, a in enumerate(obj["additions"]):
+        if not isinstance(a, dict):
+            problems.append(f"additions[{n}] is not an object")
+            continue
+        if not isinstance(a.get("unit"), str) or not a["unit"].strip():
+            problems.append(f"additions[{n}] has no 'unit' id")
+        if not isinstance(a.get("step"), int):
+            problems.append(f"additions[{n}] has no 'step' number")
+        for key in ("anchor", "addition"):
+            if not isinstance(a.get(key), str) or not a[key].strip():
+                problems.append(f"additions[{n}] has no {key!r}")
+    return problems
+
+
+def addition_choices(additions: list[dict]) -> list[ask.Choice]:
+    """One approve/skip-or-own-text choice per locale addition, for the ask layer."""
+    choices = []
+    for n, a in enumerate(additions):
+        where = f"{a['unit']} step {a['step']}"
+        addition = a["addition"]
+        context = (f"After: {a['anchor']}\n"
+                   f"Why this fits {a.get('reason', 'your locale')}")
+        choices.append(ask.Choice(
+            f"locale_add_{n}", f"Add locale detail to {where}?",
+            ((addition, f"Add '{addition}'", ""),
+             ("", "Skip", "leave as is")),
+            addition, free_text=True, context=context))
+    return choices
+
+
+def apply_additions(sequence: dict, additions: list[dict],
+                    decisions: dict[int, str]) -> tuple[dict, list[str]]:
+    """Insert approved additions after their anchors in task actions.
+
+    Returns (sequence, notes). Only non-empty decisions whose unit, step and
+    anchor are all found are applied, after the anchor's first occurrence.
+    Anything missing is reported, never guessed at. Inputs are not mutated.
+    """
+    import copy
+
+    out = copy.deepcopy(sequence)
+    notes = []
+    units = {u.get("mls_id"): u for u in out.get("mls_units", []) if isinstance(u, dict)}
+    for n, a in enumerate(additions):
+        want = decisions.get(n, "")
+        if not want:
+            continue
+        unit = units.get(a.get("unit"))
+        if unit is None:
+            notes.append(f"locale addition {n}: unit {a.get('unit')!r} not found, skipped")
+            continue
+        task = next((t for t in (unit.get("tasks") or [])
+                     if isinstance(t, dict) and t.get("step") == a.get("step")), None)
+        if task is None:
+            notes.append(f"locale addition {n}: {a.get('unit')} step {a.get('step')} not found, skipped")
+            continue
+        action = task.get("action") or ""
+        anchor = a.get("anchor") or ""
+        if not anchor or anchor not in action:
+            notes.append(f"locale addition {n}: anchor not found in {a.get('unit')} step {a.get('step')}, skipped")
+            continue
+        if anchor[-1].isalnum() and want[0].isalnum():
+            want = " " + want
+        task["action"] = action.replace(anchor, anchor + want, 1)
+        notes.append(f"locale addition {n}: added to {a.get('unit')} step {a.get('step')}")
+    return out, notes
+
+
 def review_choices(proposals: list[dict], log: list[dict]) -> list[ask.Choice]:
     """One approve/skip-or-own-text choice per proposal, for the ask layer."""
     choices = []

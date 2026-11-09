@@ -1,5 +1,5 @@
 > © 2026 Ashit Patel. Final teacher cards for the ranch town in Arizona, USA localization, covered by the repo's [Apache 2.0 LICENSE](../../../LICENSE).
-> Run `runs/snail-pond-arizona-1` (gitignored; this file is the durable copy, byte-identical to its `cards.txt`).
+> Run `runs/snail-pond-arizona-2` (gitignored; this file is the durable copy, byte-identical to its `cards.txt`).
 
 ---
 
@@ -7,18 +7,18 @@
 ==============================================================================
 LESSON SCAFFOLD: Grade 9 Environmental Studies - Pond Management
 ==============================================================================
-Goal: Understand the ponds of the area, how people use and affect them, and
-propose and carry out a pond care plan for the community.
+Goal: Understand the ponds of the area — their uses, condition and care — and
+recommend and begin a community pond design and management plan.
 Grade band: Middle. Period: 45 minutes.
 
 UNIT                  WHAT IT IS
 ------------------------------------------------------------------------------
-MLS-POND-01           Pond Locations, Uses and Cultural Value (2 weeks).
-                      Starts fresh (no earlier unit needed).
-MLS-POND-02           Pond Users, Hygiene and Seasonal Change (3 weeks).
-                      Starts fresh (no earlier unit needed).
-MLS-POND-03           Analysing Findings and Planning Pond Care (4 weeks).
-                      Builds on MLS-POND-01, MLS-POND-02.
+MLS-POND-01           Pond Uses and Community Values (2 weeks). Starts fresh
+                      (no earlier unit needed).
+MLS-POND-02           Sketching and Observing the Pond (3 weeks). Starts fresh
+                      (no earlier unit needed).
+MLS-POND-03           Pooling Findings into a Pond Care Plan (3 weeks). Builds
+                      on MLS-POND-01, MLS-POND-02.
 
 Units that build on the same earlier unit, or start fresh, can run at the same
 time.
@@ -29,199 +29,156 @@ classroom routines, behavior management habits, or physical school rules.
 
 
 ==============================================================================
-MLS-POND-01: Pond Locations, Uses and Cultural Value
+MLS-POND-01: Pond Uses and Community Values
 2 weeks. Starts fresh (no earlier unit needed).
 ==============================================================================
-Goal: Builds the shared map, use list, cultural collection and pond sketches
-that later investigation and planning build on.
+Goal: Establishes which ponds exist, what they are used for daily, and how the
+community values them, grounding later study and planning.
 
 WHO                   WHAT TO DO
 ------------------------------------------------------------------------------
-1. Lead Educator      Explain that a pond is a small still water body in the
-[changed: EB-04]      area. Revisit the class water source maps together and
-                      discuss why some areas have many ponds and others few,
-                      and what family members use ponds for each day. Each
-                      student writes one pond use on a slate and holds it up
-                      at the same time while the educator looks at all slates.
-                      Re-explain pond uses if many are wrong before moving on.
+1. Lead Educator      Revisit the class water source maps and discuss why some
+[changed: EB-04]      areas have many ponds and others few. List daily pond
+                      uses named by families,including cattle and horse
+                      watering at stock tanks, such as bathing, washing,
+                      swimming, fishing, watering gardens and duckery, as
+                      class totals on chart paper. Have each student hold up a
+                      slate naming two daily pond uses, look at all slates,
+                      and re-explain the uses many missed if many are wrong
+                      before moving on.
 
-2. Lead Educator      Ask each student to ask family and neighbours for poems,
-                      songs and sayings that mention a pond and copy the words
-                      into notebooks. Pool the collection on chart paper and
-                      discuss what it shows about how the community values
-                      ponds.
+2. Peer Facilitator   In pairs, collect short poems, songs and sayings that
+                      mention a pond, including local corridos or cowboy songs
+                      about rain and wells, from family and neighbours without
+                      recording names or home details. Count pond mentions
+                      against river and sea mentions as a class tally and
+                      discuss why the counts differ.
 
-3. Lead Educator      Take the whole class together to a nearby pond and stay
-                      with all groups. In small groups, sketch the pond
-                      location, size and shape, surrounding mesquite,
-                      cottonwoods and range grasses, and bank condition using
-                      notebooks and chalk, without entering the water, picking
-                      up waste, or lifting heavy objects.
+3. Lead Educator      Share the collected songs and sayings aloud and discuss
+                      what they show about how the community values ponds.
+                      Record the agreed values as short lines on chart paper.
 
-4. Lead Educator      Compare the number of pond references with river and sea
-                      references on the class chart. Discuss why pond
-                      references are fewer or more frequent and record the
-                      agreed reasons on chart paper.
-
-5. Peer Facilitator   In pairs, exchange sketches and check that location,
-                      size, plants and bank condition are all shown. Each
-                      student completes their own sketch in their notebook
-                      before returning it.
-
-6. Lead Educator      In week 2, open a lesson with four short questions on
-[changed: EB-01]      pond location, uses, sayings and bank condition answered
-                      from memory on slates, with notebooks, charts and books
-                      put away. Show the answers straight after so each
-                      student checks their own. Nothing is collected, marked
-                      or recorded.
+4. Lead Educator      In week 2, ask four short questions on pond uses and
+[changed: EB-01]      agreed values, answered from memory on slates with the
+                      charts and notebooks put away. Then show the answers on
+                      the board so each student checks their own. Nothing is
+                      collected, marked or recorded.
 
 ------------------------------------------------------------------------------
 BEFORE YOU START
-- Needs: Dry weather and access to one nearby pond for a supervised class
-  visit.
-  If not: Skip the visit and sketch from the class water maps and student
-  memory; combine steps 4 and 5 into one period.
+- Needs: Class holds earlier water source maps and time to collect songs from
+  families.
+  If not: Rebuild a simple pond map on the chalkboard from discussion and use
+  songs known in class; if a week is lost, combine steps 2 and 3 into one
+  period.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
-- Evidence-Based, EB-04 Checking for Understanding: every student answers one
-  pond use on slates at the same time and the educator re-explains if many are
-  wrong
-- Evidence-Based, EB-01 Retrieval Practice: low-stakes recall of pond content
-  from memory in week 2, self-checked
+- Evidence-Based, EB-04 Checking for Understanding: every student answers on
+  slates naming two pond uses, educator looks at all slates and re-explains or
+  moves on
+- Evidence-Based, EB-01 Retrieval Practice: low-stakes recall of pond uses and
+  values from memory in week 2, self-checked, nothing collected
 
 
 ==============================================================================
-MLS-POND-02: Pond Users, Hygiene and Seasonal Change
+MLS-POND-02: Sketching and Observing the Pond
 3 weeks. Starts fresh (no earlier unit needed).
 ==============================================================================
-Goal: Produces class counts of pond uses, hygiene problems, creatures and
-seasonal change needed to judge pollution and protection options.
+Goal: Produces first-hand sketches and class observation notes on pond shape,
+banks, users, hygiene, creatures and seasonal change that the analysis and
+plan build on.
 
 WHO                   WHAT TO DO
 ------------------------------------------------------------------------------
-1. Lead Educator      Discuss in class the questions for the pond visit: who
-[changed: EB-04]      uses the pond, for what purposes, with what materials,
-                      and how use changes by season. Agree a class table on
-                      chart paper for counts by purpose and season, with no
-                      names or home details. Give one example pond use and
-                      have every student show on slates where they would tally
-                      it, look at all slates and re-explain the table if many
-                      are wrong before moving on.
+1. Lead Educator      The whole class goes together to a nearby pond and the
+                      educator stays with all groups. Sketch the pond shape,
+                      size, stock tank and bank condition from the bank. Do
+                      not enter the water, pick plants, or lift stones.
 
-2. Lead Educator      Take the whole class together to the same nearby pond
-[changed: CL-02]      and stay with all groups. In mixed small groups with
-                      Counter, Recorder and Checker roles, tally pond users by
-                      purpose, note materials such as soap and feed, and
-                      record litter, waste and inflows on the class table,
-                      without touching waste, entering the water, or lifting
-                      pumps and heavy objects. Swap roles halfway through.
+2. Peer Facilitator   The whole class goes together and the educator stays
+[changed: CL-02]      with all groups. In pairs, take turns as Spotter and
+                      Recorder to record trees and plants around and on the
+                      pond, like mesquite, creosote and cottonwood, from the
+                      bank on chart paper, swapping roles halfway. Do not pick
+                      leaves, touch animals, or enter the water.
 
-3. Lead Educator      Take the whole class together around the pond edge and
-                      stay with all groups. In small groups, count birds,
-                      insects and other creatures seen, note trees and pond
-                      plants, and ask accompanying adults about past water
-                      levels and past uses, without touching animals, picking
-                      plants, or entering the water.
+3. Lead Educator      The whole class goes together and the educator stays
+                      with all groups. Tally pond uses, materials and seasonal
+                      changes as class totals and ask adult users about
+                      purposes. Do not touch soap, feed, pumps, or waste and
+                      do not enter the water.
 
-4. Lead Educator      Discuss in class whether the water looks dirtier than in
-                      the past and how quantity changes with seasons. List
-                      social and religious activities held at the pond and
-                      record agreed points on chart paper as class totals.
+4. Lead Educator      The whole class goes together and the educator stays
+                      with all groups. Note garbage, plastics, waste and
+                      inflow from the bank and list birds, animals and insects
+                      seen, such as herons, coyotes or bullfrogs at tanks,
+                      without touching them. Do not pick up waste, touch
+                      animals, or enter the water.
 
-5. Peer Facilitator   In pairs, review the class table for gaps on users,
-                      hygiene, creatures and seasonal change. Each pair
-                      reports one missing item to the class for the educator
-                      to add to the chart.
-
-6. Lead Educator      In week 3, open one lesson with four short questions on
-[changed: EB-01]      pond uses, materials, creatures and seasonal change,
-                      answered from memory on scrap paper with the class table
-                      and notebooks put away. Then show the answers so each
-                      student checks their own. Nothing is collected, marked
-                      or recorded.
+5. Lead Educator      The whole class goes together and the educator stays
+                      with all groups. Ask adult users about the pond history,
+                      water change across seasons and gatherings held there,
+                      and record class notes. Do not enter the water, pick
+                      plants, or lift heavy objects.
 
 ------------------------------------------------------------------------------
 BEFORE YOU START
-- Needs: Pond users and accompanying adults available during the visit; pond
-  edge passable.
-  If not: Use educator knowledge and student recall for counts; shorten to one
-  outdoor visit and complete the table in class.
+- Needs: Safe daylight access to a nearby pond bank for the whole class.
+  If not: Observe from the bank only without field interviews, using educator
+  notes on seasonal use; if a week is lost, combine steps 3 and 5 into one
+  visit and shorten sketching to one pond.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
-- Evidence-Based, EB-04 Checking for Understanding: every student shows on
-  slates where one example use goes on the table, educator looks at all slates
-  and re-explains if many are wrong before the visit
-- Evidence-Based, EB-01 Retrieval Practice: short recall in week 3 of uses,
-  materials, creatures and seasonal change from memory, self-checked with
-  nothing collected
-- Connected Learning, CL-02 Structural Peer Roles: added rotating Counter,
-  Recorder and Checker roles to the pond-use tally
+- Connected Learning, CL-02 Structural Peer Roles: added rotating Spotter and
+  Recorder roles with halfway swap to shared plant recording
 
 
 ==============================================================================
-MLS-POND-03: Analysing Findings and Planning Pond Care
-4 weeks. Builds on MLS-POND-01, MLS-POND-02.
+MLS-POND-03: Pooling Findings into a Pond Care Plan
+3 weeks. Builds on MLS-POND-01, MLS-POND-02.
 ==============================================================================
-Goal: Turns the sketches, cultural findings and use tallies into an agreed
-pond design, practical care actions and a class report for other schools.
+Goal: Turns the use charts and field observations into debated findings and
+the class's own pond design, started actions and shared report.
 
 WHO                   WHAT TO DO
 ------------------------------------------------------------------------------
-1. Lead Educator      Recall from MLS-POND-01: use the pond sketches and song
-                      findings, with the user and hygiene tallies from
-                      MLS-POND-02. Pool all findings into class charts and
-                      diagrams on chart paper showing uses, pollution sources
-                      and seasonal change.
+1. Lead Educator      Recall from MLS-POND-01 and MLS-POND-02: pool the use
+                      charts, song findings, sketches and observation notes
+                      into class charts and diagrams on chart paper.
 
-2. Lead Educator      Debate what pollutes pond water and what follows, asking
-[changed: EB-09]      why each pollutant harms the pond and whether mosquitoes
-                      come from the pond, with each student first writing
-                      their answer on scrap paper. State the precise agreed
-                      answers from the class charts straight after and record
-                      them on chart paper, with community rules, well-designed
-                      pond features and how to protect the pond.
+2. Lead Educator      Debate community rules for pond use, weighing ranch
+[changed: CL-02]      watering needs under senior water rights, features of a
+                      well-designed pond, sources of pollution and their
+                      effects, protection steps, and whether ponds cause extra
+                      mosquitoes. In mixed groups, name a Recorder and a
+                      Presenter to record agreed points on chart paper. Swap
+                      the two roles halfway through the debate.
 
-3. Lead Educator      Draw a pond design and management plan with planted
-[changed: EB-08]      banks, prickly pear and mesquite, a soak pit for soapy
-                      water, and open space for daily use, based on the
-                      well-managed neighboring ranch stock tank example. After
-                      each part, each student turns to a neighbour and says
-                      why that part protects the pond, then state the correct
-                      reason before drawing the next part.
+3. Lead Educator      Give a full lesson of quiet work for the class to draw a
+                      pond design and care plan with mesquite, a soak pit for
+                      wash water and space kept for use. Each group produces
+                      one plan drawing with labels.
 
-4. Lead Educator      Take the whole class together to the pond and stay with
-                      all groups to tidy the banks and plant the edges with
-                      cuttings and seeds already available locally. Students
-                      collect only dry leaves and paper using sticks or twigs,
-                      and must not touch broken, sharp or soiled waste, sewage
-                      or dead animals; the educator removes those items. Wash
-                      hands with clean water after the work, without entering
-                      deep water or lifting heavy objects.
+4. Lead Educator      The whole class goes together and the educator stays
+                      with all groups. Carry out the parts the class can do,
+                      such as clearing light litter near the pond, planting
+                      the bank and making awareness posters. Do not lift heavy
+                      objects, touch sharp waste, or enter the water.
 
-5. Peer Facilitator   In pairs, make one awareness poster on chart paper about
-                      keeping the pond clean using the class findings. Each
-                      pair keeps its poster in the classroom for the educator
-                      to collect.
-
-6. Lead Educator      Give a full lesson of quiet writing time. Each student
-                      writes a report of what the class did, what is expected
-                      to follow, and their own suggestion for pond care.
-
-7. Lead Educator      Compile one class report from the student reports and
-                      chart findings. The educator sends it to the county
-                      school-sharing network for other schools.
+5. Lead Educator      Write a short report of what the class did and what is
+                      expected to follow, with each student's name only on
+                      their own work. The educator sends the report to a
+                      county school network for other schools.
 
 ------------------------------------------------------------------------------
 BEFORE YOU START
-- Needs: Cuttings and seeds available locally; permission to clear litter and
-  plant pond banks.
-  If not: Drop planting and do clearing plus posters only; shorten debate to
-  one period to keep the 4-week span.
+- Needs: Chart paper and chalk available, plus permission to clear light
+  litter and plant a pond bank.
+  If not: Use chalkboard charts and notebook plans, and replace planting with
+  a paper bank layout; if a week is lost, run two short debates in one period
+  and drop one planting visit.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
-- Evidence-Based, EB-09 Elaborative Interrogation: precise why questions on
-  pollution effects answered first on scrap, then precise answers from charts
-  stated straight after
-- Evidence-Based, EB-08 Self-Explanation: each learner explains to a neighbour
-  why each design part works, with correct reason confirmed before next part
+- Connected Learning, CL-02 Structural Peer Roles: debate recording shared
+  through rotating Recorder and Presenter roles
 ```

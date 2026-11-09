@@ -841,6 +841,58 @@ class Relocalize(unittest.TestCase):
         self.assertEqual(result.sequence, VALID)
         self.assertEqual(info["applied"], [0])
 
+    def test_additions_run_when_enabled(self):
+        add = {"unit": "MLS-HYDRO-01", "step": 1,
+               "anchor": "measuring local rainfall", "addition": "during the monsoon",
+               "reason": "names the season"}
+        script = iter([self.LOG, {"proposals": []}, {"additions": [add]}])
+        saved = {}
+        result = run.RunResult("pass", 1, copy.deepcopy(VALID), Path("."))
+        info = run.run_relocalize(
+            SOURCE, "Nowhere", result, {"environment_assumptions": []},
+            lambda *a: next(script), lambda n, o: saved.update({n: o}),
+            run.ask.DefaultPrompter(), {}, want_additions=True)
+        action = result.sequence["mls_units"][0]["tasks"][0]["action"]
+        self.assertIn("measuring local rainfall during the monsoon", action)
+        self.assertEqual(info["added"], [0])
+        self.assertIn("locale-additions.json", saved)
+        self.assertIn("locale-add-decisions.json", saved)
+
+    def test_additions_drop_individually_on_new_failures(self):
+        good = {"unit": "MLS-HYDRO-01", "step": 1,
+                "anchor": "measuring local rainfall", "addition": "during the monsoon",
+                "reason": "names the season"}
+        bad = {"unit": "MLS-HYDRO-01", "step": 1,
+               "anchor": "measuring local rainfall", "addition": " ".join(["word"] * 100),
+               "reason": "overflows the step"}
+        script = iter([self.LOG, {"proposals": []}, {"additions": [good, bad]}])
+        result = run.RunResult("pass", 1, copy.deepcopy(VALID), Path("."))
+        info = run.run_relocalize(
+            SOURCE, "Nowhere", result, {"environment_assumptions": []},
+            lambda *a: next(script), lambda n, o: None,
+            run.ask.DefaultPrompter(), {}, want_additions=True)
+        action = result.sequence["mls_units"][0]["tasks"][0]["action"]
+        self.assertIn("during the monsoon", action)
+        self.assertNotIn("word word", action)
+        self.assertEqual(info["added"], [0])
+        self.assertEqual(info["add_skipped"], [1])
+        self.assertTrue(any("addition 1 dropped" in n for n in result.notes),
+                        result.notes)
+
+    def test_additions_skipped_when_disabled(self):
+        calls = []
+        script = iter([self.LOG, {"proposals": []}])
+
+        def call(*a):
+            calls.append(a[0])
+            return next(script)
+
+        result = run.RunResult("pass", 1, copy.deepcopy(VALID), Path("."))
+        run.run_relocalize(
+            SOURCE, "Nowhere", result, {"environment_assumptions": []},
+            call, lambda n, o: None, run.ask.DefaultPrompter(), {})
+        self.assertEqual(calls, ["locale-log", "relocalize"])
+
 
 if __name__ == "__main__":
     unittest.main()

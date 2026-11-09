@@ -56,6 +56,50 @@ class ShapeChecks(unittest.TestCase):
         self.assertTrue(loc.check_proposals(bad, 3))
 
 
+class Additions(unittest.TestCase):
+    ADD = {"unit": "U1", "step": 1, "anchor": "the local market",
+           "addition": "in Kisumu", "reason": "names the district market"}
+
+    def sequence(self):
+        return {"mls_units": [
+            {"mls_id": "U1", "tasks": [
+                {"step": 1, "action": "Buy paper at the local market, then return to the local market."},
+                {"step": 2, "action": "Count coins."}]},
+            {"mls_id": "U2", "tasks": [{"step": 1, "action": "Read."}]}]}
+
+    def test_check_accepts_good_rejects_bad(self):
+        self.assertEqual(loc.check_additions({"additions": [dict(self.ADD)]}), [])
+        self.assertEqual(loc.check_additions({"additions": []}), [])
+        self.assertTrue(loc.check_additions({}))
+        self.assertTrue(loc.check_additions({"additions": [{"unit": "U1"}]}))
+
+    def test_choices_keyed_by_position_default_to_addition(self):
+        (c,) = loc.addition_choices([dict(self.ADD)])
+        self.assertEqual(c.key, "locale_add_0")
+        self.assertEqual(c.default, "in Kisumu")
+        self.assertTrue(c.free_text)
+        self.assertIn("U1 step 1", c.question)
+
+    def test_inserts_after_anchor_first_occurrence_only(self):
+        out, notes = loc.apply_additions(self.sequence(), [dict(self.ADD)], {0: "in Kisumu"})
+        action = out["mls_units"][0]["tasks"][0]["action"]
+        self.assertIn("the local market in Kisumu, then return to the local market.", action)
+        self.assertEqual(action.count("in Kisumu"), 1)
+        self.assertTrue(any("added to U1 step 1" in n for n in notes), notes)
+        # original untouched
+        self.assertNotIn("Kisumu", str(self.sequence()))
+
+    def test_adds_missing_space_and_reports_missing_targets(self):
+        add = dict(self.ADD, addition="fresh")
+        out, _ = loc.apply_additions(self.sequence(), [add], {0: "fresh"})
+        self.assertIn("market fresh, then", out["mls_units"][0]["tasks"][0]["action"])
+        for bad in (dict(self.ADD, unit="UX"),
+                    dict(self.ADD, step=9),
+                    dict(self.ADD, anchor="nowhere")):
+            _, notes = loc.apply_additions(self.sequence(), [bad], {0: "x"})
+            self.assertTrue(any("skipped" in n for n in notes), notes)
+
+
 class Review(unittest.TestCase):
     def test_choices_default_to_proposed_with_free_text(self):
         props = [{"id": 0, "proposed": "Kisumu market", "reason": "r"},
@@ -126,10 +170,15 @@ class Plumbing(unittest.TestCase):
                          {"SOURCE_TEXT", "SEQUENCE_JSON"})
         self.assertEqual(set(run.prompt_placeholders("56-relocalize.md")),
                          {"LOCALE_LOG", "TARGET_LOCALE", "LOCALE_NOTES", "SEQUENCE_JSON"})
+        self.assertEqual(set(run.prompt_placeholders("57-locale-add.md")),
+                         {"SEQUENCE_JSON", "TARGET_LOCALE", "LOCALE_NOTES", "LOCALE_LOG"})
 
     def test_locale_notes_default_is_empty(self):
         self.assertEqual(ask.DefaultPrompter().ask(run._locale_notes_choice()), "")
         self.assertEqual(run._locale_choice().default, "strip")
+
+    def test_locale_additions_default_is_off(self):
+        self.assertFalse(ask.DefaultPrompter().ask(run._locale_additions_choice()))
 
 
 if __name__ == "__main__":

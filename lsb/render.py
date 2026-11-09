@@ -313,6 +313,54 @@ def render_html(deck: Deck) -> str:
             + "\n".join(parts) + "\n</body></html>\n")
 
 
+_WORD = re.compile(r"[A-Za-z']+")
+_SENT_END = re.compile(r"[.!?]+")
+
+
+def _syllables(word: str) -> int:
+    word = word.lower().strip("'")
+    if not word:
+        return 0
+    count = len(re.findall(r"[aeiouy]+", word))
+    if word.endswith("e"):
+        count -= 1
+    return max(count, 1)
+
+
+def readability(sequence: dict | None, assumptions: list | None = None) -> dict:
+    """Flesch reading ease over the teacher-facing texts, for summary.json.
+
+    Titles, task actions and condition/fallback lines are the words a teacher
+    reads; the score is recorded, never gated on, since locale terms and
+    necessary detail legitimately lower it. Unclear wording is enforced by
+    the critic (G02), which can judge what a count cannot.
+    """
+    texts = []
+    for u in ((sequence or {}).get("mls_units") or []):
+        if not isinstance(u, dict):
+            continue
+        if u.get("title"):
+            texts.append(u["title"])
+        for t in u.get("tasks") or []:
+            if isinstance(t, dict) and t.get("action"):
+                texts.append(t["action"])
+    for a in assumptions or []:
+        if not isinstance(a, dict):
+            continue
+        for key in ("assumes", "if_not"):
+            if a.get(key):
+                texts.append(a[key])
+    blob = " ".join(texts)
+    words = _WORD.findall(blob)
+    sents = [s for s in _SENT_END.split(blob) if s.strip()]
+    total = sum(_syllables(w) for w in words)
+    longest = max((len(_WORD.findall(s)) for s in sents), default=0)
+    words_n, sents_n = max(len(words), 1), max(len(sents), 1)
+    return {"flesch": round(206.835 - 1.015 * (words_n / sents_n) - 84.6 * (total / words_n), 1),
+            "words": len(words), "sentences": len(sents),
+            "longest_sentence_words": longest}
+
+
 # ---------------------------------------------------------------- the G21 check
 
 FORBIDDEN_HTML = re.compile(r"<\s*(img|script|link|iframe|object|embed|video|audio|svg|canvas)\b|url\(|https?://|@import",
