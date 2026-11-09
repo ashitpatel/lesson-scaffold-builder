@@ -22,6 +22,7 @@ lsb-run = "lsb.run:main"
 lsb-validate = "lsb.validate:main"
 lsb-render = "lsb.render:main"
 lsb-regress = "lsb.regress:main"
+lsb-refine = "lsb.refine:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["lsb"]

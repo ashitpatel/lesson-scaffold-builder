@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07 00:01:00 +0000
 ---
 
-*Part 2 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 2 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The [last post]({{ site.baseurl }}/from-lesson-to-classroom/) described the Sunday-evening problem: a long lesson in, a runnable sequence out. But a tool that plans lessons without asking anything would just be a faster way to get someone else's plan. So before it plans anything, LSB asks seven questions. Here is what each one asks, and why it matters.
 
@@ -22,7 +22,7 @@ The tool shows the lesson's goal and a table of its sections — what each cover
 
 A long lesson can become one scaffold spanning the whole thing, or up to four smaller ones. If several, the tool suggests breakdown lines drawn from the lesson's own sections — by topic, by skill, by week — and asks how many units at most, and how many weeks each may take (2 to 4). Small sequences with clear handoffs are easier to teach, to lose a week from, and to hand to a colleague. But splitting has a cost: every boundary needs a "recall what came before" step, or the thread breaks. So one unbroken sequence is always on the table.
 
-In the same round, the tool asks how to handle region-specific content: strip it to generic labels (the default), keep the lesson's own locale, or strip it and then relocalize to your setting. Relocalizing means naming your target locale, adding notes about it (what to prefer, what to avoid), and reviewing each proposed replacement — approve, skip, or write your own — before it reaches a card.
+In the same round, the tool asks how to handle region-specific content: strip it to generic labels (the default), keep the lesson's own locale, or strip it and then relocalize to your setting. Relocalizing means naming your target locale, adding notes about it (what to prefer, what to avoid), and reviewing each proposed replacement — approve, skip, or write your own — before it reaches a card. Where the lesson was already generic, it can also suggest small locale details to add, each reviewed the same way. And it asks which language the final cards should use: the reviewed cards are translated last, or stay in English if you prefer.
 
 ## 4. Which approaches should it leave out?
 

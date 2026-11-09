@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07 00:02:00 +0000
 ---
 
-*Part 3 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 3 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The [last post]({{ site.baseurl }}/seven-questions/) covered the questions the tool asks. This one covers the deletions, because they are half the value. Every test lesson behind this project was written carrying the things real lessons carry, and every removal below comes from a real run, listed in the [walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs). The tool removes in six groups. Each has a classroom reason, not just a rule.
 
@@ -30,7 +30,7 @@ Devices, apps, internet, printing services, projectors: out, unless marked as an
 
 ## 5. What only fits one place
 
-Named markets, a region's currency, the national curriculum body, the district education office: by default, replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test lessons are set in nine different countries precisely so this gets exercised. But stripping is a choice, not a rule: at the outset you can keep the lesson's own locale instead, or strip and then relocalize to your setting — naming the target locale, adding notes about it, and reviewing each proposed replacement before it reaches a card.
+Named markets, a region's currency, the national curriculum body, the district education office: by default, replaced with generic labels. A card set in "a market" with "coins" can travel; one set in a named town with real prices cannot. The test lessons are set in nine different countries precisely so this gets exercised. But stripping is a choice, not a rule: at the outset you can keep the lesson's own locale instead, or strip and then relocalize to your setting — naming the target locale, adding notes about it, and reviewing each proposed replacement before it reaches a card. Every removal is tagged by reason: things dropped only for being region-specific can come back as your locale's equivalents; safety, privacy, and cost removals never come back, whatever you ask for.
 
 That replacement is a guess, and sometimes a wrong or incomplete one: a stripped term can flatten meaning, a kept one can smuggle in something that doesn't travel, and a relocalized one can miss the mark for your setting entirely. Review the locale handling thoroughly, with the rest of the output, to make sure the material is culturally and educationally appropriate and complete before it reaches a classroom.
 

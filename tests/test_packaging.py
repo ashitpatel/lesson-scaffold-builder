@@ -22,9 +22,9 @@ class Packaging(unittest.TestCase):
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         self.assertIn(f"## {version} ", changelog)
 
-    def test_console_scripts_cover_the_four_runners(self):
+    def test_console_scripts_cover_the_five_runners(self):
         pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-        for name in ("lsb-run", "lsb-validate", "lsb-render", "lsb-regress"):
+        for name in ("lsb-run", "lsb-validate", "lsb-render", "lsb-regress", "lsb-refine"):
             self.assertIn(name, pyproject)
 
     def test_resource_root_is_the_checkout(self):

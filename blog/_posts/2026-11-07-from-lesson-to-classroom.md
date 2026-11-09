@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07
 ---
 
-*Part 1 of 6 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder), a free, open-source tool that turns long lessons into short, runnable classroom sequences.*
+*Part 1 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder), a free, open-source tool that turns long lessons into short, runnable classroom sequences.*
 
 Every teacher knows the Sunday-evening problem. The lesson for next week is twenty pages of lecture, written for a classroom with small groups, ready materials and pupils who all learned last term's content. Your classroom has forty pupils, a piece of chalk, and a week lost to exams. Somewhere between the lesson and Monday morning, you turn one into the other, by hand.
 
@@ -23,7 +23,7 @@ A teacher reading any of these makes a hundred quiet decisions: skip that, repla
 [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder) (LSB) does a first draft of those decisions, in the open. You give it a lesson. It returns a small set of Micro-Lesson Scaffolds: 2-to-4-week sequences of 3 to 7 steps each, printed as offline teacher cards. Along the way it:
 
 - **takes out** what is unsafe, costly, region-specific, or a risk to children's privacy, and lists everything it removed;
-- **asks** how to handle region-specific content: strip it to generic labels (the default), keep the lesson's own locale, or strip it and then relocalize to your setting — you name the target locale, add notes about it, and review each proposed replacement before it reaches a card;
+- **asks** how to handle region-specific content: strip it to generic labels (the default), keep the lesson's own locale, or strip it and then relocalize to your setting — you name the target locale, add notes about it, and review each proposed replacement before it reaches a card; it can also suggest new locale details to add where the lesson was already generic, and print the final cards in your language;
 - **adds** teaching methods only where they genuinely fit — memory and practice techniques with trial support, peer and interest-driven designs, class votes on real trade-offs — or abstains;
 - **checks** the result against 21 checks, including safety, money, offline use and whether deep work survived, and refuses to print cards that fail.
 

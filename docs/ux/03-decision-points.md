@@ -9,7 +9,7 @@
 | **The source asks for something unsafe** (an unsupervised trip, learners pouring boiling water, climbing on a roof) | Leaves it out or makes it an educator-only demonstration; every outdoor step states supervision and what not to touch | A source flag, and the safe version on the card | [Kenya](../walkthroughs/01-kenya-clean-water/) |
 | **The source tracks children** (a "slow readers" wall chart, scores by name, family migration status, videos of children) | Removes it; class totals only | A source flag naming the section | [Bangladesh](../walkthroughs/05-bangladesh-letters-and-sounds/), [Mexico](../walkthroughs/06-mexico-migration/) |
 | **Students would handle real money** (bringing coins to market, a class fund, selling a book) | Keeps budgeting as made-up numbers; adults handle any money | A source flag; a points budget on the card | [Peru](../walkthroughs/02-peru-fractions/), [Ghana](../walkthroughs/04-ghana-local-government/) |
-| **Region-specific names or currency** | Replaces them with generic labels ("the local council", "points") | Nothing regional on the cards; code fails any currency left in | every walkthrough |
+| **Region-specific names or currency** | Replaces them with generic labels ("the local council", "points"); on request relocalizes to the adapter's locale with per-item review, suggests locale details to add, and translates the cards last | Generic cards by default; reviewed locale terms, added details, or translated cards when asked | every walkthrough |
 | **A line in the source addresses the AI** | Ignores it | A source flag: "not followed" | [Civics run](../../tests/fixtures/civics-source.md) |
 | **Pure lecture** (a history of the subject, dates to copy) | Sets it aside | Listed under what was left out, with the reason | every walkthrough |
 | **A lecture defines a term the units need** | Folds a short explanation into the first step that uses it | The term taught in step 1 of a unit | [Mexico](../walkthroughs/06-mexico-migration/) |
@@ -31,11 +31,10 @@
 4. **Never worse than before.** An optimisation that can't pass review is undone, never shipped.
 5. **Deep work survives.** Practice, mastery checks and sustained writing are never cut or replaced.
 6. **Offline, zero-cost, no child data.** Paper, chalk and reused materials; class totals only; adults handle any money and any outside contact.
-7. **Region-neutral output.** Cards use generic labels so they travel between systems; the adapter localises names afterwards if they want to. Locale handling may be incorrect or incomplete: review it with the rest of the output to make sure the material is culturally and educationally appropriate and complete.
+7. **Region-neutral by default, localised on request.** Cards use generic labels so they travel between systems; the adapter can instead keep the source's locale, relocalize to their own locale with per-item review (including suggested locale details to add), and have the final cards translated. Locale handling may be incorrect or incomplete: review it with the rest of the output to make sure the material is culturally and educationally appropriate and complete.
 8. **Honest about evidence.** Steps never claim what a practice achieves; the cards' evidence notes are for reviewers.
 
 ## Open questions (to settle with practitioners)
-- Should teacher cards be localised back into the region's own names (and language) after the pipeline, and by whom?
 - Is four units the right ceiling for a long lesson, or should the adapter be able to ask for a follow-on set?
 - Which source flags should stop an adapter from using a lesson at all?
 - The evidence-based cards are a project choice (see the [cards file](../../frameworks/evidence-based-practices.md)). Who should own that list?
