@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 from dataclasses import asdict, dataclass, field
@@ -241,9 +242,29 @@ def check_regional_terms(payload: Any, terms: list[str]) -> CheckResult:
     return r
 
 
-def check_step_size(payload: Any, limits: dict) -> CheckResult:
+def effective_word_cap(limits: dict, language: str | None = None) -> int:
+    """D11 word cap scaled for the output language; unknown/bad entries mean 1.0."""
+    base = limits["max_words_per_step"]
+    table = limits.get("word_cap_multipliers")
+    if not isinstance(table, dict):
+        return base
+    raw = table.get(language) if language else None
+    if raw is None and language:
+        raw = table.get(language.lower())
+    if raw is None:
+        raw = table.get("default", 1.0)
+    try:
+        mult = float(raw)
+    except (TypeError, ValueError):
+        return base
+    if mult <= 0:
+        return base
+    return max(1, math.ceil(base * mult))
+
+
+def check_step_size(payload: Any, limits: dict, language: str | None = None) -> CheckResult:
     r = CheckResult("D11", "Step size", "Task Granularity")
-    max_s, max_w = limits["max_sentences_per_step"], limits["max_words_per_step"]
+    max_s, max_w = limits["max_sentences_per_step"], effective_word_cap(limits, language)
     for i, u in _units(payload):
         for j, t in _tasks(u):
             action = t.get("action")
@@ -258,7 +279,8 @@ def check_step_size(payload: Any, limits: dict) -> CheckResult:
 
 
 def validate(payload: Any, schema: dict | None = None, config: dict | None = None,
-             single_span: bool = False, skip_d10: bool = False) -> Report:
+             single_span: bool = False, skip_d10: bool = False,
+             language: str | None = None) -> Report:
     schema = schema if schema is not None else load_json(SCHEMA_PATH)
     config = config if config is not None else load_config()
     limits = config["limits"]
@@ -275,7 +297,7 @@ def validate(payload: Any, schema: dict | None = None, config: dict | None = Non
     ]
     if not skip_d10:
         checks.append(check_regional_terms(payload, config.get("regional_terms", [])))
-    checks.append(check_step_size(payload, limits))
+    checks.append(check_step_size(payload, limits, language))
     return Report(checks)
 
 
@@ -299,13 +321,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("payload", type=Path, help="MLS_DAG_Sequence JSON file")
     ap.add_argument("--json", action="store_true", help="print the report as JSON")
     ap.add_argument("--skip-d10", action="store_true", help="skip the regional-terms check (kept/relocalized runs)")
+    ap.add_argument("--language", default=None, metavar="CODE",
+                    help="output language code; scales the D11 word cap via the config multipliers")
     args = ap.parse_args(argv)
     try:
         payload = load_json(args.payload)
     except (OSError, json.JSONDecodeError) as e:
         print(f"cannot read {args.payload}: {e}", file=sys.stderr)
         return 2
-    report = validate(payload, skip_d10=args.skip_d10)
+    report = validate(payload, skip_d10=args.skip_d10, language=args.language)
     print(json.dumps(report.to_dict(), indent=2, ensure_ascii=False) if args.json else format_text(report))
     return 0 if report.passed else 1
 

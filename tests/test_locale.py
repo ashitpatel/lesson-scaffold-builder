@@ -29,6 +29,14 @@ class Texts(unittest.TestCase):
         self.assertIn("context-neutral names", loc.locale_rule("strip"))
         self.assertIn("context-neutral names", loc.locale_rule("relocalize"))
 
+    def test_scope_with_approved_terms_lists_exceptions(self):
+        scope = loc.locale_scope("strip", ["suomi (Finnish)", "chimanga"])
+        self.assertIn("suomi (Finnish)", scope)
+        self.assertIn("chimanga", scope)
+        self.assertIn("G09", scope)
+        plain = loc.locale_scope("strip")
+        self.assertNotIn("suomi", plain)
+
     def test_keep_rule_and_scope_cover_names_objects_stories(self):
         self.assertIn("stories", loc.locale_rule("keep"))
         self.assertIn("Do not file G09", loc.locale_scope("keep"))
@@ -42,6 +50,20 @@ class ShapeChecks(unittest.TestCase):
         self.assertEqual(len(loc.check_locale_log({})), 1)
         found = loc.check_locale_log({"locale_log": [{"original": "x"}]})
         self.assertTrue(any("category" in p for p in found), found)
+
+    def test_locale_log_checks_drop_reason(self):
+        good = {"locale_log": [{"original": "x", "category": "market",
+                                "generic": None, "drop_reason": "locale"}]}
+        self.assertEqual(loc.check_locale_log(good), [])
+        good["locale_log"][0]["drop_reason"] = "withheld"
+        self.assertEqual(loc.check_locale_log(good), [])
+        good["locale_log"][0]["drop_reason"] = None
+        self.assertEqual(loc.check_locale_log(good), [])
+        del good["locale_log"][0]["drop_reason"]
+        self.assertEqual(loc.check_locale_log(good), [])
+        bad = {"locale_log": [{"original": "x", "category": "market",
+                               "drop_reason": "sometimes"}]}
+        self.assertTrue(any("drop_reason" in p for p in loc.check_locale_log(bad)))
 
     def test_proposals_check_ids_and_text(self):
         good = {"proposals": [{"id": 0, "proposed": "Kisumu market"},
@@ -125,6 +147,69 @@ class Review(unittest.TestCase):
         self.assertEqual(ask.DefaultPrompter().ask(choices[0]), "Kisumu market")
 
 
+class Translation(unittest.TestCase):
+    def seq(self):
+        return {"macro_objective": "Learn maps.", "global_context": {"grade_band": "Middle"},
+                "mls_units": [
+                    {"mls_id": "U1", "title": "Home maps", "duration_weeks": 2,
+                     "dependencies": [], "macro_alignment": "Maps homes.",
+                     "tasks": [{"step": 1, "role": "Lead_Educator", "action": "Draw home."},
+                               {"step": 2, "role": "Peer_Facilitator", "action": "Share maps."}]},
+                    {"mls_id": "U2", "title": "Totals", "duration_weeks": 2,
+                     "dependencies": ["U1"], "macro_alignment": "Adds up.",
+                     "tasks": [{"step": 1, "role": "Lead_Educator", "action": "Count all."}]}]}
+
+    def assump(self):
+        return [{"mls_id": "U1", "assumes": "Paper around.", "if_not": "Use slates."}]
+
+    def translated(self):
+        seq = self.seq()
+        seq["macro_objective"] = "Apprendre les cartes."
+        for u in seq["mls_units"]:
+            u["title"] += " (fr)"
+            u["macro_alignment"] += " (fr)"
+            for t in u["tasks"]:
+                t["action"] += " (fr)"
+        assump = [{"mls_id": "U1", "assumes": "Papier autour. (fr)", "if_not": "Ardoises. (fr)"}]
+        return {"sequence": seq, "assumptions": assump}
+
+    def test_good_translation_passes(self):
+        self.assertEqual(loc.check_translation(self.seq(), self.assump(), self.translated()), [])
+
+    def test_bad_shapes_fail(self):
+        before, assump = self.seq(), self.assump()
+        self.assertTrue(loc.check_translation(before, assump, {}))
+        self.assertTrue(loc.check_translation(before, assump, {"sequence": {}, "assumptions": []}))
+
+    def test_structure_changes_fail(self):
+        before, assump = self.seq(), self.assump()
+        good = self.translated()
+        dropped = {"sequence": {"mls_units": good["sequence"]["mls_units"][:1],
+                                "macro_objective": "x", "global_context": {"grade_band": "Middle"}},
+                   "assumptions": good["assumptions"]}
+        self.assertTrue(loc.check_translation(before, assump, dropped))
+        bad = self.translated()
+        bad["sequence"]["mls_units"][0]["tasks"][0]["role"] = "Peer_Facilitator"
+        self.assertTrue(any("role" in p for p in loc.check_translation(before, assump, bad)))
+        bad = self.translated()
+        bad["sequence"]["mls_units"][1]["dependencies"] = []
+        self.assertTrue(loc.check_translation(before, assump, bad))
+        bad = self.translated()
+        bad["sequence"]["mls_units"][0]["tasks"][0]["action"] = "  "
+        self.assertTrue(any("emptied" in p for p in loc.check_translation(before, assump, bad)))
+        bad = self.translated()
+        bad["assumptions"][0]["mls_id"] = "U9"
+        self.assertTrue(loc.check_translation(before, assump, bad))
+
+    def test_output_language_normalizes_english_away(self):
+        self.assertIsNone(loc.output_language(""))
+        self.assertIsNone(loc.output_language("  "))
+        self.assertIsNone(loc.output_language("en"))
+        self.assertIsNone(loc.output_language("English"))
+        self.assertEqual(loc.output_language("French"), "French")
+        self.assertEqual(loc.output_language("  fr "), "fr")
+
+
 class Apply(unittest.TestCase):
     def test_replaces_in_actions_and_assumptions(self):
         assumptions = [{"assumes": "paper from the local market", "if_not": "use coins"}]
@@ -172,6 +257,14 @@ class Plumbing(unittest.TestCase):
                          {"LOCALE_LOG", "TARGET_LOCALE", "LOCALE_NOTES", "SEQUENCE_JSON"})
         self.assertEqual(set(run.prompt_placeholders("57-locale-add.md")),
                          {"SEQUENCE_JSON", "TARGET_LOCALE", "LOCALE_NOTES", "LOCALE_LOG"})
+        self.assertEqual(set(run.prompt_placeholders("59-translate.md")),
+                         {"SEQUENCE_JSON", "ASSUMPTIONS", "TARGET_LANGUAGE", "FEEDBACK"})
+
+    def test_critic_values_carry_approved_terms(self):
+        src = run.Source(text="t", ref="r")
+        vals = run.critic_values(src, {"sequence": {}}, v.validate({}),
+                                 approved_terms=["suomi (Finnish)"])
+        self.assertIn("suomi (Finnish)", vals["LOCALE_SCOPE"])
 
     def test_locale_notes_default_is_empty(self):
         self.assertEqual(ask.DefaultPrompter().ask(run._locale_notes_choice()), "")
@@ -179,6 +272,9 @@ class Plumbing(unittest.TestCase):
 
     def test_locale_additions_default_is_off(self):
         self.assertFalse(ask.DefaultPrompter().ask(run._locale_additions_choice()))
+
+    def test_output_language_default_is_empty(self):
+        self.assertEqual(ask.DefaultPrompter().ask(run._output_language_choice()), "")
 
 
 if __name__ == "__main__":

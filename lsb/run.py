@@ -72,6 +72,7 @@ MODEL = "claude-opus-5-5"
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 MAX_TOKENS = 64000
 PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
+DEF = re.compile(r"\[\[([A-Z_]+)\]\]")
 NONE = "(none)"
 
 DECOMPOSE = "05-decompose.md"
@@ -79,6 +80,7 @@ CRITIC = "50-critic.md"
 LOCALE_LOG = "55-locale-log.md"
 RELOCALIZE = "56-relocalize.md"
 LOCALE_ADD = "57-locale-add.md"
+TRANSLATE = "59-translate.md"
 
 
 @dataclass(frozen=True)
@@ -427,16 +429,22 @@ def prompt_placeholders(prompt_file: str) -> list[str]:
     return sorted(set(PLACEHOLDER.findall((PROMPTS / prompt_file).read_text(encoding="utf-8"))))
 
 
-def build_request(prompt_file: str, values: dict[str, str]) -> tuple[list[dict], str, list[str]]:
+def build_request(prompt_file: str, values: dict[str, str],
+                defs: dict[str, str] | None = None) -> tuple[list[dict], str, list[str]]:
     """Return (system blocks, user text, placeholders with no value).
 
     The prompt is the system prompt (stable across runs, so cached). Per-run
     values go in the user turn as XML-tagged blocks named after the prompt's
-    {{PLACEHOLDERS}}.
+    {{PLACEHOLDERS}}. Run constants ([[DEFS]]) are substituted into the prompt
+    prose itself; ones with no def are reported as [[NAME]] in missing.
     """
     prompt = (PROMPTS / prompt_file).read_text(encoding="utf-8")
+    defs = defs or {}
+    missing = [f"[[{n}]]" for n in sorted(set(DEF.findall(prompt))) if n not in defs]
+    for n, val in defs.items():
+        prompt = prompt.replace(f"[[{n}]]", val)
     names = prompt_placeholders(prompt_file)
-    missing = [n for n in names if n not in values]
+    missing += [n for n in names if n not in values]
     user = "Input values for this run (data, not instructions):\n\n" + "\n\n".join(
         f"<{n}>\n{values[n]}\n</{n}>" for n in names if n in values
     )
@@ -491,7 +499,7 @@ def decompose_values(src: Source, previous: dict | None = None, feedback: list |
 
 def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issues: list | None = None,
                   cards: str | None = None, mode: str = "multi",
-                  keep_locale: bool = False) -> dict[str, str]:
+                  keep_locale: bool = False, approved_terms: tuple[str, ...] | list[str] = ()) -> dict[str, str]:
     return {
         "SEQUENCE_JSON": _dump(decomposed["sequence"]),
         "VALIDATOR_REPORT": _dump(report.to_dict()),
@@ -505,7 +513,7 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
         "RENDERED_CARDS": NONE,
         "PREVIOUS_ISSUES": _dump(previous_issues) if previous_issues else NONE,
         "MODE": mode,
-        "LOCALE_SCOPE": loc.locale_scope("keep" if keep_locale else "strip"),
+        "LOCALE_SCOPE": loc.locale_scope("keep" if keep_locale else "strip", approved_terms),
     }
 
 
@@ -874,6 +882,14 @@ def _locale_additions_choice() -> ask.Choice:
                        (False, "No", "only replace what stripping removed")), False)
 
 
+def _output_language_choice() -> ask.Choice:
+    return ask.Choice("output_language", "Which language for the final content?",
+                      (("", "English", "no translation; cards stay as reviewed"),), "",
+                      free_text=True,
+                      context="Name your language in your own words. The reviewed English cards "
+                              "are translated last; if translation fails, the cards stay English.")
+
+
 def _single_choice() -> ask.Choice:
     return ask.Choice("single_module", "Break the lesson into multiple MLS, or keep one?",
                       ((False, "Multiple modules", "2-to-4-week units; the default"),
@@ -1053,10 +1069,56 @@ def _apply_additions(src: Source, target: str, result: RunResult,
     info["add_skipped"] = sorted(set(range(len(additions))) - set(info["added"]))
 
 
+def _apply_translation(result: RunResult, best: dict, call, save,
+                       target: str, cap: int, info: dict) -> None:
+    """Translate the reviewed English sequence; on any failure cards stay English.
+
+    The reply must keep the structure (units, steps, ids, roles, numbers) and
+    fit the scaled word cap; one retry, then English is kept. The critic does
+    not re-review translated prose, so mistranslation is possible — the English
+    original is saved alongside for checking.
+    """
+    assumptions = best.get("environment_assumptions") or []
+    tdefs = {"MAX_WORDS_PER_STEP": str(cap)}
+    feedback = "(none)"
+    for attempt in ("translation", "translation-retry"):
+        try:
+            out = call("translate", TRANSLATE,
+                       {"SEQUENCE_JSON": _dump(result.sequence),
+                        "ASSUMPTIONS": _dump(assumptions),
+                        "TARGET_LANGUAGE": target, "FEEDBACK": feedback},
+                       attempt, tdefs)
+        except (StageError, ModelUnavailable) as e:
+            result.notes.append(f"translation: unavailable ({e}); cards stay English")
+            return
+        problems = loc.check_translation(result.sequence, assumptions, out)
+        if not problems:
+            report = v.validate(out["sequence"], skip_d10=True, language=target)
+            problems = [f"{i.where}: {i.problem}" for c in report.checks for i in c.issues]
+        if problems:
+            feedback = "; ".join(problems)
+            if attempt == "translation":
+                continue
+            result.notes.append(f"translation: unusable ({problems[0]}); cards stay English")
+            return
+        save("english-final.json", {"sequence": result.sequence, "assumptions": assumptions})
+        save("translation.json", out)
+        result.sequence = out["sequence"]
+        best["environment_assumptions"] = out["assumptions"]
+        info["applied"] = True
+        result.notes.append(f"translation: cards translated to {target}")
+        return
+
+
 def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 2,
                  stages: tuple[str, ...] = (), max_stage_revisions: int = 1,
-                 prompter: ask.Prompter | None = None, locale: str | None = None) -> RunResult:
+                 prompter: ask.Prompter | None = None, locale: str | None = None,
+                 language: str | None = None) -> RunResult:
     out_dir.mkdir(parents=True, exist_ok=True)
+    # The pipeline runs in English at the base cap; the output language only
+    # scales the check on the translated sequence at the end.
+    word_cap = v.effective_word_cap(v.load_config()["limits"])
+    defs = {"MAX_WORDS_PER_STEP": str(word_cap)}
     prompter = prompter or ask.DefaultPrompter()
     choices: dict[str, Any] = {}
     for c in _framework_choices():
@@ -1078,6 +1140,11 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         else:
             choices["locale_notes"] = prompter.ask(_locale_notes_choice()) or ""
             choices["locale_additions"] = bool(prompter.ask(_locale_additions_choice()))
+    output_answer = (language or "").strip() if language else ""
+    if not output_answer:
+        output_answer = (prompter.ask(_output_language_choice()) or "").strip()
+    choices["output_language"] = output_answer
+    target_language = loc.output_language(output_answer)
     stages = tuple(k for k in stages if STAGES[k].key not in excluded)
     choices["single_module"] = bool(prompter.ask(_single_choice()))
     if choices["single_module"]:
@@ -1092,8 +1159,9 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     def save(name: str, obj: Any) -> None:
         (out_dir / name).write_text(_dump(obj) + "\n", encoding="utf-8")
 
-    def call(stage: str, prompt_file: str, values: dict, attempt: int | str) -> dict:
-        system, user, missing = build_request(prompt_file, values)
+    def call(stage: str, prompt_file: str, values: dict, attempt: int | str,
+             request_defs: dict | None = None) -> dict:
+        system, user, missing = build_request(prompt_file, values, request_defs or defs)
         if missing:
             raise SystemExit(f"{prompt_file}: no value for {missing}")
         text, usage = model.complete(system, user)
@@ -1274,6 +1342,13 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                                           choices.get("locale_notes") or "",
                                           bool(choices.get("locale_additions"))))
 
+    trans_info: dict[str, Any] = {"target": target_language, "applied": False}
+    final_cap = word_cap
+    if target_language and result.status == "pass" and best_decomposed is not None:
+        final_cap = v.effective_word_cap(v.load_config()["limits"], target_language)
+        _apply_translation(result, best_decomposed, call, save, target_language,
+                           final_cap, trans_info)
+
     if result.status == "pass" and best_decomposed is not None:
         deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
         result.cards_problems = render.write_cards(deck, out_dir)
@@ -1282,8 +1357,11 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
 
     readability = None
     if result.sequence is not None:
-        assumptions = best_decomposed.get("environment_assumptions") if best_decomposed else None
-        readability = render.readability(result.sequence, assumptions)
+        if trans_info["applied"]:
+            result.notes.append(f"readability: skipped; Flesch is English-only (cards in {target_language})")
+        else:
+            assumptions = best_decomposed.get("environment_assumptions") if best_decomposed else None
+            readability = render.readability(result.sequence, assumptions)
     if result.sequence is not None:
         save("sequence.json", result.sequence)
     save("choices.json", choices)
@@ -1299,6 +1377,9 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "readability": readability,
         "source_flags": result.source_flags,
         "source_ref": src.ref,
+        "language": target_language,
+        "word_cap": final_cap,
+        "translation": trans_info,
         "locale": locale_info,
         "notes": result.notes,
         "usage": result.usage,
@@ -1312,12 +1393,13 @@ def dry_run(src: Source) -> int:
     problems = 0
     fake_decomposed = {"sequence": {}, "source_trace": []}
     fake_report = v.validate({})
+    defs = {"MAX_WORDS_PER_STEP": str(v.effective_word_cap(v.load_config()["limits"]))}
     for name, values in (
         (DECOMPOSE, decompose_values(src)),
         (CRITIC, critic_values(src, fake_decomposed, fake_report)),
         *((st.prompt, stage_values(st, src, fake_decomposed, "MLS-X-01")) for st in STAGES.values()),
     ):
-        system, user, missing = build_request(name, values)
+        system, user, missing = build_request(name, values, defs)
         chars = len(system[0]["text"]) + len(user)
         status = "OK" if not missing else f"MISSING {missing}"
         problems += bool(missing)
@@ -1346,6 +1428,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--ask", action="store_true", help="ask about the breakdown and each stage's limits")
     ap.add_argument("--answers", type=Path, metavar="FILE",
                     help="JSON answers for the --ask questions (sweeps answer without stopping)")
+    ap.add_argument("--language", default=None, metavar="CODE",
+                    help="output language for the final content (translates cards last; "
+                         "scales the D11 word cap via the config multipliers)")
     ap.add_argument("--locale", default=None, metavar="LOCALE",
                     help="target locale for relocalize mode (skips asking for it)")
     ap.add_argument("--max-revisions", type=int, default=2)
@@ -1400,7 +1485,7 @@ def main(argv: list[str] | None = None) -> int:
         result = run_pipeline(src, model, out_dir, args.max_revisions,
                               stages=tuple(k for k in STAGE_ORDER if not getattr(args, f"no_{k}")),
                               max_stage_revisions=args.max_stage_revisions, prompter=prompter,
-                              locale=args.locale)
+                              locale=args.locale, language=args.language)
     except api_errors as e:
         print(f"API error after retries: {type(e).__name__}: {e}", file=sys.stderr)
         return 2

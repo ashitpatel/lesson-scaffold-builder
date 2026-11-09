@@ -20,13 +20,16 @@ Return only this JSON object:
 {
   "locale_log": [
     {"original": "Kariakoo market", "generic": "the local market", "category": "market",
-     "where": "§5, dropped from homework; generic used in MLS-MULTDIV-02 tasks"},
+     "where": "§5, dropped from homework; generic used in MLS-MULTDIV-02 tasks",
+     "drop_reason": null},
     {"original": "Tanzanian shillings", "generic": null, "category": "currency",
-     "where": "§4 workbook price; dropped, practice uses made-up points"}
+     "where": "§4 workbook price; dropped, practice uses made-up points",
+     "drop_reason": "withheld"}
   ]
 }
 ```
 
 - `category` is one of: place, market, currency, law, agency, programme, office, object, story, subject, person, other.
+- `drop_reason` is null when the item survived as a generic. When `generic` is null, say why the content is gone: `locale` if it was removed only for being region-specific (a market, currency, programme, food, or office a target-locale equivalent could replace), or `withheld` if it was dropped for any other reason — safety, privacy, money handling, cost, or pedagogy — even if it also names a place. When in doubt, `withheld`: a wrong `locale` invites the content back.
 - `where` names the source section and what the sequence did with it, briefly.
 - An empty list is valid when the source has nothing locale-specific: return `{"locale_log": []}`.

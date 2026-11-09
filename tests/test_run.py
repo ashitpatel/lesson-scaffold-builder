@@ -543,8 +543,20 @@ class Requests(unittest.TestCase):
         }
         for prompt, vals in values.items():
             with self.subTest(prompt=prompt):
-                self.assertEqual(run.build_request(prompt, vals)[2], [])
+                self.assertEqual(
+                    run.build_request(prompt, vals, {"MAX_WORDS_PER_STEP": "100"})[2], [])
                 self.assertEqual(sorted(vals), run.prompt_placeholders(prompt))
+
+    def test_build_request_substitutes_defs_into_prose(self):
+        system, _, missing = run.build_request(
+            run.DECOMPOSE, run.decompose_values(SOURCE), {"MAX_WORDS_PER_STEP": "120"})
+        self.assertEqual(missing, [])
+        self.assertIn("120 words", system[0]["text"])
+        self.assertNotIn("[[MAX_WORDS_PER_STEP]]", system[0]["text"])
+
+    def test_build_request_reports_missing_defs(self):
+        _, _, missing = run.build_request(run.DECOMPOSE, run.decompose_values(SOURCE))
+        self.assertIn("[[MAX_WORDS_PER_STEP]]", missing)
 
     def test_extract_json_tolerates_fences_and_prose(self):
         self.assertEqual(run.extract_json('Here:\n```json\n{"a": {"b": 1}}\n```'), {"a": {"b": 1}})

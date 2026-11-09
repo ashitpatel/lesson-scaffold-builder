@@ -5,13 +5,13 @@ You read the final `MLS_DAG_Sequence` (`{{SEQUENCE_JSON}}`) of a lesson already 
 - `{{SEQUENCE_JSON}}`: the final `MLS_DAG_Sequence` (after replacements).
 - `{{TARGET_LOCALE}}`: the user's locale in their own words (a place, a system, or both).
 - `{{LOCALE_NOTES}}` (optional): the user's overall input and feedback on their locale's specificities — what to prefer, what to avoid, what doesn't exist where they teach. `(none)` when they had nothing to add. Follow these notes above all: when a note contradicts an addition you would otherwise make, omit it.
-- `{{LOCALE_LOG}}`: the `locale_log` list from `55-locale-log`. Don't duplicate it: never re-add a removed item under another name, and never add detail where a replacement already landed.
+- `{{LOCALE_LOG}}`: the `locale_log` list from `55-locale-log`. Don't duplicate it: never add detail where a replacement already landed. A removed item may inspire an insertion only if its `drop_reason` is exactly `locale`; any other reason, a missing reason, or category `story`, `person`, or `law` means it stays removed — never re-add it under another name.
 
 Rules:
 
 - At most 6 additions; fewer is fine, and an empty list is valid when nothing fits. Quality over coverage.
 - Insertions only: each addition names a unit (`mls_id`), a step number, and an `anchor` quoted verbatim from that step's action; the `addition` text is inserted right after the anchor. Quote the anchor exactly — if you can't quote it, omit the entry.
-- Each addition is a short phrase (at most 20 words) that reads grammatically right after its anchor. Prefer steps with room: a step holds at most a few sentences and 80 words, and an addition that overflows its step is dropped. Never contradict the step, never change what learners do, and never add a purchase, a trip, a device, real people's names, or children's data.
+- Each addition is a short phrase (at most 20 words) that reads grammatically right after its anchor. Prefer steps with room: a step holds at most a few sentences and [[MAX_WORDS_PER_STEP]] words, and an addition that overflows its step is dropped. Never contradict the step, never change what learners do, and never add a purchase, a trip, a device, real people's names, or children's data.
 - For stories and culturally weighted material, only draw on the target locale's own traditions — never a forced cross-cultural parallel (no Helen for Sita, no swapped deities or prophets), and nothing that mocks or flattens a belief. If no addition fits without forcing, omit it.
 - The user reviews each addition before it is applied; write each `reason` for them in one plain sentence.
 

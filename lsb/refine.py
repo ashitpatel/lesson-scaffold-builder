@@ -14,6 +14,7 @@ carries a kind field so structural edits can follow later.
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,14 @@ from lsb import validate as v
 
 REFINE = "58-refine.md"
 FORMAT = 1
+
+# Critic checks that stay in scope everywhere: translation can invert meaning,
+# so safety, privacy, and money issues block even on steps the edit didn't touch.
+HARM_CHECKS = ("G19", "G06", "G07")
+
+_STEP_WHERE = re.compile(r"mls_units\[(\d+)\]\.tasks\[(\d+)\]")
+_UNIT_WHERE = re.compile(r"mls_units\[(\d+)\]$")
+_ASSUMP_WHERE = re.compile(r"environment_assumptions\[(\d+)\]$")
 
 
 def _load_json(path: Path, what: str) -> Any:
@@ -129,12 +138,83 @@ def check_refinement(before_seq: dict, before_assump: list, after: Any,
     return problems, changed
 
 
+def scope_issues(issues: list, seq: dict, assumptions: list,
+                 before_assumptions: list, changed: list) -> tuple[list, list]:
+    """Split critic issues into (kept, downgraded) for a refinement turn.
+
+    Only locations the edit changed get full scrutiny; harm checks stay in
+    scope everywhere; anything else the critic flags in accepted prose is set
+    aside as a minor note so a tweak isn't blocked by wording it didn't touch.
+    Unit-level locations are never in scope: step edits cannot change titles,
+    alignments, dependencies, or weeks. Unparseable locations are kept:
+    unknown means in scope. Cross-step coherence breaks on unchanged steps
+    (a recall line the edit orphaned) are the accepted residual: rewording an
+    action rarely orphans one, and the structure check still guards the ids.
+    """
+    units = seq.get("mls_units", []) if isinstance(seq, dict) else []
+    before_assumptions = before_assumptions or []
+
+    def edited(where: Any) -> bool | None:
+        """True if the location was edited, False if accepted, None if unknown."""
+        if not isinstance(where, str):
+            return None
+        m = _STEP_WHERE.search(where)
+        if m:
+            try:
+                unit = units[int(m.group(1))]
+                task = unit.get("tasks", [])[int(m.group(2))]
+                return [unit.get("mls_id"), task.get("step")] in changed
+            except (IndexError, AttributeError, TypeError):
+                return None
+        m = _ASSUMP_WHERE.search(where)
+        if m:
+            i = int(m.group(1))
+            if i >= len(assumptions or []) or i >= len(before_assumptions):
+                return None
+            return assumptions[i] != before_assumptions[i]
+        if _UNIT_WHERE.search(where):
+            return False
+        return None
+
+    kept, downgraded = [], []
+    for issue in issues:
+        if not isinstance(issue, dict):
+            kept.append(issue)
+            continue
+        if issue.get("check") in HARM_CHECKS or edited(issue.get("where")) is not False:
+            kept.append(issue)
+        else:
+            downgraded.append({**issue, "severity": "minor",
+                               "original_severity": issue.get("severity"),
+                               "scoped_out": True})
+    return kept, downgraded
+
+
+def approved_locale_terms(run_dir: Path) -> list[str]:
+    """Reviewed locale terms from a relocalize run, for the critic's scope.
+
+    Missing files mean no approved terms; skipped (empty) decisions are dropped.
+    """
+    terms = []
+    for name in ("locale-decisions.json", "locale-add-decisions.json"):
+        path = run_dir / name
+        if not path.exists():
+            continue
+        decisions = _load_json(path, "locale decisions")
+        if not isinstance(decisions, dict):
+            continue
+        terms += [t.strip() for t in decisions.values()
+                  if isinstance(t, str) and t.strip()]
+    return terms
+
+
 def _critic_issues(model: run.Model, src_text: str, seq: dict, assumptions: list,
                   trace: list, report: v.Report, mode: str, keep_locale: bool,
-                  reply_path: Path) -> tuple[dict, list[dict]]:
+                  reply_path: Path,
+                  approved_terms: tuple[str, ...] | list[str] = ()) -> tuple[dict, list[dict]]:
     values = run.critic_values(run.Source(text=src_text, ref=""), {"sequence": seq,
                                "source_trace": trace, "environment_assumptions": assumptions},
-                               report, None, None, mode, keep_locale)
+                               report, None, None, mode, keep_locale, approved_terms)
     system, user, missing = run.build_request(run.CRITIC, values)
     if missing:
         raise SystemExit(f"50-critic.md: no value for {missing}")
@@ -156,6 +236,9 @@ def run_revision(src_text: str, run_dir: Path, base_label: str, seq: dict,
     rev_dir = run_dir / "revisions" / f"rev{rev_num}"
     rev_dir.mkdir(parents=True, exist_ok=True)
     usage: list[dict] = []
+    summary_p = run_dir / "summary.json"
+    language = _load_json(summary_p, "summary").get("language") if summary_p.exists() else None
+    approved_terms = approved_locale_terms(run_dir)
     mode = "single" if choices.get("single_module") else "multi"
     keep_locale = choices.get("locale_mode") == "keep"
     previous_output, feedback, critic = "(none)", "(none)", {}
@@ -164,7 +247,8 @@ def run_revision(src_text: str, run_dir: Path, base_label: str, seq: dict,
                   "TEACHER_INSTRUCTION": instruction,
                   "UNIT_FOCUS": unit or "any",
                   "ASSUMPTIONS": run._dump(assumptions) if assumptions else run.NONE,
-                  "PREVIOUS_OUTPUT": previous_output, "CRITIC_FEEDBACK": feedback}
+                  "PREVIOUS_OUTPUT": previous_output, "CRITIC_FEEDBACK": feedback,
+                  "RUN_LANGUAGE": language or "English"}
         system, user, missing = run.build_request(REFINE, values)
         if missing:
             raise SystemExit(f"{REFINE}: no value for {missing}")
@@ -180,19 +264,25 @@ def run_revision(src_text: str, run_dir: Path, base_label: str, seq: dict,
         if problems:
             print(f"rev{rev_num}: {problems[0]}; run untouched")
             return None
-        report = v.validate(after["sequence"])
+        report = v.validate(after["sequence"], language=language)
         code_issues = [{"where": i.where, "problem": i.problem, "severity": "blocker"}
                        for c in report.checks for i in c.issues]
         if code_issues:
-            issues, verdict = code_issues, "REVISE"
+            issues, scoped, verdict = code_issues, [], "REVISE"
         else:
-            critic, issues = _critic_issues(model, src_text, after["sequence"],
-                                            after.get("assumptions", assumptions),
-                                            trace, report, mode, keep_locale,
-                                            rev_dir / f"refine{attempt}-critic.reply.txt")
+            critic, raw = _critic_issues(model, src_text, after["sequence"],
+                                         after.get("assumptions", assumptions),
+                                         trace, report, mode, keep_locale,
+                                         rev_dir / f"refine{attempt}-critic.reply.txt",
+                                         approved_terms)
             (rev_dir / f"refine{attempt}-critic.json").write_text(
                 json.dumps(critic, ensure_ascii=False, indent=2), encoding="utf-8")
             verdict = critic.get("verdict", "REJECT")
+            new_assump = after.get("assumptions", assumptions)
+            issues, scoped = scope_issues(raw, after["sequence"], new_assump,
+                                          assumptions, changed)
+            if verdict in ("PASS", "REVISE") and not issues:
+                verdict = "PASS"
         if not issues and verdict == "PASS":
             new_seq = after["sequence"]
             new_assump = after.get("assumptions", assumptions)
@@ -205,9 +295,11 @@ def run_revision(src_text: str, run_dir: Path, base_label: str, seq: dict,
             record = {"format": FORMAT, "kind": "step-edits", "n": rev_num, "base": base_label,
                       "instruction": instruction, "unit": unit or "any", "changed_steps": changed,
                       "cards_g21": card_problems or "pass", "usage": usage,
+                      "scoped_out": scoped,
                       "note": after.get("note", "") if isinstance(after.get("note"), str) else ""}
             (rev_dir / "revision.json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
-            print(f"rev{rev_num}: PASS, {len(changed)} step(s) changed; cards in {rev_dir}")
+            aside = f"; {len(scoped)} pre-existing note(s) set aside" if scoped else ""
+            print(f"rev{rev_num}: PASS, {len(changed)} step(s) changed; cards in {rev_dir}{aside}")
             return record
         if verdict == "REJECT" or verdict not in run.VERDICTS:
             print(f"rev{rev_num}: critic verdict {verdict}; run untouched")

@@ -105,6 +105,69 @@ class Loading(unittest.TestCase):
                 refine.load_base(Path(tmp), None)
 
 
+class Scoping(unittest.TestCase):
+    def seq(self):
+        return edited()
+
+    def test_changed_step_issue_kept(self):
+        kept, scoped = refine.scope_issues(
+            [{"check": "G02", "where": "mls_units[0].tasks[0]",
+              "problem": "x", "severity": "major"}],
+            self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(scoped, [])
+
+    def test_unchanged_step_style_issue_downgraded(self):
+        kept, scoped = refine.scope_issues(
+            [{"check": "G02", "where": "mls_units[0].tasks[1]",
+              "problem": "x", "severity": "major"}],
+            self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
+        self.assertEqual(kept, [])
+        self.assertEqual(len(scoped), 1)
+        self.assertEqual(scoped[0]["severity"], "minor")
+        self.assertEqual(scoped[0]["original_severity"], "major")
+        self.assertTrue(scoped[0]["scoped_out"])
+
+    def test_harm_checks_stay_in_scope_everywhere(self):
+        for check in ("G19", "G06", "G07"):
+            with self.subTest(check=check):
+                kept, scoped = refine.scope_issues(
+                    [{"check": check, "where": "mls_units[0].tasks[1]",
+                      "problem": "x", "severity": "blocker"}],
+                    self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
+                self.assertEqual(len(kept), 1)
+                self.assertEqual(scoped, [])
+
+    def test_unparseable_location_stays_in_scope(self):
+        kept, scoped = refine.scope_issues(
+            [{"check": "G02", "where": "somewhere", "problem": "x", "severity": "minor"}],
+            self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(scoped, [])
+
+    def test_unit_level_issue_downgraded(self):
+        kept, scoped = refine.scope_issues(
+            [{"check": "G13", "where": "mls_units[0]",
+              "problem": "x", "severity": "major"}],
+            self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
+        self.assertEqual(kept, [])
+        self.assertEqual(len(scoped), 1)
+
+    def test_changed_assumption_kept_unchanged_downgraded(self):
+        new_assump = [dict(a, assumes="Jars are ready.") for a in ASSUMPTIONS]
+        kept, _ = refine.scope_issues(
+            [{"check": "G02", "where": "environment_assumptions[0]",
+              "problem": "x", "severity": "major"}],
+            self.seq(), new_assump, ASSUMPTIONS, [[U0, 1]])
+        self.assertEqual(len(kept), 1)
+        kept, scoped = refine.scope_issues(
+            [{"check": "G02", "where": "environment_assumptions[0]",
+              "problem": "x", "severity": "major"}],
+            self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
+        self.assertEqual(kept, [])
+        self.assertEqual(len(scoped), 1)
+
+
 class RevisionLoop(unittest.TestCase):
     def test_pass_saves_revision_with_cards(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -116,6 +179,7 @@ class RevisionLoop(unittest.TestCase):
             self.assertIsNotNone(record)
             self.assertEqual(record["changed_steps"], [[U0, 1]])
             self.assertEqual(record["kind"], "step-edits")
+            self.assertEqual(record["scoped_out"], [])
             rev1 = root / "revisions" / "rev1"
             self.assertTrue((rev1 / "cards.txt").exists())
             self.assertTrue((rev1 / "cards.html").exists())
@@ -140,10 +204,54 @@ class RevisionLoop(unittest.TestCase):
             self.assertFalse((root / "revisions" / "rev1" / "sequence.json").exists())
             self.assertFalse((root / "revisions" / "rev1" / "revision.json").exists())
 
+    def test_out_of_scope_issue_does_not_block_landing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = run_dir(tmp)
+            critic = json.dumps({"verdict": "REVISE", "checks": [
+                {"id": "G02", "status": "fail", "issues": [
+                    {"severity": "major", "where": "mls_units[0].tasks[1]",
+                     "problem": "pre-existing wording"}]}]})
+            model = FakeModel([json.dumps({"sequence": edited(), "note": "x"}), critic])
+            seq, assumptions, choices, trace, label, ref = refine.load_base(root, None)
+            record = refine.run_revision("source", root, label, seq, assumptions,
+                                         choices, trace, ref, "x", None, model, 1)
+            self.assertIsNotNone(record)
+            self.assertEqual(len(record["scoped_out"]), 1)
+            self.assertEqual(record["scoped_out"][0]["original_severity"], "major")
+
+    def test_harm_issue_outside_the_edit_still_blocks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = run_dir(tmp)
+            critic = json.dumps({"verdict": "REVISE", "checks": [
+                {"id": "G19", "status": "fail", "issues": [
+                    {"severity": "blocker", "where": "mls_units[0].tasks[1]",
+                     "problem": "unsafe"}]}]})
+            replies = [json.dumps({"sequence": edited(), "note": "x"}), critic,
+                       json.dumps({"sequence": edited(), "note": "x"}), critic]
+            model = FakeModel(replies)
+            seq, assumptions, choices, trace, label, ref = refine.load_base(root, None)
+            self.assertIsNone(refine.run_revision("source", root, label, seq, assumptions,
+                                                  choices, trace, ref, "x", None, model, 1))
+
+    def test_approved_terms_come_from_both_decision_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = run_dir(tmp)
+            (root / "locale-decisions.json").write_text(
+                json.dumps({"0": "suomi (Finnish)", "1": ""}), encoding="utf-8")
+            (root / "locale-add-decisions.json").write_text(
+                json.dumps({"0": "like a sauna", "1": ""}), encoding="utf-8")
+            self.assertEqual(refine.approved_locale_terms(root),
+                             ["suomi (Finnish)", "like a sauna"])
+
+    def test_approved_terms_missing_files_mean_none(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(refine.approved_locale_terms(run_dir(tmp)), [])
+
     def test_prompt_has_its_placeholders(self):
         self.assertEqual(set(run.prompt_placeholders("58-refine.md")),
                          {"SEQUENCE_JSON", "SOURCE_TEXT", "TEACHER_INSTRUCTION",
-                          "UNIT_FOCUS", "ASSUMPTIONS", "PREVIOUS_OUTPUT", "CRITIC_FEEDBACK"})
+                          "UNIT_FOCUS", "ASSUMPTIONS", "PREVIOUS_OUTPUT", "CRITIC_FEEDBACK",
+                          "RUN_LANGUAGE"})
 
 
 if __name__ == "__main__":

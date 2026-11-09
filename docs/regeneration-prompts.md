@@ -27,7 +27,7 @@ A sequence of prompts that rebuilds this repository from an empty folder with an
 
 ## Prompt 2: The deterministic layer
 
-> Create `schemas/mls-dag.schema.json` (the spec's schema plus optional per-unit `macro_alignment` and `duration_weeks`), `config/taxonomy_mapping.json` (limits and a region-specific term list that includes currencies), `lsb/dag.py` (duplicates, missing dependencies, iterative cycle finding, topological order) and `lsb/validate.py` with checks D01–D11: schema, unit cap, steps per unit, weeks, roles, step numbering, dependencies, cycles, macro-alignment presence, regional terms (whole-word), and **step size (≤4 sentences, ≤80 words)**. Map each D-check to the critic check it settles. Add fixtures: the spec's example (which must fail D03, D04, D09) and a hand-fixed valid version.
+> Create `schemas/mls-dag.schema.json` (the spec's schema plus optional per-unit `macro_alignment` and `duration_weeks`), `config/taxonomy_mapping.json` (limits and a region-specific term list that includes currencies), `lsb/dag.py` (duplicates, missing dependencies, iterative cycle finding, topological order) and `lsb/validate.py` with checks D01–D11: schema, unit cap, steps per unit, weeks, roles, step numbering, dependencies, cycles, macro-alignment presence, regional terms (whole-word), and **step size (≤4 sentences, ≤100 words)**. Map each D-check to the critic check it settles. Add fixtures: the spec's example (which must fail D03, D04, D09) and a hand-fixed valid version.
 >
 > **Done when:** `python3 -m lsb.validate` gives exit codes 0/1/2 and unit tests cover every check with single-mutation cases.
 

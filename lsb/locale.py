@@ -34,9 +34,20 @@ def locale_rule(mode: str) -> str:
     return KEEP_RULE if mode == "keep" else GENERIC_RULE
 
 
-def locale_scope(mode: str) -> str:
-    """The {{LOCALE_SCOPE}} value for prompts/50-critic.md."""
-    return KEPT_SCOPE if mode == "keep" else GENERIC_SCOPE
+def locale_scope(mode: str, approved: tuple[str, ...] | list[str] = ()) -> str:
+    """The {{LOCALE_SCOPE}} value for prompts/50-critic.md.
+
+    `approved` lists relocalized terms the user already reviewed: the critic
+    must not file G09 issues for exactly those strings.
+    """
+    if mode == "keep":
+        return KEPT_SCOPE
+    scope = GENERIC_SCOPE
+    terms = [t for t in approved if isinstance(t, str) and t.strip()]
+    if terms:
+        scope += (" Approved relocalized terms (reviewed already; do not file G09 issues "
+                  f"for exactly these): {'; '.join(terms)}.")
+    return scope
 
 
 def check_locale_log(obj: Any) -> list[str]:
@@ -53,6 +64,8 @@ def check_locale_log(obj: Any) -> list[str]:
                 problems.append(f"locale_log[{i}] has no {key!r}")
         if "generic" in e and e["generic"] is not None and not isinstance(e["generic"], str):
             problems.append(f"locale_log[{i}] 'generic' is not a string")
+        if "drop_reason" in e and e["drop_reason"] not in (None, "locale", "withheld"):
+            problems.append(f"locale_log[{i}] 'drop_reason' is not null, 'locale' or 'withheld'")
     return problems
 
 
@@ -205,3 +218,69 @@ def apply_locale(sequence: dict, log: list[dict], decisions: dict[int, str],
         else:
             notes.append(f"locale {i} ({entry.get('original')}): '{generic}' not found, left generic")
     return out, out_a, notes
+
+
+def output_language(value: Any) -> str | None:
+    """Normalize an output-language answer; blank or English means no translation."""
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text or text.lower() in ("en", "english"):
+        return None
+    return text
+
+
+def check_translation(before_seq: dict, before_assump: list,
+                      after: Any) -> list[str]:
+    """Shape-check a 59-translate reply against the English sequence.
+
+    Only teacher-facing prose may differ (objective, titles, alignments,
+    actions, condition/fallback texts). Structure, ids, roles, numbers, and
+    anything emptied are problems.
+    """
+    if not isinstance(after, dict) or not isinstance(after.get("sequence"), dict):
+        return ["output has no 'sequence' object"]
+    if not isinstance(after.get("assumptions"), list):
+        return ["output has no 'assumptions' list"]
+    problems = []
+    seq = after["sequence"]
+    if not isinstance(seq.get("macro_objective"), str) or not seq["macro_objective"].strip():
+        problems.append("macro_objective is missing or empty")
+    if seq.get("global_context") != (before_seq.get("global_context") or {}):
+        problems.append("global_context changed; only prose is translated")
+    before_units = before_seq.get("mls_units") or []
+    units = seq.get("mls_units")
+    if not isinstance(units, list) or [u.get("mls_id") for u in units if isinstance(u, dict)] != \
+            [u.get("mls_id") for u in before_units]:
+        return problems + ["units changed; translate the same units in the same order"]
+    for b, u in zip(before_units, units):
+        uid = b.get("mls_id")
+        if u.get("dependencies") != b.get("dependencies") or \
+                u.get("duration_weeks") != b.get("duration_weeks"):
+            problems.append(f"{uid}: dependencies or weeks changed")
+        for key in ("title", "macro_alignment"):
+            if b.get(key) and (not isinstance(u.get(key), str) or not u[key].strip()):
+                problems.append(f"{uid}: {key} emptied")
+        before_tasks = b.get("tasks") or []
+        tasks = u.get("tasks")
+        if not isinstance(tasks, list) or len(tasks) != len(before_tasks):
+            problems.append(f"{uid}: tasks changed; translate the same steps in order")
+            continue
+        for bt, t in zip(before_tasks, tasks):
+            if not isinstance(t, dict) or t.get("step") != bt.get("step") or \
+                    t.get("role") != bt.get("role"):
+                problems.append(f"{uid}: a step number or role changed")
+                continue
+            if bt.get("action") and (not isinstance(t.get("action"), str) or not t["action"].strip()):
+                problems.append(f"{uid} step {bt.get('step')}: action emptied")
+    before_assump = before_assump or []
+    assumptions = after["assumptions"]
+    if [a.get("mls_id") for a in assumptions if isinstance(a, dict)] != \
+            [a.get("mls_id") for a in before_assump]:
+        problems.append("assumptions changed; translate the same entries in the same order")
+    else:
+        for b, a in zip(before_assump, assumptions):
+            for key in ("assumes", "if_not"):
+                if b.get(key) and (not isinstance(a.get(key), str) or not a[key].strip()):
+                    problems.append(f"{b.get('mls_id')}: {key} emptied")
+    return problems

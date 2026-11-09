@@ -47,7 +47,8 @@
     "min_steps_per_unit": 3,
     "max_steps_per_unit": 7,
     "max_sentences_per_step": 4,
-    "max_words_per_step": 80,
+    "max_words_per_step": 100,
+    "word_cap_multipliers": {"default": 1.0, "fr": 1.2, "french": 1.2},
     "min_duration_weeks": 2,
     "max_duration_weeks": 4
   },

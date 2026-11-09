@@ -135,13 +135,52 @@ class Mutations(unittest.TestCase):
         self.assertIn("5 sentences", report.checks[10].issues[0].problem)
 
     def test_long_single_sentence_fails_step_size(self):
-        self.unit()["tasks"][0]["action"] = "Measure " + "and record " * 45 + "the rain."
+        self.unit()["tasks"][0]["action"] = "Measure " + "and record " * 55 + "the rain."
+        self.assertEqual(failed(self.p), ["D11"])
+
+    def test_hundred_word_step_is_at_cap(self):
+        self.unit()["tasks"][0]["action"] = "Word " * 99 + "end."
+        self.assertEqual(failed(self.p), [])
+
+    def test_hundred_and_one_word_step_fails_step_size(self):
+        self.unit()["tasks"][0]["action"] = "Word " * 100 + "end."
         self.assertEqual(failed(self.p), ["D11"])
 
     def test_four_sentences_with_abbreviations_pass(self):
         self.unit()["tasks"][0]["action"] = ("Use reused items, e.g. bottles. Mark a 0 line at 2.5 cm, i.e. the water level. "
                                               "Read it daily. Write the number down.")
         self.assertEqual(failed(self.p), [])
+
+    def test_word_cap_multiplier_scales_the_limit(self):
+        cfg = copy.deepcopy(v.load_config())
+        cfg["limits"]["word_cap_multipliers"] = {"default": 1.0, "fr": 1.2}
+        self.unit()["tasks"][0]["action"] = "Word " * 109 + "end."
+        self.assertEqual(v.validate(self.p, config=cfg).failed_ids(), ["D11"])
+        self.assertEqual(v.validate(self.p, config=cfg, language="fr").failed_ids(), [])
+
+
+class WordCap(unittest.TestCase):
+    def limits(self, multipliers):
+        return {"max_words_per_step": 100, "word_cap_multipliers": multipliers}
+
+    def test_no_language_uses_config_value(self):
+        self.assertEqual(v.effective_word_cap(self.limits({"default": 1.0})), 100)
+        self.assertEqual(v.effective_word_cap({"max_words_per_step": 100}), 100)
+
+    def test_language_multiplier_scales_and_rounds_up(self):
+        self.assertEqual(v.effective_word_cap(self.limits({"fr": 1.2}), "fr"), 120)
+        self.assertEqual(v.effective_word_cap(self.limits({"fr": 1.15}), "fr"), 115)
+
+    def test_unknown_language_falls_back_to_default(self):
+        self.assertEqual(v.effective_word_cap(self.limits({"default": 1.0, "fr": 1.2}), "xx"), 100)
+
+    def test_language_lookup_ignores_case(self):
+        self.assertEqual(v.effective_word_cap(self.limits({"french": 1.2}), "French"), 120)
+
+    def test_bad_multipliers_fall_back_to_one(self):
+        for bad in (0, -1.5, "wide", None, [2]):
+            with self.subTest(bad=bad):
+                self.assertEqual(v.effective_word_cap(self.limits({"fr": bad}), "fr"), 100)
 
 
 class Robustness(unittest.TestCase):

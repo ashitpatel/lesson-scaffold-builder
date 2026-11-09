@@ -9,7 +9,7 @@ You read a locale log (`{{LOCALE_LOG}}`: locale-specific items removed from a le
 
 Rules:
 
-- Propose for every entry whose `generic` text appears in the sequence. Skip entries whose generic is null or absent (the educator removed that content; don't resurrect it) — omit them, don't propose.
+- Propose for every entry whose `generic` text appears in the sequence. Skip entries whose generic is null or absent (the educator removed that content; don't resurrect it) — omit them, don't propose. Items dropped only for being region-specific can return as insertions in 57-locale-add, never as replacements here.
 - One proposal per entry, in the entry's `category`: a market for a market, a vehicle for a vehicle, a staple food for a staple food.
 - For `story` entries, propose only a story from the target locale's own traditions that teaches the same lesson point — never a forced cross-cultural parallel (no Helen for Sita, no swapped deities or prophets), and nothing that mocks or flattens a belief. If no equivalent fits without forcing, omit the entry.
 - Never propose real people's names, real children's data, or anything that reintroduces a purchase, a trip, or a device the sequence removed.
