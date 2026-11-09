@@ -2,6 +2,15 @@
 
 Each release on GitHub attaches the ready-to-use files from `dist/`. The version lives in [`VERSION`](VERSION). The pipeline is also installable: `pip install git+https://github.com/ashitpatel/lesson-scaffold-builder.git`.
 
+## 0.3.0 — 2026-11-09
+
+- **Locale support.** An outset choice — generalize, keep, or relocalize locale-specific content — with a removal log, target proposals, overall locale notes, and per-item approve/skip/own-text review (revertible as a set when replacements newly break a code check). Locale additions propose anchored insertions with per-item review and per-addition trial application; final-content translation renders the cards in the run's language (English original kept), with per-language word-cap multipliers (`--language`, `--locale`).
+- **Multi-turn refine.** A new `lsb-refine` entry point revises steps over days or weeks, storing each turn in `revisions/revN/` with structure, code-check, and critic review scoped to the edit (harm checks stay global); replies come back in the run's language.
+- **More evidence-based practices.** EB-06 to EB-09 — TaRL-inspired level grouping plus interleaving, self-explanation, and elaboration from Dunlosky — bring the deck to nineteen cards, with verified citations; a plain-language evidence guide covers EB-01 to EB-05.
+- **Check updates.** D11 step cap 80 → 100 words; G02 flags two separable teacher actions even under the cap; readability (Flesch) is recorded in `summary.json`, never gated; a dependencies repair may add the G15 Recall opener to the unit's first step.
+- **Thirteen walkthroughs.** New Tanzania, Philippines, and two ATREE S.N.A.I.L. water lessons, each with decision trace and final cards; every walkthrough carries per-locale final cards, and the regression suite extends to 13 cases.
+- **Docs.** A seventh blog post on tweak-it-later revision, locale-choice coverage across the series, decision-points documentation, and the Zenodo concept DOI wired into `CITATION.cff` and the README badge.
+
 ## 0.2.0 — 2026-11-08
 
 - **"Lesson" everywhere.** The input is now consistently called a lesson, not a chapter, across the README, docs, prompts, browser-assistant kickoff and blog posts (including two renamed post URLs). Test fixtures, walkthrough records and validated model prompts keep the original term.
