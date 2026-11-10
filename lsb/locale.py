@@ -230,6 +230,23 @@ def output_language(value: Any) -> str | None:
     return text
 
 
+def source_language(value: Any) -> str | None:
+    """Normalize a source-language answer; blank or English means no intake translation."""
+    return output_language(value)
+
+
+def check_intake(source_text: str, after: Any) -> list[str]:
+    """Shape-check a 04-translate-source reply: non-empty text that is not the input."""
+    if not isinstance(after, dict):
+        return ["output has no JSON object"]
+    text = after.get("source_text")
+    if not isinstance(text, str) or not text.strip():
+        return ["output has no 'source_text' text"]
+    if text == source_text:
+        return ["translation matches the source; translate it into English"]
+    return []
+
+
 def check_translation(before_seq: dict, before_assump: list,
                       after: Any) -> list[str]:
     """Shape-check a 59-translate reply against the English sequence.

@@ -209,6 +209,18 @@ class Translation(unittest.TestCase):
         self.assertEqual(loc.output_language("French"), "French")
         self.assertEqual(loc.output_language("  fr "), "fr")
 
+    def test_source_language_normalizes_english_away(self):
+        self.assertIsNone(loc.source_language(""))
+        self.assertIsNone(loc.source_language("en"))
+        self.assertIsNone(loc.source_language("English"))
+        self.assertEqual(loc.source_language("French"), "French")
+
+    def test_check_intake(self):
+        self.assertEqual(loc.check_intake("L'eau.", {"source_text": "Water."}), [])
+        self.assertTrue(loc.check_intake("L'eau.", {}))
+        self.assertTrue(loc.check_intake("L'eau.", {"source_text": "  "}))
+        self.assertTrue(loc.check_intake("L'eau.", {"source_text": "L'eau."}))
+
 
 class Apply(unittest.TestCase):
     def test_replaces_in_actions_and_assumptions(self):
@@ -259,6 +271,8 @@ class Plumbing(unittest.TestCase):
                          {"SEQUENCE_JSON", "TARGET_LOCALE", "LOCALE_NOTES", "LOCALE_LOG"})
         self.assertEqual(set(run.prompt_placeholders("59-translate.md")),
                          {"SEQUENCE_JSON", "ASSUMPTIONS", "TARGET_LANGUAGE", "FEEDBACK"})
+        self.assertEqual(set(run.prompt_placeholders("04-translate-source.md")),
+                         {"SOURCE_TEXT", "SOURCE_LANGUAGE", "FEEDBACK"})
 
     def test_critic_values_carry_approved_terms(self):
         src = run.Source(text="t", ref="r")
@@ -275,6 +289,9 @@ class Plumbing(unittest.TestCase):
 
     def test_output_language_default_is_empty(self):
         self.assertEqual(ask.DefaultPrompter().ask(run._output_language_choice()), "")
+
+    def test_source_language_default_is_empty(self):
+        self.assertEqual(ask.DefaultPrompter().ask(run._source_language_choice()), "")
 
 
 if __name__ == "__main__":

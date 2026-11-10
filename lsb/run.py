@@ -25,6 +25,9 @@ The outset also asks how to handle locale-specific content: generalize
 (the default), keep the source's locale, or generalize, then relocalize to the
 `--locale` target, reviewing each proposed replacement first. Relocalize runs
 may also suggest new locale details to insert, reviewed one by one.
+It also asks what language the source lesson is in (a non-English source is
+translated to English first) and which language the final cards should use
+(translated last).
 
 Routing (prompts/README.md):
   critic PASS    -> done
@@ -75,6 +78,7 @@ PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
 DEF = re.compile(r"\[\[([A-Z_]+)\]\]")
 NONE = "(none)"
 
+INTAKE_TRANSLATE = "04-translate-source.md"
 DECOMPOSE = "05-decompose.md"
 CRITIC = "50-critic.md"
 LOCALE_LOG = "55-locale-log.md"
@@ -497,6 +501,10 @@ def decompose_values(src: Source, previous: dict | None = None, feedback: list |
     }
 
 
+def intake_values(text: str, language: str, feedback: str | None = None) -> dict[str, str]:
+    return {"SOURCE_TEXT": text, "SOURCE_LANGUAGE": language, "FEEDBACK": feedback or NONE}
+
+
 def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issues: list | None = None,
                   cards: str | None = None, mode: str = "multi",
                   keep_locale: bool = False, approved_terms: tuple[str, ...] | list[str] = ()) -> dict[str, str]:
@@ -882,6 +890,15 @@ def _locale_additions_choice() -> ask.Choice:
                        (False, "No", "only replace removed locale terms")), False)
 
 
+def _source_language_choice() -> ask.Choice:
+    return ask.Choice("source_language", "What language is the source lesson in?",
+                      (("", "English", "no intake translation; the pipeline runs in English"),), "",
+                      free_text=True,
+                      context="Name your language in your own words. A non-English source is "
+                              "translated to English first; if that fails, the run uses the "
+                              "source as written.")
+
+
 def _output_language_choice() -> ask.Choice:
     return ask.Choice("output_language", "Which language for the final content?",
                       (("", "English", "no translation; cards stay as reviewed"),), "",
@@ -1069,6 +1086,36 @@ def _apply_additions(src: Source, target: str, result: RunResult,
     info["add_skipped"] = sorted(set(range(len(additions))) - set(info["added"]))
 
 
+def _apply_intake_translation(src: Source, call, out_dir: Path, source: str,
+                              info: dict, notes: list) -> Source:
+    """Translate a non-English source lesson to English; on any failure keep it as written.
+
+    The reply must hold non-empty text that differs from the input; one retry,
+    then the run proceeds on the original text with a note. The English text is
+    saved as english-source.md for checking against the original.
+    """
+    feedback = None
+    for attempt in ("intake-translate", "intake-translate-retry"):
+        try:
+            out = call("intake", INTAKE_TRANSLATE, intake_values(src.text, source, feedback),
+                       attempt)
+        except (StageError, ModelUnavailable) as e:
+            notes.append(f"intake: unavailable ({e}); using the source as written")
+            return src
+        problems = loc.check_intake(src.text, out)
+        if problems:
+            feedback = "; ".join(problems)
+            if attempt == "intake-translate":
+                continue
+            notes.append(f"intake: unusable ({problems[0]}); using the source as written")
+            return src
+        english = out["source_text"]
+        (out_dir / "english-source.md").write_text(english, encoding="utf-8")
+        info["applied"] = True
+        notes.append(f"intake: source translated from {source}")
+        return replace(src, text=english)
+
+
 def _apply_translation(result: RunResult, best: dict, call, save,
                        target: str, cap: int, info: dict) -> None:
     """Translate the reviewed English sequence; on any failure cards stay English.
@@ -1113,7 +1160,7 @@ def _apply_translation(result: RunResult, best: dict, call, save,
 def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 2,
                  stages: tuple[str, ...] = (), max_stage_revisions: int = 1,
                  prompter: ask.Prompter | None = None, locale: str | None = None,
-                 language: str | None = None) -> RunResult:
+                 language: str | None = None, source_language: str | None = None) -> RunResult:
     out_dir.mkdir(parents=True, exist_ok=True)
     # The pipeline runs in English at the base cap; the output language only
     # scales the check on the translated sequence at the end.
@@ -1140,6 +1187,11 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         else:
             choices["locale_notes"] = prompter.ask(_locale_notes_choice()) or ""
             choices["locale_additions"] = bool(prompter.ask(_locale_additions_choice()))
+    source_answer = (source_language or "").strip() if source_language else ""
+    if not source_answer:
+        source_answer = (prompter.ask(_source_language_choice()) or "").strip()
+    choices["source_language"] = source_answer
+    src_language = loc.source_language(source_answer)
     output_answer = (language or "").strip() if language else ""
     if not output_answer:
         output_answer = (prompter.ask(_output_language_choice()) or "").strip()
@@ -1171,6 +1223,10 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         return extract_json(text)
 
     result = RunResult("error", 0, None, out_dir)
+    intake_info: dict[str, Any] = {"source": src_language, "applied": False}
+    if src_language is not None:
+        src = _apply_intake_translation(src, call, out_dir, src_language, intake_info,
+                                        result.notes)
     best_decomposed: dict | None = None
     previous: dict | None = None
     feedback: list | None = None
@@ -1377,8 +1433,10 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "readability": readability,
         "source_flags": result.source_flags,
         "source_ref": src.ref,
+        "source_language": src_language,
         "language": target_language,
         "word_cap": final_cap,
+        "intake": intake_info,
         "translation": trans_info,
         "locale": locale_info,
         "notes": result.notes,
@@ -1395,6 +1453,7 @@ def dry_run(src: Source) -> int:
     fake_report = v.validate({})
     defs = {"MAX_WORDS_PER_STEP": str(v.effective_word_cap(v.load_config()["limits"]))}
     for name, values in (
+        (INTAKE_TRANSLATE, intake_values(src.text, "French")),
         (DECOMPOSE, decompose_values(src)),
         (CRITIC, critic_values(src, fake_decomposed, fake_report)),
         *((st.prompt, stage_values(st, src, fake_decomposed, "MLS-X-01")) for st in STAGES.values()),
@@ -1431,6 +1490,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--language", default=None, metavar="CODE",
                     help="output language for the final content (translates cards last; "
                          "scales the D11 word cap via the config multipliers)")
+    ap.add_argument("--source-language", default=None, metavar="CODE",
+                    help="source lesson language (translates the source to English first; "
+                         "the pipeline runs in English)")
     ap.add_argument("--locale", default=None, metavar="LOCALE",
                     help="target locale for relocalize mode (skips asking for it)")
     ap.add_argument("--max-revisions", type=int, default=2)
@@ -1485,7 +1547,8 @@ def main(argv: list[str] | None = None) -> int:
         result = run_pipeline(src, model, out_dir, args.max_revisions,
                               stages=tuple(k for k in STAGE_ORDER if not getattr(args, f"no_{k}")),
                               max_stage_revisions=args.max_stage_revisions, prompter=prompter,
-                              locale=args.locale, language=args.language)
+                              locale=args.locale, language=args.language,
+                              source_language=args.source_language)
     except api_errors as e:
         print(f"API error after retries: {type(e).__name__}: {e}", file=sys.stderr)
         return 2

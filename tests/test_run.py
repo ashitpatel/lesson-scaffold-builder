@@ -34,9 +34,9 @@ ISSUE = {"severity": "blocker", "source": "judgement", "where": "mls_units[0].ta
 class FakeModel:
     """Replies with the next scripted text for the stage named by the system prompt."""
 
-    def __init__(self, decompose, critic, cl=(), pb=(), eb=()):
+    def __init__(self, decompose, critic, cl=(), pb=(), eb=(), intake=()):
         self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl), "pb": list(pb),
-                       "eb": list(eb)}
+                       "eb": list(eb), "intake": list(intake)}
         self.calls = []
 
     def complete(self, system, user):
@@ -44,7 +44,8 @@ class FakeModel:
         stage = ("decompose" if "Input Decomposition Layer" in text
                  else "cl" if "Connected Learning stage" in text
                  else "pb" if "Participatory Budgeting stage" in text
-                 else "eb" if "Evidence-Based stage" in text else "critic")
+                 else "eb" if "Evidence-Based stage" in text
+                 else "intake" if "Intake Translation step" in text else "critic")
         self.calls.append((stage, user))
         reply = self.script[stage].pop(0)
         if isinstance(reply, Exception):
@@ -225,6 +226,54 @@ def cl_reply(unit, apply=True, card="CL-05"):
 U0, U1 = VALID["mls_units"]
 CL_ISSUE = {"severity": "major", "source": "judgement", "where": "mls_units[0].tasks[4]",
             "problem": "the showcase needs the educator present", "fix": "say the educator stays"}
+
+
+class IntakeTranslation(unittest.TestCase):
+    FRENCH = "LEÇON: l'eau du village.\n\n## La pluie\nLes élèves mesurent la pluie."
+    ENGLISH = "LESSON: the village water.\n\n## Rain\nPupils measure the rain."
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def summary(self):
+        return json.loads((self.out / "summary.json").read_text(encoding="utf-8"))
+
+    def test_non_english_source_is_translated_before_decompose(self):
+        src = run.Source(text=self.FRENCH, ref="Leçon - L'eau")
+        m = FakeModel([decomposed(VALID)], [critic("PASS")],
+                      intake=[json.dumps({"source_text": self.ENGLISH})])
+        r = run.run_pipeline(src, m, self.out, source_language="French")
+        self.assertEqual(r.status, "pass")
+        self.assertEqual([s for s, _ in m.calls], ["intake", "decompose", "critic"])
+        decompose_user = m.calls[1][1].split("<SOURCE_TEXT>")[1]
+        self.assertIn("Pupils measure the rain", decompose_user)
+        self.assertNotIn("mesurent", decompose_user)
+        self.assertEqual((self.out / "english-source.md").read_text(encoding="utf-8"), self.ENGLISH)
+        self.assertEqual(self.summary()["intake"], {"source": "French", "applied": True})
+        self.assertEqual(self.summary()["source_language"], "French")
+
+    def test_english_source_skips_intake(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")])
+        r = run.run_pipeline(SOURCE, m, self.out)
+        self.assertEqual(r.status, "pass")
+        self.assertEqual([s for s, _ in m.calls], ["decompose", "critic"])
+        self.assertFalse((self.out / "english-source.md").exists())
+        self.assertEqual(self.summary()["intake"], {"source": None, "applied": False})
+
+    def test_unusable_intake_translation_runs_on_the_source_as_written(self):
+        src = run.Source(text=self.FRENCH, ref="Leçon - L'eau")
+        m = FakeModel([decomposed(VALID)], [critic("PASS")],
+                      intake=['{"nope": true}', '{"source_text": "  "}'])
+        r = run.run_pipeline(src, m, self.out, source_language="French")
+        self.assertEqual(r.status, "pass")
+        self.assertEqual([s for s, _ in m.calls], ["intake", "intake", "decompose", "critic"])
+        self.assertIn("mesurent", m.calls[2][1].split("<SOURCE_TEXT>")[1])
+        self.assertTrue(any("using the source as written" in n for n in r.notes))
+        self.assertEqual(self.summary()["intake"], {"source": "French", "applied": False})
 
 
 class ConnectedLearning(unittest.TestCase):
