@@ -1,5 +1,7 @@
 # Lesson Scaffold Builder — Docs
 
+*Turning lessons into teachable classroom plans.*
+
 Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, how people would use it, and what it actually does to real-looking teaching material from six countries.
 
 > **Read this first.** Every walkthrough below is **live output**: the pipeline was run on an original test lesson set in that country, and the walkthrough reports what came out, including what went wrong. Nothing is a hand-written "ideal answer". The lessons were written for this project to contain the kinds of problems real material has, and **no teacher or curriculum specialist has reviewed the output yet.** The locale handling in each walkthrough (generalized, kept, or relocalized terms) may be incorrect or incomplete: review it with the rest of the output to make sure the material is culturally and educationally appropriate and complete. There's no graphical interface; the pipeline runs from the command line.

@@ -1,5 +1,7 @@
 # Lesson Scaffold Builder (LSB)
 
+*Turning lessons into teachable classroom plans.*
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24048998.svg)](https://doi.org/10.5281/zenodo.24048998)
 
 **A pipeline that turns long, lecture-heavy teaching material (a textbook lesson, a syllabus section, a teacher's guide) into a small set of 2-to-4-week Micro-Lesson Scaffolds, printed as offline teacher cards. Along the way it removes what is unsafe, costly or region-specific, and adds evidence-based practices, Connected Learning and participatory budgeting only where they genuinely fit.**

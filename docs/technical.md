@@ -1,5 +1,7 @@
 # Technical reference
 
+*Turning lessons into teachable classroom plans.*
+
 How to run, check and extend the pipeline. For what LSB is and why, start with the [README](../README.md); for how it's used, see [docs/README.md](README.md).
 
 Requirements: Python 3.10+, `pip install jsonschema anthropic`, and a model backend: a Claude Code login (the default), a Muse login (`--backend muse`), a free Gemini key from Google AI Studio (`--backend gemini`, `GEMINI_API_KEY`), or an Anthropic API key (`--backend api`).

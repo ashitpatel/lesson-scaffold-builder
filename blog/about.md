@@ -3,6 +3,8 @@ layout: page
 title: About
 ---
 
+*Turning lessons into teachable classroom plans.*
+
 [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder) is a free, open-source pipeline that turns long, lecture-heavy teaching material into a small set of 2-to-4-week Micro-Lesson Scaffolds, printed as offline teacher cards. It also ships as a prompt for ChatGPT, Claude, Gemini, Google AI Mode and other browser assistants. The scaffold is inspired by [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan: small, time-bound, locally owned improvement units from India's public-school movement.
 
 More in the repository:
