@@ -112,11 +112,47 @@ This follows the decision in the [ELEVATE design note](integrations/elevate.md#1
 | Phase 2 | Teachers in the pilot ran most steps, with measured fidelity and prep time | That the cards change learning |
 | Phase 3 | An estimated effect on the primary outcome, for this partner, version and setting | That the effect carries over to other systems, subjects or LSB versions |
 
-## Before contacting a research organisation
+## Approaching a research team
+
+This section is for an organisation that uses LSB: an NGO programme, a district training team, a textbook team or a ministry unit (the curriculum adapter in [Who uses it](ux/01-who-uses-it.md)). For a trial, **that organisation is the implementing partner**. LSB's maintainers are not a party to it.
+
+### Are you ready?
 
 Research groups that run field trials usually look for three things:
-1. **An implementing partner**: a school network, NGO or ministry ready to deliver the cards at scale.
-2. **A way to randomise**: for example, phasing schools in by lottery.
-3. **Outcome data the partner already collects**, which keeps the cost of evaluation down.
+1. **An implementing partner** able to deliver the cards to enough schools for a school-level comparison. If you are writing, this is you.
+2. **A way to randomise**: for example, phasing schools in by lottery or a waiting list, which you would have to be willing to do.
+3. **Outcome data you already collect**, such as term assessments or attendance, which keeps the cost of evaluation down.
 
-LSB has none of these today. The order is: find a partner → finish Phase 1 with them → then approach researchers, describing LSB in the README's own terms (a working prototype whose output no practitioner has yet reviewed) and attaching the Phase 1 results.
+Write once you have all three and have finished **Phase 1** on your own units. Phase 2 results make a much stronger case. Without Phase 1 you can only offer a promise; with it you can show what your specialists found.
+
+Possible contacts include the regional offices and education programmes of research networks that run school trials (for example J-PAL and Innovations for Poverty Action), university education or economics departments near you, and your ministry's own research or assessment unit.
+
+### Template
+
+Fill in every `[bracket]` and delete any line you can't support. Keep LSB's status in its own terms: the README's [What this project can and can't claim](../README.md#what-this-project-can-and-cant-claim) table is the limit of what the email may say about the tool. Don't claim the cards improve learning; finding out is the point of the trial.
+
+> **Subject:** Evaluation partnership: [your organisation] and printed teacher cards for [subject, grade band] in [region]
+>
+> Dear [name or team],
+>
+> I lead [programme] at [your organisation], which supports [number] teachers in [number] [primary/secondary] schools in [region]. We are looking for a research team interested in evaluating a change to how our teachers receive curriculum material.
+>
+> **What we are doing.** We use Lesson Scaffold Builder (LSB), an open-source pipeline, to turn our [textbook/syllabus] units into short printed teacher cards: 2-to-4-week sequences of classroom steps that need no devices or purchases. The pipeline removes unsafe, costly or region-specific requirements and adds a small set of practices with replicated evidence (such as retrieval practice, worked examples, checking every student's understanding and grouping by level, in the spirit of Teaching at the Right Level) only where they fit. Our [specialists/adapters] review every unit before it is printed. LSB is a working prototype, and its developers make no claim that the cards improve learning.
+>
+> **What we have found so far.**
+> - Curriculum review ([n] units, [n] reviewers): [share rated ready after at most minor edits]; [main problems found and fixed].
+> - [If done] Classroom pilot ([n] classrooms, [n] weeks): [share of steps completed]; [fidelity finding]; [prep-time finding].
+>
+> **What we can offer a study.**
+> - Delivery to [number] schools, with willingness to phase schools in by [lottery/waiting list].
+> - Existing outcome data: [assessment, attendance or other], collected [when], held by [whom].
+> - A frozen, documented set of cards for the study period.
+>
+> **What we are asking.** Would your team, or researchers you work with, be interested in designing an evaluation with us? We would welcome a short call about fit, timing and any funding rounds you think suit this work.
+>
+> Our draft evaluation plan, based on LSB's evaluation protocol: [link]. Sample cards: [link].
+>
+> Best regards,
+> [name, role, organisation, contact]
+
+Keep the email free of student data: no names, individual scores or school-level results that could identify a child. Share data only after a data agreement is in place, as described under [Data: who holds what](#data-who-holds-what).

@@ -36,7 +36,7 @@ Every walkthrough follows the same shape: **at a glance â†’ the starting point â
 - How to run, check and extend it: [technical.md](technical.md)
 - Rebuild the whole project with an AI coding agent: [regeneration-prompts.md](regeneration-prompts.md)
 - Exploratory design note on exporting runs to ShikshaLokam ELEVATE (nothing built): [integrations/elevate.md](integrations/elevate.md)
-- Exploratory plan for evaluating LSB with a partner, from curriculum review to a cluster-randomised trial (nothing run): [evaluation-protocol.md](evaluation-protocol.md)
+- Exploratory plan for evaluating LSB with a partner, from curriculum review to a cluster-randomised trial, with an email template for approaching a research team (nothing run): [evaluation-protocol.md](evaluation-protocol.md)
 - The methods, as the pipeline reads them: [evidence-based practices](../frameworks/evidence-based-practices.md), [Connected Learning](../frameworks/connected-learning.md), [participatory budgeting](../frameworks/participatory-budgeting.md)
 - The model prompts and how they're orchestrated: [prompts/README.md](../prompts/README.md)
 - The test lessons and what each run must show: [tests/fixtures/README.md](../tests/fixtures/README.md), [tests/regression/cases.json](../tests/regression/cases.json)
