@@ -215,7 +215,7 @@ What the sweep shows:
 | A failed optimisation never reaches the cards | That the output is good on real textbooks, which are longer and messier than the test lessons |
 | The reviewer catches real problems (missing supervision, a vote with no rule, a broken prerequisite) and revisions fix them | That teachers find the cards usable: no practitioner has reviewed them |
 
-**How to find out:** have curriculum specialists review the walkthrough cards → run real lessons from partner systems → pilot a few units with teachers and collect class-level feedback → compare completion and teacher ratings across versions.
+**How to find out:** have curriculum specialists review the walkthrough cards → run real lessons from partner systems → pilot a few units with teachers and collect class-level feedback → compare completion and teacher ratings across versions. A staged plan for doing this with a partner, up to a cluster-randomised trial, is drafted in [docs/evaluation-protocol.md](docs/evaluation-protocol.md) (exploratory; nothing run yet).
 
 ---
 
