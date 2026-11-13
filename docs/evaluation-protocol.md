@@ -74,6 +74,7 @@ For every unit, keep the adapter's changes to the cards as a diff against the fr
 - **Conditions that didn't hold.** Each unit card lists the conditions it relies on and what to do if one doesn't hold. Record which conditions failed and whether the fallback worked.
 - **Prep time:** teachers' own estimate of minutes spent preparing the unit, against their usual preparation for a similar unit. The cards are not designed to need no preparation, so measure it.
 - **Teacher rating** of each card, with free-text comments.
+- **Costs** per unit: model usage, adapter review time, printing and teacher preparation time (see [What this means for LSB](#what-this-means-for-lsb)).
 
 **Exit gate (project choice).** Most planned steps run, fidelity to the non-negotiables high enough that a trial would test the practices and not a hollow version, and prep time **no worse** than usual. The gate does not require prep time to fall; whether it falls is a finding, not a condition.
 
@@ -112,6 +113,30 @@ This follows the decision in the [ELEVATE design note](integrations/elevate.md#1
 | Phase 2 | Teachers in the pilot ran most steps, with measured fidelity and prep time | That the cards change learning |
 | Phase 3 | An estimated effect on the primary outcome, for this partner, version and setting | That the effect carries over to other systems, subjects or LSB versions |
 
+## Who builds this kind of evidence, and how LSB users can draw on it
+
+LSB applies practices whose evidence comes from other people's studies. That leaves two separate questions:
+1. **Do the practices work?** Mostly answered elsewhere, with the limits the [evidence guide](evidence-guide.md#what-the-evidence-does-and-doesnt-say) sets out.
+2. **Does delivering them through LSB cards work,** in a given system, at a given cost? Nobody has answered this yet.
+
+The organisations below work on both. None of them has reviewed or endorsed LSB. Details were checked against their own pages in November 2026 and can change; check them again before relying on them.
+
+| Organisation | What it does | How an LSB user can draw on it |
+|---|---|---|
+| [J-PAL](https://www.povertyactionlab.org/) (Abdul Latif Jameel Poverty Action Lab, MIT, with regional offices) | A network of affiliated university researchers who run randomised evaluations, and a policy team that summarises what they find. Its [Learning for All Initiative](https://www.povertyactionlab.org/node/8033470) funds pilots, randomised evaluations and scale-ups of ways to improve children's learning in low- and middle-income countries. | The Teaching at the Right Level trials behind EB-06 [E10, E11] are J-PAL-affiliated work with Pratham. Its funding goes to affiliated researchers, not to implementers, and it covers research costs only: **the implementing partner pays for delivery**. A user needs a researcher to apply with. |
+| [Innovations for Poverty Action](https://poverty-action.org/) (IPA) | A research and policy nonprofit with country offices that runs field trials, often with J-PAL affiliates. Its [Right-Fit Evidence](https://poverty-action.org/right-fit-evidence) unit helps implementers build monitoring, evaluation and learning systems. | Phases 1 and 2 are monitoring, not impact evaluation. This is where Right-Fit support fits: deciding what to measure, and collecting it well, before anyone pays for a trial. |
+| [CEGA](https://cega.berkeley.edu/) (Center for Effective Global Action, UC Berkeley) | A network of researchers on global development. Its [BITSS](https://cega.berkeley.edu/theme/transparency) initiative promotes research transparency: registries and pre-analysis plans. Its [Cost Transparency Initiative](https://cega.berkeley.edu/initiative/cost-transparency-initiative) works on costing, noting that fewer than one in five impact evaluations report cost-effectiveness, and publishes a costing pre-analysis plan template. | Education is not CEGA's main focus. Its value here is methods: a pre-analysis plan for Phase 3, and a costing plan, so that a result can be compared with other ways of spending the same money. |
+| [Global Education Evidence Advisory Panel](https://www.worldbank.org/en/topic/teachingandlearning/publication/cost-effective-approaches-to-improve-global-learning) (GEEAP, convened by the World Bank, the UK's FCDO and UNICEF, among others) | "Smart Buys" reports that rate approaches to improving learning in low- and middle-income countries by cost-effectiveness, drawing on hundreds of evaluations. In 2023, **structured pedagogy** and **targeting instruction by learning level** were among its "Great Buys"; investing in hardware or other inputs alone was a "Bad Buy". | The fairest summary of where LSB sits in the evidence. See [What this means for LSB](#what-this-means-for-lsb). |
+| [What Works Hub for Global Education](https://www.bsg.ox.ac.uk/research/what-works-hub-global-education) (Blavatnik School of Government, Oxford, with governments and funders) | Turns evidence on foundational learning into action: evidence translation, evidence labs inside governments, and implementation science, the study of what makes a working approach survive delivery at scale. | Phase 2's question, whether teachers run the cards as written, is an implementation-science question. Relevant if the partner is a government it works with. |
+| Registries and syntheses: [AEA RCT Registry](https://www.socialscienceregistry.org/), [3ie](https://www.3ieimpact.org/), the IES [What Works Clearinghouse](https://ies.ed.gov/ncee/wwc/), the EEF [Teaching and Learning Toolkit](https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit) | Places to register a trial, and systematic reviews and evidence gap maps of what has already been tested. The IES practice guide is already one of LSB's sources [E2]; the EEF draws mainly on high-income evidence. | Check whether something close to an LSB trial already exists before designing one, and register the analysis plan before baseline. |
+
+### What this means for LSB
+
+1. **Structured pedagogy is the closest match, and LSB covers only part of it.** In the GEEAP sense, structured pedagogy is a package: structured lesson plans, learning materials, and ongoing support for teachers, such as coaching. LSB cards are structured lesson plans. LSB adds no materials beyond what classrooms already have, and no coaching. **The evidence for the package can't be borrowed for the cards alone.** A trial with one arm that gets the cards alone and one that gets the cards with the partner's coaching would show what the cards add on their own.
+2. **Targeting by level depends on the conditions that made it work.** The TaRL trials used dedicated time and instructors, and EB-06 adapts the practice inside existing practice time. Phase 2's fidelity checks are what show whether the adaptation keeps the practice intact.
+3. **Cost is part of the result.** Smart Buys ranks approaches by learning per unit of money spent. LSB's costs include the model usage per run (recorded in `summary.json`), the adapter's review time, printing and teachers' time. Record them per unit from Phase 1 on, using a costing template such as CEGA's, so a trial can report cost-effectiveness and not only effect.
+4. **A trial tests the package as delivered.** A cluster trial of whole card sets will not show which card did the work. It also adds little to the evidence on the individual practices, which mostly comes from high-income settings. What it would add is evidence on whether an automated, reviewed adaptation of a system's own curriculum is a cost-effective way to get these practices into classrooms.
+
 ## Approaching a research team
 
 This section is for an organisation that uses LSB: an NGO programme, a district training team, a textbook team or a ministry unit (the curriculum adapter in [Who uses it](ux/01-who-uses-it.md)). For a trial, **that organisation is the implementing partner**. LSB's maintainers are not a party to it.
@@ -125,7 +150,7 @@ Research groups that run field trials usually look for three things:
 
 Write once you have all three and have finished **Phase 1** on your own units. Phase 2 results make a much stronger case. Without Phase 1 you can only offer a promise; with it you can show what your specialists found.
 
-Possible contacts include the regional offices and education programmes of research networks that run school trials (for example J-PAL and Innovations for Poverty Action), university education or economics departments near you, and your ministry's own research or assessment unit.
+Possible contacts include the organisations in [Who builds this kind of evidence](#who-builds-this-kind-of-evidence-and-how-lsb-users-can-draw-on-it) (for school trials, usually J-PAL's regional offices or IPA's country offices), university education or economics departments near you, and your ministry's own research or assessment unit.
 
 ### Template
 

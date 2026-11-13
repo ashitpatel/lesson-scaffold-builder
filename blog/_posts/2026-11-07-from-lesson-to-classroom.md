@@ -33,7 +33,7 @@ The scaffold's shape — small, time-bound, owned by the teacher — is borrowed
 
 ## What it doesn't do
 
-It is a working prototype, and this series will keep saying so. **No teacher or curriculum specialist has reviewed its output yet**, and nothing here shows the cards improve learning. The list of teaching methods is a project choice that needs review by the people who own the content. The cards are a starting draft for a teacher's judgment, not a replacement for it.
+It is a working prototype, and this series will keep saying so. **No teacher or curriculum specialist has reviewed its output yet**, and nothing here shows the cards improve learning. The list of teaching methods is a project choice that needs review by the people who own the content. The cards are a starting draft for a teacher's judgment, not a replacement for it. How to find out whether they help, step by step, is set out in an [evaluation protocol](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/docs/evaluation-protocol.md).
 
 I wrote this series the same way the tool works: I set the direction and made the editorial calls, and an AI agent drafted the posts. Corrections are welcome as [issues](https://github.com/ashitpatel/lesson-scaffold-builder/issues).
 

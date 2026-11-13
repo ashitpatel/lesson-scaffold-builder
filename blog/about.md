@@ -9,7 +9,7 @@ title: About
 
 More in the repository:
 
-- [Walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs): nine test lessons with full sources, decision traces and final cards.
+- [Walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs): thirteen test lessons with full sources, decision traces and final cards.
 - [The method cards](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/frameworks): the nineteen evidence-based, Connected Learning and participatory budgeting cards the stages may apply.
 - [Try it now](https://github.com/ashitpatel/lesson-scaffold-builder#try-it-now): open the assistant in ChatGPT, Claude or Google AI Mode, no setup.
 - [Rebuilding from scratch](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/docs/regeneration-prompts.md): the prompts used to build it.

@@ -2,7 +2,7 @@
 
 *Turning lessons into teachable classroom plans.*
 
-Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, how people would use it, and what it actually does to real-looking teaching material from six countries.
+Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, how people would use it, and what it actually does to thirteen test lessons, most of them set in a specific country.
 
 > **Read this first.** Every walkthrough below is **live output**: the pipeline was run on an original test lesson set in that country, and the walkthrough reports what came out, including what went wrong. Nothing is a hand-written "ideal answer". The lessons were written for this project to contain the kinds of problems real material has, and **no teacher or curriculum specialist has reviewed the output yet.** The locale handling in each walkthrough (generalized, kept, or relocalized terms) may be incorrect or incomplete: review it with the rest of the output to make sure the material is culturally and educationally appropriate and complete. There's no graphical interface; the pipeline runs from the command line.
 
@@ -32,11 +32,11 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source lesson (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after), the complete final cards (`final.md`), and three relocalized variants (`localizations.md`, with one `final-<locale>.md` per locale).
 
 ## Going deeper
-- What the five evidence-based practices are, when they fit, and what supports them: [evidence-guide.md](evidence-guide.md)
+- What the nine evidence-based practices are, when they fit, and what supports them: [evidence-guide.md](evidence-guide.md)
 - How to run, check and extend it: [technical.md](technical.md)
 - Rebuild the whole project with an AI coding agent: [regeneration-prompts.md](regeneration-prompts.md)
 - Exploratory design note on exporting runs to ShikshaLokam ELEVATE (nothing built): [integrations/elevate.md](integrations/elevate.md)
-- Exploratory plan for evaluating LSB with a partner, from curriculum review to a cluster-randomised trial, with an email template for approaching a research team (nothing run): [evaluation-protocol.md](evaluation-protocol.md)
+- Exploratory plan for evaluating LSB with a partner, from curriculum review to a cluster-randomised trial; what J-PAL, IPA, CEGA, GEEAP and others do and how users can draw on them; and an email template for approaching a research team (nothing run): [evaluation-protocol.md](evaluation-protocol.md)
 - The methods, as the pipeline reads them: [evidence-based practices](../frameworks/evidence-based-practices.md), [Connected Learning](../frameworks/connected-learning.md), [participatory budgeting](../frameworks/participatory-budgeting.md)
 - The model prompts and how they're orchestrated: [prompts/README.md](../prompts/README.md)
 - The test lessons and what each run must show: [tests/fixtures/README.md](../tests/fixtures/README.md), [tests/regression/cases.json](../tests/regression/cases.json)

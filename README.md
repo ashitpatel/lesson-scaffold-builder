@@ -230,7 +230,7 @@ lesson-scaffold-builder/
 ├── docs/                        READ FIRST if you're new
 │   ├── README.md                index
 │   ├── ux/                      who uses it, the end-to-end journey, decision points
-│   ├── walkthroughs/            nine folders: walkthrough + source + decision trace + final cards each
+│   ├── walkthroughs/            thirteen folders: walkthrough + source + decision trace + final cards each
 │   ├── technical.md             every check, flag, output file and exit code
 │   ├── regeneration-prompts.md  prompts to rebuild this project with an AI coding agent
 │   └── assets/                  social preview image + its HTML source
