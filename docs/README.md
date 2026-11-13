@@ -32,6 +32,7 @@ Plain-language documentation of what the Lesson Scaffold Builder (LSB) is for, h
 Every walkthrough follows the same shape: **at a glance → the starting point → what the pipeline kept → what was removed and why → the units → what each stage did → what the reviewers caught → before/after → the teacher card → what to watch for**. Each lives in its own folder with the source lesson (`source.md`), the engine's decision trace (`decisions.md`: frameworks found relevant, what was asked and answered, and every changed step's before → after), the complete final cards (`final.md`), and three relocalized variants (`localizations.md`, with one `final-<locale>.md` per locale).
 
 ## Going deeper
+- **Two kinds of card:** the *teacher cards* LSB prints and the 19 *method cards* it may apply, defined with an annotated example of each: [README](../README.md#two-kinds-of-card)
 - What the nine evidence-based practices are, when they fit, and what supports them: [evidence-guide.md](evidence-guide.md)
 - How to run, check and extend it: [technical.md](technical.md)
 - Rebuild the whole project with an AI coding agent: [regeneration-prompts.md](regeneration-prompts.md)

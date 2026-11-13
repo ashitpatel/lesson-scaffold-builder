@@ -29,6 +29,36 @@ A teacher reading any of these makes a hundred quiet decisions: skip that, repla
 
 Every step is traced to the lesson section it came from, every change is tagged with the method that made it, and every unit says what it relies on and what to do if that doesn't hold. Nothing is hidden: the [thirteen walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs) show full inputs and outputs.
 
+## What a card looks like
+
+A run prints an overview card (the lesson's goal and the units, with what each builds on) and then one card per unit, each a single page of plain text, black on white. This is part of a unit card from the Peru fractions lesson, shortened:
+
+```
+MLS-FRAC-01: What a Fraction Is and Folding Equivalent Fractions
+2 weeks. Starts fresh (no earlier unit needed).
+Goal: Gives pupils a set of labelled paper strips and the multiplying rule, so
+they can represent any fraction and write it in equivalent ways.
+
+WHO                   WHAT TO DO
+2. Lead Educator      Give each pupil three strips of reused paper of the same
+                      length. Each pupil folds one strip into halves, one into
+                      quarters and one into eighths. …
+5. Lead Educator      Work four examples on the board … Then every pupil
+[changed: EB-04]      writes a fraction equivalent to 3/5 on scrap paper and
+                      holds it up at the same time. …
+
+BEFORE YOU START
+- Needs: Enough reused paper to give each pupil five strips of the same
+  length.
+  If not: Cut strips from the backs of old worksheets or newspaper margins, …
+
+CHANGES FROM THE SOURCE
+- Evidence-Based, EB-04 Checking for Understanding: after the four worked
+  examples, every pupil writes and holds up a fraction equivalent to 3/5 …
+```
+
+Every unit card has the same parts: who does each step and what, what the unit relies on and what to do if it isn't there, and every change the tool made. A tag such as `[changed: EB-04]` names the teaching method that changed the step. Each method is itself written as a strict rule, called a method card, which [part 4]({{ site.baseurl }}/what-it-adds/) describes. In this series, *cards* on their own always means the printed teacher cards.
+
 The scaffold's shape — small, time-bound, owned by the teacher — is borrowed from [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan, from the movement now running over a million micro-improvements across India's public schools.
 
 ## What it doesn't do

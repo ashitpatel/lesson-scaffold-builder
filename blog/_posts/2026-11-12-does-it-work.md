@@ -40,7 +40,7 @@ Cost counts too. A small gain that costs little can be worth more than a large g
 
 None of these organisations has reviewed or endorsed this tool. They are where this kind of evidence comes from:
 
-- **[J-PAL](https://www.povertyactionlab.org/)** is a network of university researchers who run randomised evaluations. The Teaching at the Right Level trials behind the level-groups card are their work, with the Indian NGO Pratham.
+- **[J-PAL](https://www.povertyactionlab.org/)** is a network of university researchers who run randomised evaluations. The Teaching at the Right Level trials behind the level-groups method are their work, with the Indian NGO Pratham.
 - **[IPA](https://poverty-action.org/)** runs field trials through its country offices, and helps implementers set up monitoring before anyone pays for a trial. That is the stage of steps 1 and 2.
 - **[CEGA](https://cega.berkeley.edu/)** at UC Berkeley works on how studies are done: writing the analysis plan before seeing the data, and counting costs properly.
 - **The [Global Education Evidence Advisory Panel](https://www.worldbank.org/en/topic/teachingandlearning/publication/cost-effective-approaches-to-improve-global-learning)** compares approaches to learning by cost-effectiveness. It's the source of the "best buys" above.
@@ -57,7 +57,7 @@ Run step 1 on your own units first. With your specialists' findings in hand, you
 
 ## What even a good trial won't say
 
-A trial would give one result, for one system, one version and one setting. It wouldn't show which card did the work, because a whole set of cards is tested together. It wouldn't settle whether the cards work anywhere else. That is still more than anyone knows today. It would also show whether reviewed, automated adaptation of a school system's own curriculum is a sensible way to get good practices into classrooms.
+A trial would give one result, for one system, one version and one setting. It wouldn't show which method did the work, because a whole set of cards is tested together. It wouldn't settle whether the cards work anywhere else. That is still more than anyone knows today. It would also show whether reviewed, automated adaptation of a school system's own curriculum is a sensible way to get good practices into classrooms.
 
 Corrections and reports are welcome as [issues](https://github.com/ashitpatel/lesson-scaffold-builder/issues). The series starts [here]({{ site.baseurl }}/from-lesson-to-classroom/).
 

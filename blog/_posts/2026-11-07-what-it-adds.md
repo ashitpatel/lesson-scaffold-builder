@@ -10,6 +10,18 @@ date: 2026-11-07 00:03:00 +0000
 
 The [last post]({{ site.baseurl }}/what-it-takes-out/) covered the deletions. This one covers the additions: nineteen small teaching methods, each allowed at most twice per unit, each with strict conditions — and a standing permission to use none of them.
 
+Each method is written down as a **method card**: a strict rule the tool must follow, not a suggestion. These aren't the printed teacher cards from [part 1]({{ site.baseurl }}/from-lesson-to-classroom/); a teacher sees only a method's code, in a tag on the step it changed. A method card says:
+- which kind of step it **targets**;
+- the only **edits** allowed;
+- what must **never** happen;
+- what counts as **already there**, in which case the tool changes nothing.
+
+Evidence-based cards add **non-negotiables** and their **basis** in research. Recall from memory, shortened:
+
+> **Targets:** a unit where students must remember facts or steps for later, and nothing asks them to recall it from memory. **Allowed edits:** open a later lesson with 3 to 5 short questions answered from memory, then show the answers so each student checks their own. **Non-negotiables:** notes out of sight; answers shown straight after; nothing collected, marked or recorded. **Never:** grade or record the results; rank students; replace teaching with quizzing.
+
+All nineteen are in the [frameworks folder](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/frameworks), and the [README](https://github.com/ashitpatel/lesson-scaffold-builder#two-kinds-of-card) sets out both kinds of card side by side.
+
 ## Evidence-based: nine techniques with trial support
 
 These are the only additions with broad, replicated evidence about learning. All but one fit inside an existing step (level groups may reorganize a unit's practice time). Each has **non-negotiables** — the parts the evidence is about. A version that can't include all of them is hollow, and the right answer is to abstain. Full citations: [references](https://github.com/ashitpatel/lesson-scaffold-builder#references).
@@ -50,7 +62,7 @@ Like the peer designs, these are engagement and civic-reasoning designs, not lev
 
 ## The most common answer is no
 
-Per unit, at most two cards and one added step — and "doesn't apply" is normal. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
+Per unit, at most two methods and one added step — and "doesn't apply" is normal. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the teacher card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
 
 The [next post]({{ site.baseurl }}/nine-lessons/) walks through all thirteen test lessons, before and after.
 

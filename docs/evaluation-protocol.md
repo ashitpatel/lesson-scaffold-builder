@@ -48,7 +48,7 @@ For every unit, keep the adapter's changes to the cards as a diff against the fr
 - **Goal preservation** (1–5): do the unit's objective and core concepts survive decomposition?
 - **Wrongly removed content.** For each source flag in `summary.json` (and each item in `locale-log.json` for relocalize runs), was the removal right? Count removals the reviewer would undo.
 - **Missed problems.** Unsafe, costly or region-specific content that is still on the cards.
-- **Evidence-based practice fit.** For each EB card applied, are its non-negotiables intact on the card? Was it applied where it shouldn't have been, or missed where it clearly fits?
+- **Evidence-based practice fit.** For each evidence-based method card applied, are its non-negotiables intact on the teacher card? Was it applied where it shouldn't have been, or missed where it clearly fits?
 - **Adapter edits.** The size of the diff against the frozen cards.
 - **Ready for class?** Yes, yes after minor edits, or no.
 
@@ -66,7 +66,7 @@ For every unit, keep the adapter's changes to the cards as a diff against the fr
 
 **What to record:**
 - **Step completion:** the share of planned steps run within the unit's 2-to-4-week window, and which steps were skipped and why.
-- **Fidelity to non-negotiables**, for units carrying these cards:
+- **Fidelity to non-negotiables**, for units where these method cards were applied:
   - EB-01: notes away, answers shown straight after, **nothing marked or recorded**;
   - EB-04: **every** student answers at once, the teacher looks, and what happens next depends on it;
   - EB-06: a fresh level check, and groups re-checked rather than fixed.
@@ -90,7 +90,7 @@ This phase needs a research team with its own ethics approval, and a partner tha
 
 **One primary outcome.** Choose one, before baseline: most likely an end-of-term assessment aligned to the curriculum, set by the partner or the evaluator. Teacher time on task, prep burden, completion, attendance and engagement are secondary outcomes.
 
-**Connected Learning and participatory budgeting are secondary only.** The README forbids claiming that CL or PB cards improve test scores. Engagement in units carrying CL-01–CL-05 or PB-01–PB-05 can be measured as a secondary outcome; it must not be the primary outcome or be reported as an effect on learning.
+**Connected Learning and participatory budgeting are secondary only.** The README forbids claiming that CL or PB method cards improve test scores. Engagement in units where CL-01–CL-05 or PB-01–PB-05 were applied can be measured as a secondary outcome; it must not be the primary outcome or be reported as an effect on learning.
 
 **Power and registration.** Size the trial with a power calculation based on the partner's own data on clustering of scores between schools. Pre-register the analysis plan, for example on the [AEA RCT Registry](https://www.socialscienceregistry.org/), before baseline testing.
 
@@ -135,7 +135,7 @@ The organisations below work on both. None of them has reviewed or endorsed LSB.
 1. **Structured pedagogy is the closest match, and LSB covers only part of it.** In the GEEAP sense, structured pedagogy is a package: structured lesson plans, learning materials, and ongoing support for teachers, such as coaching. LSB cards are structured lesson plans. LSB adds no materials beyond what classrooms already have, and no coaching. **The evidence for the package can't be borrowed for the cards alone.** A trial with one arm that gets the cards alone and one that gets the cards with the partner's coaching would show what the cards add on their own.
 2. **Targeting by level depends on the conditions that made it work.** The TaRL trials used dedicated time and instructors, and EB-06 adapts the practice inside existing practice time. Phase 2's fidelity checks are what show whether the adaptation keeps the practice intact.
 3. **Cost is part of the result.** Smart Buys ranks approaches by learning per unit of money spent. LSB's costs include the model usage per run (recorded in `summary.json`), the adapter's review time, printing and teachers' time. Record them per unit from Phase 1 on, using a costing template such as CEGA's, so a trial can report cost-effectiveness and not only effect.
-4. **A trial tests the package as delivered.** A cluster trial of whole card sets will not show which card did the work. It also adds little to the evidence on the individual practices, which mostly comes from high-income settings. What it would add is evidence on whether an automated, reviewed adaptation of a system's own curriculum is a cost-effective way to get these practices into classrooms.
+4. **A trial tests the package as delivered.** A cluster trial of whole sets of teacher cards will not show which method card did the work. It also adds little to the evidence on the individual practices, which mostly comes from high-income settings. What it would add is evidence on whether an automated, reviewed adaptation of a system's own curriculum is a cost-effective way to get these practices into classrooms.
 
 ## Approaching a research team
 

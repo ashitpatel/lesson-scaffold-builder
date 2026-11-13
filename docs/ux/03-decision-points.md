@@ -37,4 +37,4 @@
 ## Open questions (to settle with practitioners)
 - Is four units the right ceiling for a long lesson, or should the adapter be able to ask for a follow-on set?
 - Which source flags should stop an adapter from using a lesson at all?
-- The evidence-based cards are a project choice (see the [cards file](../../frameworks/evidence-based-practices.md)). Who should own that list?
+- The evidence-based method cards are a project choice (see the [method cards file](../../frameworks/evidence-based-practices.md)). Who should own that list?

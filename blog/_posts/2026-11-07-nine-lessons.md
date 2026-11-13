@@ -44,6 +44,6 @@ The cards kept the strips (pupils keep them in their notebooks for the next unit
 
 ## Read them as drafts, not verdicts
 
-Each walkthrough shows its working: which sections were kept, what was removed and why, which cards were applied or refused, and the full final cards. If you teach one of these subjects, the most useful thing you can do is read one and say what's wrong: [issues](https://github.com/ashitpatel/lesson-scaffold-builder/issues). The [next post]({{ site.baseurl }}/adapt-it/) covers how to run the tool and adapt it to your school.
+Each walkthrough shows its working: which sections were kept, what was removed and why, which methods were applied or refused, and the full final cards. If you teach one of these subjects, the most useful thing you can do is read one and say what's wrong: [issues](https://github.com/ashitpatel/lesson-scaffold-builder/issues). The [next post]({{ site.baseurl }}/adapt-it/) covers how to run the tool and adapt it to your school.
 
 {% include series.html %}

@@ -25,7 +25,7 @@ These links start the chat with the short version of the prompt, [`dist/kickoff.
 ### Any browser assistant, no setup
 For assistants with no place for custom instructions, such as Google AI Mode in Search, Gemini in Chrome, Microsoft Copilot, or a fresh chat in any app, paste [`dist/kickoff.md`](dist/kickoff.md) as your **first message**. It is a condensed version (under 4,000 characters, so it fits most chat boxes) that asks the assistant to take on the role and start with your lesson.
 
-The kickoff is shorter than the full prompt and carries only one line per method card, so expect less detailed cards and checks. Assistants without saved instructions can also drift out of the role in a long chat; paste it again if that happens. For the full pipeline with its code-checked limits and 21-check review, run it below instead.
+The kickoff is shorter than the full prompt and carries only one line per method card instead of the full card, so expect the methods to be applied less precisely and fewer checks. Assistants without saved instructions can also drift out of the role in a long chat; paste it again if that happens. For the full pipeline with its code-checked limits and 21-check review, run it below instead.
 
 ---
 
@@ -44,10 +44,101 @@ It does that by:
 
 It generalises the [Shikshagraha MIP Transformer](https://github.com/ashitpatel/shikshagraha-mip-transformer), which revises single Micro-Improvement Projects for Indian public schools, to any K-12 material in any system, with region-neutral output. The Micro-Lesson Scaffold itself is inspired by [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan: the movement's idea that big school goals become achievable when broken into small, time-bound, locally owned units — over 1.3 million of them so far across some 177,000 schools. LSB applies that idea to lesson content: a 2-to-4-week classroom sequence a teacher can run with the materials they have.
 
-### What the source usually asks for that a card must not
+### What the source usually asks for that a teacher card must not
 Every one of the nine test lessons contains things a real lesson might: trips without an adult, learners pouring boiling water, a "slow readers" wall chart, scores posted by name, family migration status, children's videos in a parents' group, students collecting money, purchases, devices, and region-specific bodies and currencies. Two include a line addressed to automated systems. The pipeline must remove all of them, say what it removed, and still deliver the lesson's goal.
 
 ---
+
+## Two kinds of card
+
+LSB uses the word *card* for two different things. One goes into the pipeline and the other comes out of it.
+
+| | **Teacher card** (what LSB prints) | **Method card** (what LSB may apply) |
+|---|---|---|
+| What it is | One printed page a teacher runs from: the steps of one unit, in order | One teaching practice written as a strict rule: where it fits, what it may change, and what it must never do |
+| Who reads it | Teachers, and the adapters who check the cards before printing | The optimisation stages and the reviewer; also curriculum specialists reviewing the method |
+| How many | Per run: one overview card, plus one card per unit (at most 4) | 19 in all: EB-01–EB-09, CL-01–CL-05, PB-01–PB-05 |
+| Where | `cards.txt` and `cards.html` in each run folder; `final.md` in each [walkthrough](docs/walkthroughs/) | [frameworks/](frameworks/) |
+| Made by | Code ([lsb/render.py](lsb/render.py)), from the reviewed sequence | Written by the project and fixed; never generated |
+
+**How they meet.** When a stage applies a method card to a step, the teacher card tags that step with the method card's code (`[changed: EB-04]`) and lists the change under **CHANGES FROM THE SOURCE**. These tags are the only card codes a teacher sees. In the README, docs and blog, *cards* on its own means teacher cards, and *method cards* (or a code such as EB-04) means the rules. In the prompts and in [frameworks/](frameworks/), which only the pipeline and reviewers read, *cards* means method cards.
+
+### A method card
+
+Every method card has the same core fields. This is EB-01, slightly shortened from [frameworks/evidence-based-practices.md](frameworks/evidence-based-practices.md):
+
+> **EB-01 Retrieval Practice**
+>
+> **Targets:** a unit where students must remember facts, terms, methods or steps for later work, and nothing asks them to recall it from memory.
+>
+> **Allowed edits:** open a later lesson with 3 to 5 short questions on earlier content, answered from memory on scrap paper, slates or orally, then show the answers so each student checks their own. …
+>
+> **Non-negotiables:** answers come from memory, with notes, charts and books out of sight; students see the correct answers straight after; nothing is collected, marked or recorded.
+>
+> **Never:** grade or record the results; rank students; replace teaching with quizzing.
+>
+> **Already present when:** the unit already has students recall earlier content without notes and then check it.
+>
+> **Basis:** practice testing was rated high utility in Dunlosky et al. (2013); …
+
+| Field | What it does |
+|---|---|
+| **Targets** | The kind of step the card may change. A unit without one gets no edit from this card. |
+| **Allowed edits** | The only changes the stage may make. Anything else is out of bounds. |
+| **Non-negotiables** (evidence-based cards) | The parts the evidence is about. If an edit can't include all of them, the stage must abstain: a hollow version is worse than none. |
+| **Never** | Forbidden edits, checked again by the reviewer. |
+| **Already present when** | What counts as the practice being there already. The stage credits it and changes nothing. |
+| **Basis** (evidence-based cards) | The research behind the card. It is for reviewers, and never appears on a teacher card. |
+
+Connected Learning cards also carry a one-line **Rule**, and participatory budgeting cards a **Category** (the subjects they suit). Participatory budgeting also has a fit-gate that the whole unit must pass before any of its cards is considered. The guardrails at the end of each framework file apply to every card in that file.
+
+### A teacher card
+
+A run prints an **overview card**: the lesson's goal, grade band and period length, then every unit with its weeks and the units it builds on. After that comes **one card per unit**, in dependency order. This is the first unit card from the [Peru fractions walkthrough](docs/walkthroughs/02-peru-fractions/final.md), shortened (`…`):
+
+```
+==============================================================================
+MLS-FRAC-01: What a Fraction Is and Folding Equivalent Fractions
+2 weeks. Starts fresh (no earlier unit needed).
+==============================================================================
+Goal: Gives pupils a set of labelled paper strips and the multiplying rule, so
+they can represent any fraction and write it in equivalent ways.
+
+WHO                   WHAT TO DO
+------------------------------------------------------------------------------
+1. Lead Educator      Explain that a fraction names equal parts of a whole. …
+…
+5. Lead Educator      Work four examples on the board of finding an equivalent
+[changed: EB-04]      fraction by multiplying the numerator and the
+                      denominator by the same number, … Then every pupil
+                      writes a fraction equivalent to 3/5 on scrap paper and
+                      holds it up at the same time. Look at all the answers,
+                      and re-explain the rule with one more example if many
+                      are wrong before moving on. Answers are not recorded
+                      and no pupil is named.
+…
+------------------------------------------------------------------------------
+BEFORE YOU START
+- Needs: Enough reused paper to give each pupil five strips of the same
+  length.
+  If not: Cut strips from the backs of old worksheets or newspaper margins, …
+------------------------------------------------------------------------------
+CHANGES FROM THE SOURCE
+- Evidence-Based, EB-04 Checking for Understanding: after the four worked
+  examples, every pupil writes and holds up a fraction equivalent to 3/5 on
+  scrap paper; …
+```
+
+| Part | What it tells the teacher |
+|---|---|
+| **Header** | The unit's id and title, its weeks, and which earlier units it builds on |
+| **Goal** | What learners can do by the end of the unit |
+| **WHO / WHAT TO DO** | 3 to 7 numbered steps, each with one of three roles (`Lead Educator`, `Peer Facilitator`, or `Community Volunteer`, always with the educator present) and at most four sentences |
+| **`[changed: …]` tag** | This step was changed by the method card named |
+| **BEFORE YOU START** | What the unit relies on (**Needs**) and what to do if it isn't there (**If not**) |
+| **CHANGES FROM THE SOURCE** | Each change a stage made, by method card, in plain words |
+
+The same cards come as `cards.txt` (plain text, at most 78 characters wide) and `cards.html` (one printed page per card, black on white, two columns, no images or scripts). Code checks both against critic check G21 before the run passes ([technical.md](docs/technical.md)).
 
 ## How it works
 
@@ -62,9 +153,9 @@ source lesson  ──► decompose ──► code checks ──► reviewer (21 
 | [Decompose](prompts/05-decompose.md) | Macro objective, ≤4 units, 3–7 one-action steps, 2–4 weeks, dependencies, source trace, what each unit assumes and its fallback, what was set aside | Model |
 | [Validate](lsb/validate.py) | 11 deterministic checks (D01–D11) | Code |
 | [Critic](prompts/50-critic.md) | 21 checks (G01–G21); code results are final; source problems become *source flags* | Model |
-| [Evidence-Based](prompts/25-evidence-based.md) · [Connected Learning](prompts/30-connected-learning.md) · [Participatory Budgeting](prompts/31-participatory-budgeting.md) | One unit at a time: credit what's already there, apply ≤2 cards and ≤1 added step, or abstain | Model; edit limits checked in [code](lsb/optimise.py) |
+| [Evidence-Based](prompts/25-evidence-based.md) · [Connected Learning](prompts/30-connected-learning.md) · [Participatory Budgeting](prompts/31-participatory-budgeting.md) | One unit at a time: credit what's already there, apply ≤2 method cards and ≤1 added step, or abstain | Model; edit limits checked in [code](lsb/optimise.py) |
 | Repair | Problems a stage's review finds in steps no stage changed go back to decompose, fixed in place; if they can't be fixed, the run doesn't pass | Model; limits checked in [code](lsb/optimise.py) |
-| [Render](lsb/render.py) | Overview card + one card per unit; G21 checked on the output | Code |
+| [Render](lsb/render.py) | Teacher cards: an overview card + one card per unit; G21 checked on the output | Code |
 | [Regression](lsb/regress.py) | Runs every test lesson and checks properties of the result | Code |
 
 ---
@@ -235,7 +326,7 @@ lesson-scaffold-builder/
 │   ├── regeneration-prompts.md  prompts to rebuild this project with an AI coding agent
 │   └── assets/                  social preview image + its HTML source
 │
-├── frameworks/                  THE METHOD: the cards the stages may apply
+├── frameworks/                  THE METHOD: the method cards the stages may apply
 │   ├── evidence-based-practices.md   EB-01 to EB-09, non-negotiables, guardrails
 │   ├── connected-learning.md         CL-01 to CL-05, guardrails
 │   └── participatory-budgeting.md    fit-gate, PB-01 to PB-05, guardrails
