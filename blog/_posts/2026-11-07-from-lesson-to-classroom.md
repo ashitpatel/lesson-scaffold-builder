@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07
 ---
 
-*Part 1 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder), a free, open-source tool that turns long lessons into short, runnable classroom sequences.*
+*Part 1 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder), a free, open-source tool that turns long lessons into short, runnable classroom sequences.*
 
 Every teacher knows the Sunday-evening problem. The lesson for next week is twenty pages of lecture, written for a classroom with small groups, ready materials and pupils who all learned last term's content. Your classroom has forty pupils, a piece of chalk, and a week lost to exams. Somewhere between the lesson and Monday morning, you turn one into the other, by hand.
 
@@ -39,7 +39,7 @@ I wrote this series the same way the tool works: I set the direction and made th
 
 ## What's next
 
-The rest of the series covers the questions the tool asks before planning anything, what it takes out of a lesson and why, what it adds and when it refuses, the thirteen test lessons with before-and-after cards, and how to run it or adapt it to your school — free, including in a browser with no account.
+The rest of the series covers the questions the tool asks before planning anything, what it takes out of a lesson and why, what it adds and when it refuses, the thirteen test lessons with before-and-after cards, how to run it or adapt it to your school — free, including in a browser with no account — how to revise cards after they print, and how anyone would find out whether they help.
 
 **Try it now**, no setup needed: open it in [ChatGPT]({{ site.data.try_links.chatgpt }}), [Claude]({{ site.data.try_links.claude }}) or [Google AI Mode]({{ site.data.try_links.google_ai_mode }}).
 

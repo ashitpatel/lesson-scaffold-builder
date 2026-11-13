@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-09 00:06:00 +0000
 ---
 
-*Part 7 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 7 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The cards assume chart paper you don't have, 45-minute periods you don't get, and volunteers who never show up. And needs don't all surface on Sunday: on Monday you learn the chart paper is gone, on Wednesday that periods are 30 minutes, next term that a new class needs simpler wording. A plan you can't revise is a plan you'll abandon — so the tool treats printed cards as a living draft, not a finished product.
 
@@ -35,6 +35,8 @@ A real turn from testing: asked for pencils instead of chalk on a French reading
 Step wording only. It can't add a unit, move weeks, or restructure the plan: anything that changes the shape needs a fresh run, not a tweak. It needs the run folder and a model backend, and every turn is still reviewed — even a small tweak can be refused, and that refusal is the feature working, not failing. As with everything the tool makes, read the revised cards before they reach a classroom: no teacher has reviewed this output yet.
 
 Small plans, revised often, beat big plans revised never. That was the idea behind borrowing the scaffold's shape from [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan in [part 1]({{ site.baseurl }}/from-lesson-to-classroom/) — and it applies to the cards themselves.
+
+The [next post]({{ site.baseurl }}/does-it-work/) asks how anyone would find out whether the cards help.
 
 Corrections and reports are welcome as [issues](https://github.com/ashitpatel/lesson-scaffold-builder/issues).
 

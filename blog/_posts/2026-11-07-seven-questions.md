@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07 00:01:00 +0000
 ---
 
-*Part 2 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 2 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The [last post]({{ site.baseurl }}/from-lesson-to-classroom/) described the Sunday-evening problem: a long lesson in, a runnable sequence out. But a tool that plans lessons without asking anything would just be a faster way to get someone else's plan. So before it plans anything, LSB asks seven questions. Here is what each one asks, and why it matters.
 

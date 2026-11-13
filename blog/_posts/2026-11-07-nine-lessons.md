@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07 00:04:00 +0000
 ---
 
-*Part 5 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 5 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The [last post]({{ site.baseurl }}/what-it-adds/) described the nineteen methods. This one shows them at work. The project keeps [thirteen walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs), each with the full source lesson, the decision trace, the final cards, and three relocalized variants of those cards. Every walkthrough below passed its run. None has been reviewed by a teacher yet.
 

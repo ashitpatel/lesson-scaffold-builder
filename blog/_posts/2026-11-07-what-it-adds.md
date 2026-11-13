@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07 00:03:00 +0000
 ---
 
-*Part 4 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 4 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The [last post]({{ site.baseurl }}/what-it-takes-out/) covered the deletions. This one covers the additions: nineteen small teaching methods, each allowed at most twice per unit, each with strict conditions — and a standing permission to use none of them.
 

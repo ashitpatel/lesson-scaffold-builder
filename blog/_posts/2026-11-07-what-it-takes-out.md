@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07 00:02:00 +0000
 ---
 
-*Part 3 of 7 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 3 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The [last post]({{ site.baseurl }}/seven-questions/) covered the questions the tool asks. This one covers the deletions, because they are half the value. Every test lesson behind this project was written carrying the things real lessons carry, and every removal below comes from a real run, listed in the [walkthroughs](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/docs/walkthroughs). The tool removes in six groups. Each has a classroom reason, not just a rule.
 
