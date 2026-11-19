@@ -52,6 +52,56 @@ One paragraph per family, in teacher language:
   task, then critique bias and errors with a teacher debrief. Marked
   with its tech needs.
 
+## Using the guided flow
+
+With `--ask`, the run interviews you before spending anything on models:
+
+1. **Goals.** Pick what matters in plain language (find strugglers,
+   more talk, real surroundings, access, AI). Leave blank for none.
+2. **Proposal.** The next question suggests method families with
+   numbered picks and grade-band caveats. Type the suggestion, adjust
+   it, or leave blank. Type `?N` on any option for what it is, what it
+   demands, what changes on your cards, and where to read more.
+3. **Inventory.** Five short questions (sessions, tutor, devices,
+   internet, home access), each explaining what it gates.
+4. **Preview.** Before the first model call, a methodology check lists
+   what will be considered and what stays out with reasons. Overruling
+   the proposal is allowed; thresholds still apply.
+
+`--answers` files skip the guidance and answer directly; `method_goals`
+is accepted but gates nothing.
+
+Worked example (middle-school class via `--grade-band Middle`, wants
+strugglers found and AI judged; practice 3 times a week with a steady
+tutor; shared devices with internet; the teacher overrules the proposal
+to include the two gated families):
+
+```
+Which goals matter for this run?
+  1. Find where strugglers are stuck — screening + extra practice
+  [... options 2–5 ...]
+> 1,5
+Based on your goals (Find where strugglers are stuck, Students using and judging AI tools), suggested: 1 — peer tutoring (extra practice in steady pairs).
+ROAR screening (browser check per student) needs the Primary band (this run: Middle) — left out
+AI literacy (use + critique AI) needs the High band (this run: Middle) — left out
+Each applies only above its threshold (checked next). Type suggested numbers, adjust, or blank for none.
+Which Stanford-translated method families may apply?
+  [... options 1–6 ...]
+  (?N for more about an option)
+> ?5
+What: each child completes a short browser reading check; the teacher regroups from it.
+Demands: one browser device per student + internet, Primary band. Nothing recorded.
+Changes: one screening step, marked with its tech needs.
+More: docs/methodologies.md.
+> 1,5,6
+[... five inventory questions ...]
+Methodology check (based on your answers):
+• Peer tutoring protocol: will be considered for fitting units.
+• ROAR screening: not offered — one browser device per student; Primary grade band.
+• AI literacy: not offered — High grade band.
+Details: docs/methodologies.md.
+```
+
 ## Threshold model
 
 Each offered family has a fit-gate. Below the gate the run abstains or

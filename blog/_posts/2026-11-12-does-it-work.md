@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-12 00:00:00 +0000
 ---
 
-*Part 8 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 8 of 9 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 Every post in this series ends up saying the same thing: **no teacher or curriculum specialist has reviewed the tool's output, and nothing shows the cards improve learning.** That sentence is true, and it will stay true until someone tests the tool. This post sets out what a test would look like and who does this kind of work. The full plan is in the repository's [evaluation protocol](https://github.com/ashitpatel/lesson-scaffold-builder/blob/main/docs/evaluation-protocol.md).
 

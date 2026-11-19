@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-07
 ---
 
-*Part 1 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder), a free, open-source tool that turns long lessons into short, runnable classroom sequences.*
+*Part 1 of 9 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder), a free, open-source tool that turns long lessons into short, runnable classroom sequences.*
 
 Every teacher knows the Sunday-evening problem. The lesson for next week is twenty pages of lecture, written for a classroom with small groups, ready materials and pupils who all learned last term's content. Your classroom has forty pupils, a piece of chalk, and a week lost to exams. Somewhere between the lesson and Monday morning, you turn one into the other, by hand.
 

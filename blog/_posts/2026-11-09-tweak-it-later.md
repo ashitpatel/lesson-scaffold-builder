@@ -6,7 +6,7 @@ series: scaffold
 date: 2026-11-09 00:06:00 +0000
 ---
 
-*Part 7 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
+*Part 7 of 9 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
 The cards assume chart paper you don't have, 45-minute periods you don't get, and volunteers who never show up. And needs don't all surface on Sunday: on Monday you learn the chart paper is gone, on Wednesday that periods are 30 minutes, next term that a new class needs simpler wording. A plan you can't revise is a plan you'll abandon — so the tool treats printed cards as a living draft, not a finished product.
 
