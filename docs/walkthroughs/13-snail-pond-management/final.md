@@ -27,7 +27,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -71,6 +73,11 @@ BEFORE YOU START
   available.
   If not: Use two educator-provided examples and hold one class discussion;
   combine steps 2 and 3 in one period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student answers on
@@ -134,6 +141,11 @@ BEFORE YOU START
   If not: Sketch from the bank in one combined visit for two ponds and drop
   the repeat visit; use the water source maps for missing details.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student holds up
   slate naming the four sketch items, educator looks at all slates and
@@ -186,6 +198,11 @@ BEFORE YOU START
 - Needs: Chart paper and chalk for pooling charts and graphs.
   If not: Reuse notebook pages for group tables and keep one class chart;
   combine the rules and pollution discussions in one period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student answers on
@@ -243,6 +260,11 @@ BEFORE YOU START
   seeds, or cuttings.
   If not: Clear only the school-edge pond area and plant fewer spots in one
   visit; shorten the poster task to one poster per group.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student shows the

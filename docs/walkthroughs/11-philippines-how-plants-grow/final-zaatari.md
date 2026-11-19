@@ -25,7 +25,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -72,6 +74,11 @@ BEFORE YOU START
   If not: Use one shared school plant and a covered part with paper; if a week
   is lost, combine observation marking and comparison in one period and drop
   the second observation round.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers on
@@ -133,6 +140,11 @@ BEFORE YOU START
   If not: Skip the walk and sort leaves already fallen in school grounds from
   one quick pickup, or use the prior shared basket; drop the final comparison
   sentence to fit the declared weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers why
@@ -198,6 +210,11 @@ BEFORE YOU START
   If not: Use a smaller shared seed sample and shorten stem watching to one
   day; if a week is lost, combine seed sorting with drawing in one period and
   drop one practice question.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers at the

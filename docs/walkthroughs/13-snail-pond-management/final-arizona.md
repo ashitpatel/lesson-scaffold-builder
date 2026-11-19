@@ -25,7 +25,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -71,6 +73,11 @@ BEFORE YOU START
   If not: Rebuild a simple pond map on the chalkboard from discussion and use
   songs known in class; if a week is lost, combine steps 2 and 3 into one
   period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student answers on
@@ -128,6 +135,11 @@ BEFORE YOU START
   notes on seasonal use; if a week is lost, combine steps 3 and 5 into one
   visit and shorten sketching to one pond.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-02 Structural Peer Roles: added rotating Spotter and
   Recorder roles with halfway swap to shared plant recording
@@ -177,6 +189,11 @@ BEFORE YOU START
   If not: Use chalkboard charts and notebook plans, and replace planting with
   a paper bank layout; if a week is lost, run two short debates in one period
   and drop one planting visit.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-02 Structural Peer Roles: debate recording shared

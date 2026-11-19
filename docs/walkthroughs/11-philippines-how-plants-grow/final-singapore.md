@@ -25,7 +25,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -126,6 +128,11 @@ BEFORE YOU START
   If not: Use one seedling in light then covered for two days, combine
   measuring into one period, and drop the second observation day.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil shows
   predicted colour movement on slates at once, educator checks all and
@@ -191,6 +198,11 @@ BEFORE YOU START
 - Needs: Dry weather and access to school grounds for short walks.
   If not: Use fallen leaves already on school grounds near the classroom, then
   combine sorting and drawing in one period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: added whole-class

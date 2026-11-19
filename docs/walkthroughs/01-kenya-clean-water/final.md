@@ -28,7 +28,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -104,6 +106,11 @@ BEFORE YOU START
 - Needs: Two weeks of lessons run without a break.
   If not: If a week is lost, do steps 1 and 2 in one period and steps 5 and 6
   in one period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: during the explanation of
@@ -209,6 +216,11 @@ BEFORE YOU START
   If not: If a week is lost, do steps 1 and 2 in one period and step 3 in the
   next, and do steps 5 and 6 on the same day.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: after explaining that
   filtering does not remove all germs, every learner answers at once with
@@ -293,6 +305,11 @@ BEFORE YOU START
   If not: Practise on the days school is open, and do steps 4 to 6 in one
   period if a week is lost. Do not extend the unit.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: the storage explanation
   and demonstration now end with a finger check that every learner answers at
@@ -350,6 +367,11 @@ BEFORE YOU START
   If not: If a week is lost, do the partner check (step 3) in the first part
   of the period for the final copy (step 4), and give the rest of the period
   to writing.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-05 Real Audience Production: finished guides are read

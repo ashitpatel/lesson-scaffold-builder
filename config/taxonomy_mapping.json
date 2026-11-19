@@ -52,5 +52,5 @@
     "min_duration_weeks": 2,
     "max_duration_weeks": 4
   },
-  "onboarding_disclaimer": "The LSB framework functions purely as an adaptive, supportive scaffolding framework for lesson content delivery. It does not prescribe operational classroom routines, behavior management habits, or physical school rules."
+  "onboarding_disclaimer": "The LSB framework functions purely as an adaptive, supportive scaffolding framework for lesson content delivery. It does not prescribe operational classroom routines, behavior management habits, or physical school rules; the one exception is a short, optional note on unit cards with group work, on what to ask a group that is stuck."
 }

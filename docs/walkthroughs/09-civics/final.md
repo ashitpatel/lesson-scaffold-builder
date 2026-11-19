@@ -28,7 +28,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -233,6 +235,11 @@ BEFORE YOU START
 - Needs: Two full weeks of class periods are available.
   If not: If a week is lost, hold steps 2 and 3 in one period.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: after the explanation of
   majority and approval voting, every student answers one two-part question on
@@ -291,6 +298,11 @@ BEFORE YOU START
 - Needs: Two full weeks of class periods are available.
   If not: If a week is lost, hold the partner reading at the start of the
   revision lesson and keep the two full drafting lessons.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-01 Retrieval Practice: the reread of notebooks becomes

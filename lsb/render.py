@@ -8,7 +8,9 @@ G21 (Output Clarity) asks for a "high-contrast, text-only, dual-column format".
 That is layout, so it is done here in code, not by a model: one overview card,
 then one card per unit in dependency order. Each unit card has a two-column
 WHO / WHAT TO DO step table, the conditions the unit relies on with what to do
-if one doesn't hold, and the changes the optimisation stages made, by card.
+if one doesn't hold, a fixed note on what to do when a group gets stuck (only
+on units with group or pair work), and the changes the optimisation stages
+made, by card.
 
 cards.txt is plain text at most 78 characters wide. cards.html is one
 self-contained black-on-white page with no images, scripts, links or external
@@ -41,6 +43,16 @@ WIDTH = 78
 WHO = 22  # left column width in cards.txt
 ROLE_NAMES = {"Lead_Educator": "Lead Educator", "Peer_Facilitator": "Peer Facilitator",
               "Community_Volunteer": "Community Volunteer"}
+# A fixed classroom-management note, the same on every card it appears on: it is
+# rendered text, not a method card, so it adds no step and uses no card slot.
+# It makes no outcome claim, and it ends in help (EB-03) rather than withholding it.
+STUCK_HEADING = "If a group is stuck"
+STUCK_LINES = (
+    'Ask: "What exactly are you stuck on?"',
+    'Then: "What is one small thing you can try in the next five minutes?"',
+    "If they are still stuck, help: show them the next step or a worked example.",
+)
+GROUP_WORK = re.compile(r"\b(groups?|pairs?|partners?|teams?|in threes|in fours)\b", re.I)
 STAGE_NAMES = {"evidence_based": "Evidence-Based", "connected_learning": "Connected Learning", "participatory_budgeting": "Participatory Budgeting"}
 
 
@@ -169,6 +181,12 @@ def _assumptions(deck: Deck, uid: str) -> list[tuple[str, str]]:
     return [(str(a.get("assumes", "")), str(a.get("if_not", ""))) for a in deck.assumptions if a.get("mls_id") == uid]
 
 
+def _has_group_work(unit: dict) -> bool:
+    """True when a step's action puts students in groups or pairs."""
+    return any(isinstance(t, dict) and GROUP_WORK.search(str(t.get("action", "")))
+               for t in unit.get("tasks") or [])
+
+
 def _overview_rows(deck: Deck) -> list[tuple[str, str]]:
     return [(u.get("mls_id", "?"), f"{u.get('title', '')} ({_weeks(u)}). {_deps_line(u)}.") for u in deck.units()]
 
@@ -248,6 +266,11 @@ def render_text(deck: Deck, width: int = WIDTH) -> str:
                 out += _wrap("- Needs: " + assumes, width, hang="  ")
                 if if_not:
                     out += _wrap("If not: " + if_not, width, "  ")
+        if _has_group_work(unit):
+            out.append(light)
+            out.append(STUCK_HEADING.upper())
+            for line in STUCK_LINES:
+                out += _wrap("- " + line, width, hang="  ")
         changes = _changes(deck, uid)
         if changes:
             out.append(light)
@@ -326,6 +349,9 @@ def render_html(deck: Deck) -> str:
             items = "".join(f"<li>Needs: {_e(a)}" + (f"<br>If not: {_e(b)}" if b else "") + "</li>"
                             for a, b in assumptions)
             parts.append(f"<h3>Before you start</h3><ul>{items}</ul>")
+        if _has_group_work(unit):
+            items = "".join(f"<li>{_e(line)}</li>" for line in STUCK_LINES)
+            parts.append(f"<h3>{_e(STUCK_HEADING)}</h3><ul>{items}</ul>")
         changes = _changes(deck, uid)
         if changes:
             items = "".join(f"<li>{_e(stage)}, {_e(card)} {_e(names.get(card, ''))}: {_e(summary)}</li>"

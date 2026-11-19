@@ -27,7 +27,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -76,6 +78,11 @@ BEFORE YOU START
   and notebooks available.
   If not: Use the classroom and yard edge for listing, or educator-supplied
   local examples, and combine two short listing periods into one period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student shows biotic
@@ -190,6 +197,11 @@ BEFORE YOU START
   shorten the comparison to three tallies; combine marking and first tally in
   one period.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student sorts one
   organism on slates at the same time, the educator looks and re-explains
@@ -253,6 +265,11 @@ BEFORE YOU START
   and revision.
   If not: Educator reads the cases aloud and students discuss from the board;
   shorten drafting to one sustained period and revision to the next period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-02 Spaced Practice: Recall step becomes brief practice of

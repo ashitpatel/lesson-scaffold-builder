@@ -57,6 +57,22 @@ class Content(unittest.TestCase):
         self.assertIn("Needs: Reused bottles are available.", self.text)
         self.assertIn("If not: Use any straight-sided jar.", self.page)
 
+    def test_stuck_note_only_on_units_with_group_work(self):
+        seq = copy.deepcopy(VALID)
+        for t in seq["mls_units"][0]["tasks"]:
+            t["action"] = "Students write the answers alone."
+        for t in seq["mls_units"][1]["tasks"]:
+            t["action"] = "Students work in pairs on the tally."
+        d = deck(seq)
+        text, page = render.render_text(d), render.render_html(d)
+        cards = text.split(f"{U1}:")
+        self.assertNotIn("IF A GROUP IS STUCK", cards[0].split(f"{U0}:")[-1])
+        self.assertIn("IF A GROUP IS STUCK", cards[-1])
+        self.assertEqual(page.count("<h3>If a group is stuck</h3>"), 1)
+        self.assertIn("What exactly are you stuck on?", page)
+        self.assertIn("show them the next step", text)
+        self.assertEqual(render.check_render(d, text, page), [])
+
     def test_overview_and_disclaimer(self):
         self.assertIn("LESSON SCAFFOLD: Test source", self.text)
         self.assertIn("does not prescribe operational", self.text)

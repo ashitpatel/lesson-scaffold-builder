@@ -26,7 +26,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -84,6 +86,11 @@ BEFORE YOU START
   If not: Reuse scrap paper and combine steps 2 and 3 into one period; drop
   half of the twelve exercises.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers on
   slates during the equal-parts explanation and the educator re-explains or
@@ -138,6 +145,11 @@ BEFORE YOU START
 - Needs: Dry beans or stones for two demonstration piles are available.
   If not: Use only the folded strips for quarter and half comparisons and
   combine steps 3 and 4 into one period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers the
@@ -206,6 +218,11 @@ BEFORE YOU START
 - Needs: The garden bed is accessible in dry weather for one short visit.
   If not: Skip the visit and use only the board grid; shorten step 5 drafting
   and drop one equivalent form.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers one

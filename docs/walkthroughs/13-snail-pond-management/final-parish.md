@@ -27,7 +27,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -77,6 +79,11 @@ BEFORE YOU START
   chart paper and notebooks are available.
   If not: Use the educator's own examples and class discussion only; combine
   collection and sharing into one period and drop the river-versus-sea count.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student shows pond
@@ -137,6 +144,11 @@ BEFORE YOU START
   combine the hygiene and history steps into one period with shortened notes,
   with no extension.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-02 Structural Peer Roles: paired asking and recording
   roles with swap for the pond-use interviews
@@ -185,6 +197,11 @@ BEFORE YOU START
   debate.
   If not: Pool findings on the chalkboard only; shorten the design debate and
   drop the mosquito question to a brief answer, with no extension.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student answers one
@@ -250,6 +267,11 @@ BEFORE YOU START
   If not: If the bank is unreachable, do the design, posters and report in
   class only and drop planting; if a week is lost, do two report steps in one
   period, with no extension.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-09 Elaborative Interrogation: telling of the soak pit

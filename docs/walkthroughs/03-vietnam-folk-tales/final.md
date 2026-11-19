@@ -26,7 +26,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -96,6 +98,11 @@ BEFORE YOU START
   them).
   If not: Do steps 4 and 5 in one period, and do step 6 as the last part of
   that period, so the unit still ends within 2 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: right after the structure
@@ -210,6 +217,11 @@ BEFORE YOU START
   If not: If a week is lost, cut pair practice to one lesson and start the
   final retellings sooner, so the unit still ends within 3 weeks.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-02 Spaced Practice: the 'Recall from' step now opens with
   a brief written review, from memory, of the three parts and character types
@@ -271,6 +283,11 @@ BEFORE YOU START
   lesson. Do step 1 in the last ten minutes of the lesson before the first
   drafting lesson, and do step 4 in the first fifteen minutes of the revision
   lesson, before pupils start revising, so the unit still ends within 3 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-04 Collective Shared Purpose: all final copies bound

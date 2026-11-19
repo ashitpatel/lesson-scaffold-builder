@@ -25,7 +25,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -73,6 +75,11 @@ BEFORE YOU START
 - Needs: Chalkboard and pupil notebooks available each period.
   If not: Combine the two solo problem sets into one period and drop one
   tables round that week to stay in 3 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-03 Worked Examples, then Practice: second worked example
@@ -128,6 +135,11 @@ BEFORE YOU START
   If not: Draw baskets and tangerines (gyul) tallies on the chalkboard with no
   stones, and combine the demo with the first word problems in one period.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-03 Worked Examples, then Practice: one complete example
   is shown step by step, then a second example is left for pupils to finish
@@ -181,6 +193,11 @@ BEFORE YOU START
 - Needs: Mixed worksheets available, or chalkboard space to copy the set.
   If not: Copy the ten-plus-ten set on the chalkboard and drop the final
   fluency set to stay in 2 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-07 Interleaved Practice: the final ten-item set is

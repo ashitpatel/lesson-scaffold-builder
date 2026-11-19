@@ -27,7 +27,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -69,6 +71,11 @@ BEFORE YOU START
   notebooks.
   If not: List organisms from the yard edge or from memory on chart paper, and
   combine sorting and class-list steps in one period to stay within 2 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: added every-student slate
@@ -123,6 +130,11 @@ BEFORE YOU START
   string for quadrats.
   If not: If one week is lost, keep three weekly tallies instead of four and
   shorten the comparison to one period; do not extend past 4 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-03 Worked Examples, then Practice: demonstrate marking
@@ -231,6 +243,11 @@ BEFORE YOU START
   If not: Rebuild a small web on the board from the class list, and if a week
   is lost combine case discussion with draft start in one period while keeping
   both full writing lessons within 3 weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-09 Elaborative Interrogation: pairs first answer why each

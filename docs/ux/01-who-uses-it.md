@@ -14,7 +14,7 @@ The Lesson Scaffold Builder (LSB) takes a **long, lecture-heavy piece of teachin
 
 ### 2. Teacher (the `Lead_Educator` on every card)
 - **What they want:** to know what to do on Monday, in plain words, with materials they already have.
-- **How they use it:** receive one printed card per unit and run the steps in order. The "Before you start" box says what the unit relies on and what to do if it isn't there.
+- **How they use it:** receive one printed card per unit and run the steps in order. The "Before you start" box says what the unit relies on and what to do if it isn't there. On units with group or pair work, "If a group is stuck" gives two questions to ask a stuck group, then says to show them the next step.
 - **What matters:** the core teaching (practice, mastery checks, sustained writing) isn't cut; nothing needs a device, a purchase or a record about individual children.
 
 ### 3. School leader
@@ -26,6 +26,6 @@ The Lesson Scaffold Builder (LSB) takes a **long, lecture-heavy piece of teachin
 ## Who it is **not** for
 - **Students** never see the tool. They get roles inside steps (Recorder, Counter, a choice of theme, a vote on a class decision).
 - **Grading or tracking.** The pipeline removes individual records, name lists and score charts from sources rather than producing them.
-- **Replacing curriculum decisions.** It structures how a lesson is delivered; it doesn't decide what a system should teach, and it doesn't prescribe classroom routines or school rules.
+- **Replacing curriculum decisions.** It structures how a lesson is delivered; it doesn't decide what a system should teach, and it doesn't prescribe classroom routines or school rules (the one exception is the optional "If a group is stuck" note).
 
 Next: [the end-to-end journey](02-journey.md).

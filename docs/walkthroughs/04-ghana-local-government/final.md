@@ -26,7 +26,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -89,6 +91,11 @@ BEFORE YOU START
   so the unit still runs over two weeks. If lessons in those weeks are short,
   do step 2 at the end of the step 1 lesson and run steps 4 and 5 in one
   period.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-05 Concrete and Visual Representations: the same
@@ -229,6 +236,11 @@ BEFORE YOU START
   If not: If a week is lost, do step 1 at the start of the drafting lesson and
   step 3 at the start of the revision lesson. Keep both full writing lessons
   so the unit fits in two weeks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-05 Real Audience Production: final letters read to

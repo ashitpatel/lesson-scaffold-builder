@@ -27,7 +27,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -88,6 +90,11 @@ BEFORE YOU START
 - Needs: Chart paper is available for the class list.
   If not: Use the back of a reused poster or flattened cardboard. Or write the
   list on the board and have students copy it into their notebooks.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: after the three groups are
@@ -253,6 +260,11 @@ BEFORE YOU START
   If not: Groups tally an unfamiliar organism under a short description, such
   as 'small brown beetle', and use that same description at every visit.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-05 Concrete and Visual Representations: the spoken
   explanation of sampling now comes with a board drawing of the grounds as a
@@ -328,6 +340,11 @@ BEFORE YOU START
   discussion in the same period. Keep the full writing and revision lessons.
 - Needs: There is paper for two-page drafts and final copies.
   If not: Students write in their notebooks or on the backs of reused paper.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: a separate check after the

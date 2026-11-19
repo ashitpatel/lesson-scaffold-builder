@@ -28,7 +28,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -152,6 +154,11 @@ BEFORE YOU START
   copies; if a week is lost, do one combination per student instead of two and
   shorten the totals discussion.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student answers one
   question on scrap paper at the same time, educator looks at all answers and
@@ -221,6 +228,11 @@ BEFORE YOU START
   time is short, combine steps 2 and 3 in one period and shorten the fairness
   discussion.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every student answers on
   scrap paper at once during approval-voting explanation, educator looks and
@@ -276,6 +288,11 @@ BEFORE YOU START
   If not: If a week is lost, shorten each writing lesson and require one page
   instead of two, but keep both partner feedback and revision; do not extend
   the unit.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-05 Real Audience Production: final arguments read to

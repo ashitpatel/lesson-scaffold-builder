@@ -26,7 +26,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -122,6 +124,11 @@ BEFORE YOU START
   If not: If materials are short, the educator demonstrates one filter while
   groups observe in turn; drop repeat pours and keep one comparison.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every learner shows the
   layer order on slates after the demonstration, answers are viewed and
@@ -191,6 +198,11 @@ BEFORE YOU START
   If not: If sun is weak, shorten SODIS to a demonstration setup and use
   boiled water for the guide; if a week is lost, combine handwashing practice
   into one period and keep both writing lessons.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-09 Elaborative Interrogation: boiling explanation becomes

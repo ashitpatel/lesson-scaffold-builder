@@ -28,7 +28,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -118,6 +120,11 @@ BEFORE YOU START
   one week is lost, combine listing and tallying in one period and shorten the
   urgency discussion to one round.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Connected Learning, CL-02 Structural Peer Roles: added rotating Suggester,
   Recorder and Checker roles to the group needs listing
@@ -182,6 +189,11 @@ BEFORE YOU START
   and combine sharing with the vote in one period; drop the second discussion
   round.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-03 Worked Examples, then Practice: one complete fitting
   set is worked step by step on the board before groups solve their own sets
@@ -245,6 +257,11 @@ BEFORE YOU START
   If not: If time is lost, shorten the questions step to one question and
   combine choosing with drafting; protect one revision period and drop copying
   of the final copy if needed.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-09 Elaborative Interrogation: meeting explanation becomes

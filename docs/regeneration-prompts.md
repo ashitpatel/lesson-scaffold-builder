@@ -55,7 +55,7 @@ A sequence of prompts that rebuilds this repository from an empty folder with an
 
 ## Prompt 6: Teacher cards
 
-> Write `lsb/render.py`: an overview card and one card per unit in dependency order, as 78-column text and a self-contained black-and-white HTML page (no images, scripts or external resources, one card per printed page). Two-column WHO / WHAT TO DO, changed steps marked with their card, "Before you start" from the assumptions, kept changes by card name. Then check G21 in code: every step present unaltered (read the right-hand column on its own in the text version), widths, two columns, text only, black and white. Render every passed run.
+> Write `lsb/render.py`: an overview card and one card per unit in dependency order, as 78-column text and a self-contained black-and-white HTML page (no images, scripts or external resources, one card per printed page). Two-column WHO / WHAT TO DO, changed steps marked with their card, "Before you start" from the assumptions, a fixed "If a group is stuck" note on units whose steps mention groups or pairs, kept changes by card name. Then check G21 in code: every step present unaltered (read the right-hand column on its own in the text version), widths, two columns, text only, black and white. Render every passed run.
 >
 > **Done when:** the check catches altered steps, missing cards, long lines, images, colours and three-column rows in tests.
 

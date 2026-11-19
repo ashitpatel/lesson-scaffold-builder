@@ -25,7 +25,9 @@ time.
 
 The LSB framework functions purely as an adaptive, supportive scaffolding
 framework for lesson content delivery. It does not prescribe operational
-classroom routines, behavior management habits, or physical school rules.
+classroom routines, behavior management habits, or physical school rules; the
+one exception is a short, optional note on unit cards with group work, on what
+to ask a group that is stuck.
 
 
 ==============================================================================
@@ -78,6 +80,11 @@ BEFORE YOU START
 - Needs: Full weeks are available for repeated observation.
   If not: If a week is lost, combine two observations into one period and
   shorten the final discussion, without extending the unit.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers one
@@ -143,6 +150,11 @@ BEFORE YOU START
   If not: If a week is lost, combine sorting and drawing into one period and
   drop the repeat question check, without extending the unit.
 ------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers on
   slates which need leaves use, educator looks at all and re-explains if many
@@ -207,6 +219,11 @@ BEFORE YOU START
 - Needs: Full weeks are available for the two-day flower watch.
   If not: If a week is lost, shorten to one shared observation and combine the
   rota with the final explanation in one period, without extending the unit.
+------------------------------------------------------------------------------
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
 ------------------------------------------------------------------------------
 CHANGES FROM THE SOURCE
 - Evidence-Based, EB-04 Checking for Understanding: every pupil answers at the

@@ -136,6 +136,7 @@ CHANGES FROM THE SOURCE
 | **WHO / WHAT TO DO** | 3 to 7 numbered steps, each with one of three roles (`Lead Educator`, `Peer Facilitator`, or `Community Volunteer`, always with the educator present) and at most four sentences |
 | **`[changed: …]` tag** | This step was changed by the method card named |
 | **BEFORE YOU START** | What the unit relies on (**Needs**) and what to do if it isn't there (**If not**) |
+| **IF A GROUP IS STUCK** | Only on units with group or pair work: the same fixed note on every card — two questions to ask a stuck group, then show them the next step or a worked example. It is printed by the renderer, not added by a method card, so it adds no step |
 | **CHANGES FROM THE SOURCE** | Each change a stage made, by method card, in plain words |
 
 The same cards come as `cards.txt` (plain text, at most 78 characters wide) and `cards.html` (one printed page per card, black on white, two columns, no images or scripts). Code checks both against critic check G21 before the run passes ([technical.md](docs/technical.md)).
