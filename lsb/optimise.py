@@ -18,6 +18,72 @@ from typing import Any
 CL_CARDS = ("CL-01", "CL-02", "CL-03", "CL-04", "CL-05")
 PB_CARDS = ("PB-01", "PB-02", "PB-03", "PB-04", "PB-05")
 EB_CARDS = ("EB-01", "EB-02", "EB-03", "EB-04", "EB-05", "EB-06", "EB-07", "EB-08", "EB-09")
+# Method routines a change entry may name (docs/methodologies.md): token -> family and host card.
+ROUTINE_FAMILIES = {"nssa-tutoring": "tutoring", "uptake-moves": "uptake",
+                    "civic-mapping": "mapping", "udl-choice": "udl"}
+ROUTINE_HOSTS = {"nssa-tutoring": "CL-02", "uptake-moves": "EB-04",
+                 "civic-mapping": "CL-03", "udl-choice": "EB-05"}
+ST_CARDS = ("ST-01", "ST-02")
+# Tech-conditional cards and the method family each needs.
+ST_FAMILIES = {"ST-01": "roar", "ST-02": "ai"}
+NEEDS_MARKER = "(needs:"
+
+
+def stanford_blockers(family: str, methods: dict | None) -> list[str]:
+    """Inventory factors blocking this tech-conditional family; [] means it passes.
+
+    Grade band comes from the run's declared band (None when the flag was not
+    passed); an unverifiable factor blocks, it never passes silently.
+    """
+    if not isinstance(methods, dict):
+        return ["methodology answers unavailable"]
+    opt_in = methods.get("method_opt_in") or []
+    devices = methods.get("classroom_devices", "none")
+    internet = methods.get("classroom_internet", False) is True
+    grade = methods.get("grade_band")
+    blockers = []
+    if family not in opt_in:
+        blockers.append("method_opt_in does not include %r" % family)
+    if family == "roar":
+        if devices != "one-per-student":
+            blockers.append("needs one browser device per student")
+        if not internet:
+            blockers.append("needs classroom internet")
+        if grade != "Primary":
+            blockers.append("needs Primary grade band")
+    elif family == "ai":
+        if devices not in ("shared", "one-per-student"):
+            blockers.append("needs shared or 1:1 student devices")
+        if not internet:
+            blockers.append("needs classroom internet")
+        if grade != "High":
+            blockers.append("needs High grade band")
+    else:
+        blockers.append("unknown family %r" % family)
+    return blockers
+
+
+def routine_blockers(routine: str, methods: dict | None) -> list[str]:
+    """Inventory factors blocking this routine; [] means the code gates pass.
+
+    Content fit stays model-judged (the card states it); only countable
+    answers gate here. Without methodology answers nothing is verifiable,
+    so every routine is blocked.
+    """
+    if not isinstance(methods, dict):
+        return ["methodology answers unavailable"]
+    opt_in = methods.get("method_opt_in") or []
+    blockers = []
+    if ROUTINE_FAMILIES.get(routine) not in opt_in:
+        blockers.append("method_opt_in does not include %r" % ROUTINE_FAMILIES.get(routine))
+    if routine == "nssa-tutoring":
+        sessions = methods.get("sessions_per_week", 1)
+        sessions = sessions if isinstance(sessions, int) and sessions >= 1 else 1
+        if sessions < 3:
+            blockers.append("sessions_per_week is %d, needs 3+" % sessions)
+        if methods.get("tutor_staff") is not True:
+            blockers.append("no consistent tutor available")
+    return blockers
 FIXED_FIELDS = ("mls_id", "title", "dependencies", "macro_alignment", "duration_weeks")
 DECISIONS = ("APPLY", "ABSTAIN")
 MAX_ADDED_STEPS = 1
@@ -48,11 +114,14 @@ def match_steps(before: dict, after: dict) -> list[int | None]:
 
 
 def check_unit_edit(before: dict, result: Any, cards: tuple[str, ...] = CL_CARDS,
-                    max_cards: int = MAX_CARDS, max_added: int = MAX_ADDED_STEPS) -> list[str]:
+                    max_cards: int = MAX_CARDS, max_added: int = MAX_ADDED_STEPS,
+                    methods: dict | None = None) -> list[str]:
     """Problems with an optimisation stage's output for one unit; [] means accepted.
 
     `cards` is the allowlist (a user's subset of the stage's cards); `max_cards`
     and `max_added` tighten the per-unit limits below the code defaults.
+    `methods` carries the methodology answers so named routines can be
+    threshold-gated; without it every routine is blocked.
     """
     if not isinstance(result, dict):
         return ["output is not a JSON object"]
@@ -100,6 +169,31 @@ def check_unit_edit(before: dict, result: Any, cards: tuple[str, ...] = CL_CARDS
         problems.append(f"{len(used_cards)} cards applied; at most {max_cards}")
     if decision == "APPLY" and not changes:
         problems.append("decision is APPLY but 'changes' is empty")
+
+    for c in changes:
+        routine = c.get("routine")
+        if routine is None:
+            continue
+        if routine not in ROUTINE_FAMILIES:
+            problems.append(f"unknown routine {routine!r}; use one of "
+                            f"{', '.join(sorted(ROUTINE_FAMILIES))} or omit it")
+        elif c.get("card") != ROUTINE_HOSTS[routine]:
+            problems.append(f"routine {routine!r} belongs on {ROUTINE_HOSTS[routine]}, "
+                            f"not {c.get('card')!r}")
+        else:
+            for blocker in routine_blockers(routine, methods):
+                problems.append(f"routine {routine!r} below threshold: {blocker}")
+
+    for c in changes:
+        family = ST_FAMILIES.get(c.get("card") or "")
+        if family is None:
+            continue
+        step = c.get("step")
+        action = tasks[step - 1].get("action", "") if isinstance(step, int) and 1 <= step <= len(tasks) else ""
+        if NEEDS_MARKER not in action:
+            problems.append(f"{c.get('card')} step {step} needs a '{NEEDS_MARKER} ...)' tech marker")
+        for blocker in stanford_blockers(family, methods):
+            problems.append(f"{family} below threshold: {blocker}")
 
     matched = match_steps(before, after)
     logged: dict[int, dict] = {}

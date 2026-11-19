@@ -37,8 +37,9 @@ The validator's result is final: a critic PASS on a sequence that fails a code
 check is recorded and treated as REVISE.
 
 Once the sequence passes, the optimisation stages run in order, each once per unit:
-25-evidence-based (skip with --no-eb), 30-connected-learning (--no-cl), then
-31-participatory-budgeting (--no-pb).
+25-evidence-based (skip with --no-eb), 30-connected-learning (--no-cl),
+31-participatory-budgeting (--no-pb), then 32-stanford-methods (--no-st,
+skipped unless a tech-gated family is opted in).
 lsb.optimise checks each edit's limits in code; accepted edits are merged, validated
 and reviewed by the critic again. A unit whose edit still has issues after
 --max-stage-revisions is reverted, so a stage never fails a passed sequence.
@@ -97,6 +98,7 @@ class FrameworkStage:
     cards_placeholder: str
     card_ids: tuple[str, ...]
     cards_text: str | None = None  # a user's subset of the cards file, if chosen
+    opt_in: tuple[str, ...] = ()  # method families, one of which must be opted in; empty runs always
 
     def cards(self) -> str:
         return self.cards_text if self.cards_text is not None else self.cards_path.read_text(encoding="utf-8")
@@ -109,8 +111,11 @@ STAGES = {
                          ROOT / "frameworks" / "connected-learning.md", "CL_CARDS", opt.CL_CARDS),
     "pb": FrameworkStage("participatory_budgeting", "pb", "31-participatory-budgeting.md",
                          ROOT / "frameworks" / "participatory-budgeting.md", "PB_CARDS", opt.PB_CARDS),
+    "st": FrameworkStage("stanford_methods", "st", "32-stanford-methods.md",
+                         ROOT / "frameworks" / "stanford-methods.md", "ST_CARDS", opt.ST_CARDS,
+                         opt_in=("roar", "ai")),
 }
-STAGE_ORDER = ("eb", "cl", "pb")
+STAGE_ORDER = ("eb", "cl", "pb", "st")
 VERDICTS = ("PASS", "REVISE", "REJECT")
 
 
@@ -507,7 +512,8 @@ def intake_values(text: str, language: str, feedback: str | None = None) -> dict
 
 def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issues: list | None = None,
                   cards: str | None = None, mode: str = "multi",
-                  keep_locale: bool = False, approved_terms: tuple[str, ...] | list[str] = ()) -> dict[str, str]:
+                  keep_locale: bool = False, approved_terms: tuple[str, ...] | list[str] = (),
+                  methods: dict | None = None) -> dict[str, str]:
     return {
         "SEQUENCE_JSON": _dump(decomposed["sequence"]),
         "VALIDATOR_REPORT": _dump(report.to_dict()),
@@ -522,11 +528,50 @@ def critic_values(src: Source, decomposed: dict, report: v.Report, previous_issu
         "PREVIOUS_ISSUES": _dump(previous_issues) if previous_issues else NONE,
         "MODE": mode,
         "LOCALE_SCOPE": loc.locale_scope("keep" if keep_locale else "generalize", approved_terms),
+        "METHOD_CONTEXT": method_context_summary(methods),
     }
 
 
+METHOD_KEYS = ("method_opt_in", "sessions_per_week", "tutor_staff",
+               "classroom_devices", "classroom_internet", "home_access")
+
+
+def method_context_values(methods: dict | None) -> dict[str, str]:
+    """METHOD_OPT_IN / TECH_INVENTORY placeholder values; safe defaults when unanswered."""
+    m = methods or {}
+    opt_in = [u for u in (m.get("method_opt_in") or []) if isinstance(u, str)]
+    sessions = m.get("sessions_per_week", 1)
+    sessions = sessions if isinstance(sessions, int) and sessions >= 1 else 1
+    tutor = "yes" if m.get("tutor_staff") is True else "no"
+    devices = m.get("classroom_devices", "none")
+    devices = devices if isinstance(devices, str) and devices else "none"
+    internet = "yes" if m.get("classroom_internet") is True else "no"
+    home = m.get("home_access", "few")
+    home = home if isinstance(home, str) and home else "few"
+    grade = m.get("grade_band")
+    grade = grade if isinstance(grade, str) and grade else "(not stated)"
+    minutes = m.get("time_block_minutes")
+    minutes = str(minutes) if isinstance(minutes, int) and minutes > 0 else "(not stated)"
+    return {
+        "METHOD_OPT_IN": ", ".join(opt_in) or "(none)",
+        "TECH_INVENTORY": ("sessions_per_week: %d; tutor_staff: %s; classroom_devices: %s; "
+                           "classroom_internet: %s; home_access: %s; grade_band: %s; "
+                           "time_block_minutes: %s"
+                           % (sessions, tutor, devices, internet, home, grade, minutes)),
+    }
+
+
+def method_context_summary(methods: dict | None) -> str:
+    """One-block methodology context for the critic; "(none)" when unanswered."""
+    if not methods:
+        return NONE
+    vals = method_context_values(methods)
+    return "METHOD_OPT_IN: %s; TECH_INVENTORY: %s" % (vals["METHOD_OPT_IN"], vals["TECH_INVENTORY"])
+
+
 def stage_values(stage: FrameworkStage, src: Source, decomposed: dict, uid: str,
-                 previous: dict | None = None, feedback: list | None = None) -> dict[str, str]:
+                 previous: dict | None = None, feedback: list | None = None,
+                 methods: dict | None = None) -> dict[str, str]:
     trace = [e for e in decomposed.get("source_trace") or [] if isinstance(e, dict) and e.get("mls_id") == uid]
     return {
         "SEQUENCE_JSON": _dump(decomposed["sequence"]),
@@ -536,6 +581,7 @@ def stage_values(stage: FrameworkStage, src: Source, decomposed: dict, uid: str,
         stage.cards_placeholder: stage.cards(),
         "PREVIOUS_OUTPUT": _dump(previous) if previous is not None else NONE,
         "CRITIC_FEEDBACK": _dump(feedback) if feedback else NONE,
+        **method_context_values(methods),
     }
 
 
@@ -609,7 +655,8 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
                         earlier_cards: str = "", max_revisions: int = 1,
                         allowed: tuple[str, ...] | None = None,
                         max_cards: int = opt.MAX_CARDS, max_added: int = opt.MAX_ADDED_STEPS,
-                        single_span: bool = False, keep_locale: bool = False) -> dict | None:
+                        single_span: bool = False, keep_locale: bool = False,
+                        methods: dict | None = None) -> dict | None:
     """Apply one stage's cards unit by unit to a sequence that passed the critic.
 
     `current` is {"sequence", "source_trace"}. Each unit's edit must pass
@@ -650,8 +697,10 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
         for tries in (1, 2):
             label = f"{p}{rnd}-{uid}" + ("-retry" if tries == 2 else "")
             try:
-                out = call(stage.key, stage.prompt, stage_values(stage, src, current, uid, previous, feedback), label)
-                problems = opt.check_unit_edit(originals[uid], out, stage.card_ids, max_cards, max_added)
+                out = call(stage.key, stage.prompt,
+                           stage_values(stage, src, current, uid, previous, feedback, methods), label)
+                problems = opt.check_unit_edit(originals[uid], out, stage.card_ids, max_cards, max_added,
+                                               methods=methods)
             except StageError as e:
                 out, problems = None, [str(e)]
             if out is not None:
@@ -719,7 +768,7 @@ def run_framework_stage(stage: FrameworkStage, src: Source, current: dict, call,
             critic = call("critic", CRITIC,
                           critic_values(src, cand, report, previous_issues, review_cards,
                                         "single" if single_span else "multi",
-                                        keep_locale=keep_locale),
+                                        keep_locale=keep_locale, methods=methods),
                           f"{p}{rnd}-critic")
         except StageError as e:
             revert(accepted, f"critic unusable: {e}")
@@ -853,7 +902,9 @@ def _framework_choices() -> list[ask.Choice]:
          ("connected_learning", "Connected Learning",
           "engagement designs: choice, peer roles, real context, class products, audience"),
          ("participatory_budgeting", "Participatory budgeting",
-          "civic reasoning: class votes and budget decisions where a real trade-off exists")),
+          "civic reasoning: class votes and budget decisions where a real trade-off exists"),
+         ("stanford_methods", "Stanford methods",
+          "tech-conditional: reading screening, AI literacy (needs opt-in + devices)")),
         [], multi=True,
         context="The optimisation stages improve each unit after it passes review; "
                 "excluded frameworks are skipped entirely. Blank excludes nothing.")]
@@ -931,6 +982,67 @@ def _breakdown_choices(src: Source) -> list[ask.Choice]:
                     (3, "3 weeks", ""),
                     (4, "4 weeks", "the default window")), 4),
     ]
+
+
+def _methodology_choices() -> list[ask.Choice]:
+    """Opt-in to Stanford-translated method families plus the tech inventory.
+
+    Defaults preserve current behavior: no family applies, and the inventory
+    answers sit below every threshold. See docs/methodologies.md.
+    """
+    return [
+        ask.Choice("method_opt_in", "Which Stanford-translated method families may apply?",
+                   (("tutoring", "Peer tutoring protocol", "same pairs, rotating roles, 3+ times a week"),
+                    ("uptake", "Talk uptake moves", "revoice ideas, press for reasoning, wait time"),
+                    ("mapping", "Civic mapping on paper", "map school grounds, tally as a class"),
+                    ("udl", "UDL choice", "a second way to perceive and to respond"),
+                    ("roar", "ROAR screening", "needs 1:1 browser devices + internet, Primary"),
+                    ("ai", "AI literacy", "needs shared devices + internet, High band")),
+                   [], multi=True,
+                   context=("These methods apply only above their effectiveness thresholds "
+                            "(docs/methodologies.md); below the line the run abstains with a reason. "
+                            "Recording the classroom is never offered.")),
+        ask.Choice("sessions_per_week", "How many sessions per week can practice run?",
+                   ((1, "1", ""), (2, "2", ""), (3, "3", ""), (4, "4", ""), (5, "5 or more", "")),
+                   1),
+        ask.Choice("tutor_staff", "Is the same tutor available across sessions?",
+                   ((True, "Yes", ""), (False, "No", "")), False),
+        ask.Choice("classroom_devices", "What devices reach students in class?",
+                   (("none", "None", ""), ("teacher-only", "Teacher device only", ""),
+                    ("shared", "Shared student devices", ""), ("one-per-student", "One per student", "")),
+                   "none"),
+        ask.Choice("classroom_internet", "Does the classroom have internet?",
+                   ((True, "Yes", ""), (False, "No", "")), False),
+        ask.Choice("home_access", "How many students have a device plus internet at home?",
+                   (("most", "Most", ""), ("some", "Some", ""), ("few", "Few or none", "")), "few"),
+    ]
+
+
+def _methodology_notes(choices: dict, grade_band: str | None) -> list[str]:
+    """Abstention notes for opted-in tech-gated families below threshold.
+
+    A family that passes leaves no note: the Stanford-methods stage runs and
+    records per-unit outcomes in its own log.
+    """
+    notes = []
+    methods = {k: choices.get(k) for k in METHOD_KEYS}
+    methods["grade_band"] = grade_band
+    needs = {"roar": "one browser device per student, classroom internet, Primary band",
+             "ai": "shared or 1:1 student devices, classroom internet, High band"}
+    for family in ("roar", "ai"):
+        if family not in (choices.get("method_opt_in") or []):
+            continue
+        missing = [b[6:] if b.startswith("needs ") else b
+                   for b in opt.stanford_blockers(family, methods)
+                   if "method_opt_in" not in b]
+        if not missing:
+            continue
+        note = ("methodology %s: not offered: needs %s (missing: %s)."
+                % (family, needs[family], ", ".join(missing)))
+        if family == "roar" and choices.get("home_access") == "most":
+            note += " ROAR also runs at home."
+        notes.append(note + " See docs/methodologies.md.")
+    return notes
 
 
 def _stage_choices(stage: FrameworkStage, sequence: dict) -> list[ask.Choice]:
@@ -1178,6 +1290,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     choices: dict[str, Any] = {}
     for c in _framework_choices():
         choices[c.key] = prompter.ask(c)
+    for c in _methodology_choices():
+        choices[c.key] = prompter.ask(c)
     excluded = set(choices["frameworks_excluded"])
     choices["locale_mode"] = prompter.ask(_locale_choice())
     if choices["locale_mode"] not in loc.MODES:
@@ -1358,6 +1472,9 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         kept_cards: list[str] = []
         for key in stages:
             stage = STAGES[key]
+            if stage.opt_in and not (set(choices.get("method_opt_in") or []) & set(stage.opt_in)):
+                result.notes.append(f"{stage.key}: skipped; none of {', '.join(stage.opt_in)} opted in")
+                continue
             for c in _stage_choices(stage, current["sequence"]):
                 choices[c.key] = prompter.ask(c)
             picked = tuple(choices[f"{stage.key}_cards"])
@@ -1367,7 +1484,10 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                 new = run_framework_stage(stage, src, current, call, save, result,
                                           "\n\n".join(kept_cards), max_stage_revisions,
                                           picked, max_cards, max_added, single_span,
-                                          keep_locale)
+                                          keep_locale,
+                                          {**{k: choices[k] for k in METHOD_KEYS if k in choices},
+                                           "grade_band": src.grade_band,
+                                           "time_block_minutes": src.time_block_minutes})
             except ModelUnavailable as e:
                 result.notes.append(f"{stage.key}: model unavailable; stopped before finishing this stage, "
                                     f"kept the sequence from the stages before it: {e}")
@@ -1400,6 +1520,8 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                                     "repaired; see late-issues.json. No cards were rendered.")
 
     locale_info: dict[str, Any] = {"mode": choices["locale_mode"]}
+    result.notes.extend(_methodology_notes(choices, src.grade_band))
+
     if choices["locale_mode"] == "relocalize" and result.status == "pass" and best_decomposed is not None:
         locale_info.update(run_relocalize(src, target_locale, result, best_decomposed,
                                           call, save, prompter, choices,
@@ -1515,6 +1637,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-eb", action="store_true", help="skip the Evidence-Based stage")
     ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
     ap.add_argument("--no-pb", action="store_true", help="skip the Participatory Budgeting stage")
+    ap.add_argument("--no-st", action="store_true", help="skip the Stanford-methods stage")
     ap.add_argument("--max-stage-revisions", type=int, default=1,
                     help="critic-driven revision rounds per optimisation stage (default 1)")
     ap.add_argument("--out", type=Path, help="output directory (default runs/<timestamp>)")

@@ -287,5 +287,82 @@ class Repair(unittest.TestCase):
         self.assertIn("tasks[1]", found[0])
 
 
+class RoutineGates(unittest.TestCase):
+    METHODS = {"method_opt_in": ["tutoring", "uptake", "mapping", "udl"],
+               "sessions_per_week": 3, "tutor_staff": True,
+               "classroom_devices": "none", "classroom_internet": False, "home_access": "few"}
+
+    def gated(self, routine, card, methods):
+        out = modified(card=card)
+        out["changes"][0]["routine"] = routine
+        cards = opt.EB_CARDS if card.startswith("EB") else opt.CL_CARDS
+        return opt.check_unit_edit(BEFORE, out, cards, methods=methods)
+
+    def test_opted_in_routines_pass(self):
+        for routine, card in (("uptake-moves", "EB-04"), ("udl-choice", "EB-05"),
+                              ("nssa-tutoring", "CL-02"), ("civic-mapping", "CL-03")):
+            with self.subTest(routine=routine):
+                self.assertEqual(self.gated(routine, card, self.METHODS), [])
+
+    def test_routine_without_opt_in_is_blocked(self):
+        methods = {**self.METHODS, "method_opt_in": []}
+        found = self.gated("uptake-moves", "EB-04", methods)
+        self.assertTrue(any("below threshold" in p and "method_opt_in" in p for p in found), found)
+
+    def test_tutoring_needs_dosage_and_tutor(self):
+        methods = {**self.METHODS, "sessions_per_week": 2, "tutor_staff": False}
+        found = self.gated("nssa-tutoring", "CL-02", methods)
+        self.assertTrue(any("sessions_per_week is 2" in p for p in found), found)
+        self.assertTrue(any("no consistent tutor" in p for p in found), found)
+
+    def test_routine_without_answers_is_blocked(self):
+        out = modified(card="EB-04")
+        out["changes"][0]["routine"] = "uptake-moves"
+        found = opt.check_unit_edit(BEFORE, out, opt.EB_CARDS)
+        self.assertTrue(any("methodology answers unavailable" in p for p in found), found)
+
+    def test_unknown_routine_and_wrong_host_fail(self):
+        out = modified(card="EB-04")
+        out["changes"][0]["routine"] = "roar-screening"
+        self.assertTrue(any("unknown routine" in p
+                            for p in opt.check_unit_edit(BEFORE, out, opt.EB_CARDS, methods=self.METHODS)))
+        out["changes"][0]["routine"] = "uptake-moves"
+        out["changes"][0]["card"] = "EB-03"
+        found = opt.check_unit_edit(BEFORE, out, opt.EB_CARDS, methods=self.METHODS)
+        self.assertTrue(any("belongs on EB-04" in p for p in found), found)
+
+
+class StanfordGates(unittest.TestCase):
+    METHODS = {"method_opt_in": ["roar", "ai"], "sessions_per_week": 1, "tutor_staff": False,
+               "classroom_devices": "one-per-student", "classroom_internet": True,
+               "home_access": "few", "grade_band": "Primary", "time_block_minutes": 45}
+
+    def st_reply(self, card="ST-01", marker=True):
+        out = modified(card=card)
+        if marker:
+            out["unit"]["tasks"][1]["action"] += " (needs: one browser device per student + internet.)"
+        return out
+
+    def gated(self, result, methods):
+        return opt.check_unit_edit(BEFORE, result, opt.ST_CARDS, methods=methods)
+
+    def test_passing_inventory_with_marker_passes(self):
+        self.assertEqual(self.gated(self.st_reply(), self.METHODS), [])
+
+    def test_missing_marker_fails(self):
+        found = self.gated(self.st_reply(marker=False), self.METHODS)
+        self.assertTrue(any("(needs:" in p for p in found), found)
+
+    def test_failing_inventory_fails(self):
+        methods = {**self.METHODS, "classroom_devices": "none", "grade_band": "Middle"}
+        found = self.gated(self.st_reply(), methods)
+        self.assertTrue(any("one browser device per student" in p for p in found), found)
+        self.assertTrue(any("Primary grade band" in p for p in found), found)
+
+    def test_no_answers_blocks(self):
+        found = self.gated(self.st_reply(), None)
+        self.assertTrue(any("methodology answers unavailable" in p for p in found), found)
+
+
 if __name__ == "__main__":
     unittest.main()

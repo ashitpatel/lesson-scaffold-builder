@@ -9,7 +9,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
-from lsb import render, run
+from lsb import ask, render, run
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 VALID = json.loads((FIXTURES / "hydrology-valid.json").read_text(encoding="utf-8"))
@@ -37,9 +37,9 @@ ISSUE = {"severity": "blocker", "source": "judgement", "where": "mls_units[0].ta
 class FakeModel:
     """Replies with the next scripted text for the stage named by the system prompt."""
 
-    def __init__(self, decompose, critic, cl=(), pb=(), eb=(), intake=()):
+    def __init__(self, decompose, critic, cl=(), pb=(), eb=(), intake=(), st=()):
         self.script = {"decompose": list(decompose), "critic": list(critic), "cl": list(cl), "pb": list(pb),
-                       "eb": list(eb), "intake": list(intake)}
+                       "eb": list(eb), "intake": list(intake), "st": list(st)}
         self.calls = []
 
     def complete(self, system, user):
@@ -48,6 +48,7 @@ class FakeModel:
                  else "cl" if "Connected Learning stage" in text
                  else "pb" if "Participatory Budgeting stage" in text
                  else "eb" if "Evidence-Based stage" in text
+                 else "st" if "Stanford-methods stage" in text
                  else "intake" if "Intake Translation step" in text else "critic")
         self.calls.append((stage, user))
         reply = self.script[stage].pop(0)
@@ -246,6 +247,37 @@ def cl_reply(unit, apply=True, card="CL-05"):
         n = len(out["tasks"]) + 1
         out["tasks"].append({"step": n, "role": "Lead_Educator",
                              "action": f"Run the {card} activity for 10 minutes with the whole class."})
+        changes = [{"step": n, "change": "added", "replaces_step": None, "card": card, "summary": "s"}]
+    return json.dumps({"mls_id": unit["mls_id"], "decision": "APPLY" if apply else "ABSTAIN", "reason": "r",
+                       "credit": [], "unit": out, "changes": changes, "deferred": []})
+
+
+def eb_reply(unit, routine=None, apply=True):
+    """An EB stage reply for `unit`: one added EB-04 step, or an abstain."""
+    out = copy.deepcopy(unit)
+    changes = []
+    if apply:
+        n = len(out["tasks"]) + 1
+        out["tasks"].append({"step": n, "role": "Lead_Educator",
+                             "action": "Run the EB-04 uptake activity for 10 minutes with the whole class."})
+        change = {"step": n, "change": "added", "replaces_step": None, "card": "EB-04", "summary": "s"}
+        if routine:
+            change["routine"] = routine
+        changes = [change]
+    return json.dumps({"mls_id": unit["mls_id"], "decision": "APPLY" if apply else "ABSTAIN", "reason": "r",
+                       "credit": [], "unit": out, "changes": changes, "deferred": []})
+
+
+def st_reply(unit, card="ST-01", marker=True, apply=True):
+    """An ST stage reply for `unit`: one added tech step, or an abstain."""
+    out = copy.deepcopy(unit)
+    changes = []
+    if apply:
+        n = len(out["tasks"]) + 1
+        action = "Run the screening session with the whole class."
+        if marker:
+            action += " (needs: one browser device per student + internet.)"
+        out["tasks"].append({"step": n, "role": "Lead_Educator", "action": action})
         changes = [{"step": n, "change": "added", "replaces_step": None, "card": card, "summary": "s"}]
     return json.dumps({"mls_id": unit["mls_id"], "decision": "APPLY" if apply else "ABSTAIN", "reason": "r",
                        "credit": [], "unit": out, "changes": changes, "deferred": []})
@@ -650,6 +682,166 @@ class Choices(unittest.TestCase):
         self.assertEqual(r.sequence, VALID)
         saved = json.loads((self.out / "choices.json").read_text(encoding="utf-8"))
         self.assertEqual(saved["connected_learning_cards"], ["CL-02"])
+
+
+class MethodologyChoices(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def go(self, model, **kw):
+        return run.run_pipeline(SOURCE, model, self.out, **kw)
+
+    def answers(self, obj):
+        f = Path(self.tmp.name) / "answers.json"
+        f.write_text(json.dumps(obj), encoding="utf-8")
+        return ask.FilePrompter(f)
+
+    def test_defaults_preserve_current_behavior(self):
+        self.go(FakeModel([decomposed(VALID)], [critic("PASS")]))
+        saved = json.loads((self.out / "summary.json").read_text())
+        self.assertEqual(saved["notes"], [n for n in saved["notes"] if not n.startswith("methodology ")])
+        choices = json.loads((self.out / "choices.json").read_text())
+        self.assertEqual(choices["method_opt_in"], [])
+        self.assertEqual(choices["sessions_per_week"], 1)
+        self.assertEqual(choices["tutor_staff"], False)
+        self.assertEqual(choices["classroom_devices"], "none")
+        self.assertEqual(choices["classroom_internet"], False)
+        self.assertEqual(choices["home_access"], "few")
+
+    def test_answers_file_honored_and_invalid_falls_back(self):
+        p = self.answers({"method_opt_in": ["tutoring", "roar", "xx"],
+                          "sessions_per_week": 3, "tutor_staff": True,
+                          "classroom_devices": "shared", "classroom_internet": "yes",
+                          "home_access": "most"})
+        self.go(FakeModel([decomposed(VALID)], [critic("PASS")]), prompter=p)
+        choices = json.loads((self.out / "choices.json").read_text())
+        self.assertEqual(choices["method_opt_in"], ["tutoring", "roar"])
+        self.assertEqual(choices["sessions_per_week"], 3)
+        self.assertTrue(choices["tutor_staff"])
+        self.assertEqual(choices["classroom_devices"], "shared")
+        self.assertFalse(choices["classroom_internet"])  # "yes" is not a boolean option
+        self.assertEqual(choices["home_access"], "most")
+
+    def test_gated_family_below_threshold_names_missing_factors(self):
+        p = self.answers({"method_opt_in": ["roar"], "home_access": "most"})
+        r = self.go(FakeModel([decomposed(VALID)], [critic("PASS")]), prompter=p)
+        notes = [n for n in r.notes if n.startswith("methodology roar")]
+        self.assertEqual(len(notes), 1)
+        self.assertIn("one browser device per student", notes[0])
+        self.assertIn("classroom internet", notes[0])
+        self.assertIn("Primary grade band", notes[0])
+        self.assertIn("ROAR also runs at home", notes[0])
+
+    def test_passing_inventory_leaves_no_note_stage_decides(self):
+        p = self.answers({"method_opt_in": ["roar", "ai"],
+                          "classroom_devices": "one-per-student", "classroom_internet": True})
+        src = run.Source(text=SOURCE.text, ref=SOURCE.ref, grade_band="Primary")
+        r = run.run_pipeline(src, FakeModel([decomposed(VALID)], [critic("PASS")]),
+                             self.out, prompter=p)
+        notes = [n for n in r.notes if n.startswith("methodology ")]
+        self.assertEqual(len(notes), 1)  # roar passes silently; the stage records per-unit outcomes
+        self.assertIn("High grade band", notes[0])  # Primary band fails the ai gate
+
+
+class MethodRoutines(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def answers(self, obj):
+        f = Path(self.tmp.name) / "answers.json"
+        f.write_text(json.dumps(obj), encoding="utf-8")
+        return ask.FilePrompter(f)
+
+    def test_opted_in_routine_applies_with_inventory_in_context(self):
+        p = self.answers({"method_opt_in": ["uptake"], "sessions_per_week": 3})
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("PASS")],
+                      eb=[eb_reply(U0, "uptake-moves"), eb_reply(U1, apply=False)])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("eb",), prompter=p)
+        self.assertEqual(r.status, "pass")
+        unit = r.optimisation["evidence_based"]["units"]["MLS-HYDRO-01"]
+        self.assertEqual(unit["status"], "applied")
+        self.assertEqual(unit["changes"][0]["routine"], "uptake-moves")
+        request = m.calls[2][1]
+        self.assertIn("<METHOD_OPT_IN>\nuptake\n</METHOD_OPT_IN>", request)
+        self.assertIn("sessions_per_week: 3", request)
+
+    def test_gated_out_routine_is_rejected(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")],
+                      eb=[eb_reply(U0, "uptake-moves"), eb_reply(U0, "uptake-moves"),
+                          eb_reply(U1, apply=False)])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("eb",))
+        units = r.optimisation["evidence_based"]["units"]
+        self.assertEqual(units["MLS-HYDRO-01"]["status"], "edit_rejected")
+        self.assertEqual(units["MLS-HYDRO-02"]["status"], "abstained")
+        self.assertTrue(any("below threshold" in n for n in r.notes), r.notes)
+        self.assertEqual(r.sequence, VALID)
+
+
+class StanfordMethods(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def answers(self, obj):
+        f = Path(self.tmp.name) / "answers.json"
+        f.write_text(json.dumps(obj), encoding="utf-8")
+        return ask.FilePrompter(f)
+
+    def passing(self):
+        return self.answers({"method_opt_in": ["roar"], "classroom_devices": "one-per-student",
+                             "classroom_internet": True})
+
+    def primary(self):
+        return run.Source(text=SOURCE.text, ref=SOURCE.ref, grade_band="Primary")
+
+    def test_stage_skipped_without_opt_in(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("st",))
+        self.assertNotIn("st", [s for s, _ in m.calls])
+        self.assertNotIn("stanford_methods", r.optimisation or {})
+        self.assertTrue(any("skipped; none of roar, ai opted in" in n for n in r.notes))
+
+    def test_applied_with_passing_inventory(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("PASS")],
+                      st=[st_reply(U0), st_reply(U1, apply=False)])
+        r = run.run_pipeline(self.primary(), m, self.out, stages=("st",), prompter=self.passing())
+        self.assertEqual(r.status, "pass")
+        unit = r.optimisation["stanford_methods"]["units"]["MLS-HYDRO-01"]
+        self.assertEqual(unit["status"], "applied")
+        page = (self.out / "cards.html").read_text(encoding="utf-8")
+        self.assertIn("(needs: one browser device per student + internet.)", page)
+        self.assertEqual(r.cards_problems, [])
+        review = m.calls[-1][1]
+        self.assertIn("roar", review)  # METHOD_CONTEXT reaches the review
+
+    def test_below_threshold_rejected(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")],
+                      st=[st_reply(U0), st_reply(U0), st_reply(U1, apply=False)])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("st",),
+                             prompter=self.answers({"method_opt_in": ["roar"]}))
+        units = r.optimisation["stanford_methods"]["units"]
+        self.assertEqual(units["MLS-HYDRO-01"]["status"], "edit_rejected")
+        self.assertTrue(any("below threshold" in n for n in r.notes), r.notes)
+
+    def test_unmarked_tech_step_rejected(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS")],
+                      st=[st_reply(U0, marker=False), st_reply(U0, marker=False),
+                          st_reply(U1, apply=False)])
+        r = run.run_pipeline(self.primary(), m, self.out, stages=("st",), prompter=self.passing())
+        units = r.optimisation["stanford_methods"]["units"]
+        self.assertEqual(units["MLS-HYDRO-01"]["status"], "edit_rejected")
+        self.assertTrue(any("(needs:" in n for n in r.notes), r.notes)
 
 
 class Requests(unittest.TestCase):

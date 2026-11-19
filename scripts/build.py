@@ -91,8 +91,8 @@ title: "Lesson Scaffold Builder"
 abstract: >-
   A pipeline that turns long, lecture-heavy K-12 lessons into short, safe,
   runnable Micro-Lesson Scaffolds, printed as offline teacher cards, adding
-  evidence-based practices, Connected Learning and participatory budgeting
-  only where they fit.
+  evidence-based practices, Connected Learning, participatory budgeting,
+  and opt-in Stanford methods only where they fit.
 authors:
   - family-names: "{family}"
     given-names: "{given}"

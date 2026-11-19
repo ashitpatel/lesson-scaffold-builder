@@ -15,6 +15,9 @@
 | **A lecture defines a term the units need** | Folds a short explanation into the first step that uses it | The term taught in step 1 of a unit | [Mexico](../walkthroughs/06-mexico-migration/) |
 | **Deep work in the source** (an essay, writing a story) | Keeps sustained time for it; no stage may shorten it | Full lessons of writing on the card | [Vietnam](../walkthroughs/03-vietnam-folk-tales/) |
 | **A practice fits but can't be done properly** | The stage abstains or defers it | "Deferred: …" with a reason | — |
+| **An opted-in method is below its threshold** (tutoring without 3x/week sessions or a steady tutor) | Code rejects the routine; the unit keeps its other edits | "below threshold: …" naming the failed factor, then the unit stays as it was | — |
+| **A tech-gated method is opted in** (ROAR screening, AI literacy) | Applied only above its threshold, with a `(needs: …)` marker and plan B; else the run records why not | A marked step, or a run note naming the missing factors and pointing to [methodologies](../methodologies.md) | — |
+| **No tech-gated family opted in** | The Stanford-methods stage is skipped without asking its card questions | A "skipped" run note | — |
 | **No resource trade-off** (most science, reading and writing units) | Participatory budgeting abstains | "Fit-gate fails", per unit | [Bangladesh](../walkthroughs/05-bangladesh-letters-and-sounds/) |
 | **A real class decision** (sharing a garden bed, choosing among projects) | Participatory budgeting adds the counting rule first, then a report-back | A vote with its rule stated before anyone votes | [Peru](../walkthroughs/02-peru-fractions/), [Ghana](../walkthroughs/04-ghana-local-government/) |
 | **An edit breaks a rule** (removes a step, changes a unit's weeks) | Code rejects it; one retry with the reason; then the unit stays as it was | "edit_rejected" for that unit | — |

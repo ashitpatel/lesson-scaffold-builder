@@ -14,6 +14,8 @@ Each release on GitHub attaches the ready-to-use files from `dist/`. The version
 Follow-up to C (implemented, unreleased):
 - **Translated stuck note.** The translate stage now carries the fixed "If a group is stuck" note's heading and lines into the run's language; which units get the note is decided on the reviewed English, since translated steps no longer match the group-work pattern. Runs translated before this change re-render with the English note via `english-final.json`.
 - **Translated-page language tag.** `cards.html` now declares the run's output language (`<html lang>`, BCP47 with an `en` fallback for unknown languages); the G21 self-check verifies the tag.
+- **Stanford-translated method routines (Phase 1).** Opt-in method families (peer tutoring, talk uptake, civic mapping, UDL choice) with a tech/time inventory; routines apply only above effectiveness thresholds enforced in code, while tech-gated methods record honest abstentions. See docs/methodologies.md.
+- **Stanford-methods stage (Phase 2).** A fourth optimisation stage with two tech-conditional cards (ST-01 ROAR screening, ST-02 AI literacy), applied only with opt-in plus a passing inventory; applied steps carry a `(needs: …)` marker and plan B, enforced in code and re-verified by the critic's G08 row. Deck grows to twenty-one cards.
 
 ## 0.3.0 — 2026-11-09
 

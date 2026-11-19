@@ -10,12 +10,13 @@ from lsb import validate as v
 ROOT = Path(__file__).resolve().parents[1]
 PROMPTS = ROOT / "prompts"
 ADAPTED = ("05-decompose.md", "25-evidence-based.md", "30-connected-learning.md", "31-participatory-budgeting.md",
-           "50-critic.md")
+           "32-stanford-methods.md", "50-critic.md")
 CL_CARDS = ROOT / "frameworks/connected-learning.md"
 # (prompt, cards file, card-id prefix, code's card ids attribute)
 STAGES = (("25-evidence-based.md", ROOT / "frameworks/evidence-based-practices.md", "EB", "EB_CARDS"),
           ("30-connected-learning.md", CL_CARDS, "CL", "CL_CARDS"),
-          ("31-participatory-budgeting.md", ROOT / "frameworks/participatory-budgeting.md", "PB", "PB_CARDS"))
+          ("31-participatory-budgeting.md", ROOT / "frameworks/participatory-budgeting.md", "PB", "PB_CARDS"),
+          ("32-stanford-methods.md", ROOT / "frameworks/stanford-methods.md", "ST", "ST_CARDS"))
 
 
 def read(name):

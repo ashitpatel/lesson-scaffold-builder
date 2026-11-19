@@ -2,7 +2,7 @@
 
 The cards the Connected Learning stage (`prompts/30-connected-learning.md`) may apply to an MLS unit, and the critic (`prompts/50-critic.md`) checks against. Each card carries one rule from the requirements (Part 2, §4), the step it targets, the edits it allows, and what it must never do. A technique that isn't on a card, or isn't in the source, may not be added.
 
-The layer "optimizes [steps] using interest-driven, peer-supported, and contextualized frameworks **without disrupting standard mastery checks**" (requirements §4). The guardrails at the end apply to every card.
+The layer "optimizes [steps] using interest-driven, peer-supported, and contextualized frameworks **without disrupting standard mastery checks**" (requirements §4). The guardrails at the end apply to every card. CL-02 and CL-03 each carry one Stanford-translated routine (see docs/methodologies.md for sources and thresholds).
 
 ---
 
@@ -27,10 +27,11 @@ The layer "optimizes [steps] using interest-driven, peer-supported, and contextu
 **Allowed edits:**
 - Name 2 to 4 roles for the existing task and say how they rotate (e.g. swap roles each visit, or each day).
 - Pair a reader or measurer with a recorder ("non-hierarchical pairs": one measures, the other records, then they swap).
+- Run skill practice as a tutoring protocol (routine `nssa-tutoring`) — only when the run opted into `tutoring`, practice runs 3+ sessions a week, and the same tutor is available: same pairs across the unit's weeks, tutor and tutee roles swapping each session, working the unit's own skill practice. Name the routine in the change entry.
 
-**Never:** create a permanent leader, monitor or captain; give a student authority over others' behaviour or marks; add recording the source doesn't need.
+**Never:** create a permanent leader, monitor or captain; give a student authority over others' behaviour or marks; keep one student always tutoring; add recording the source doesn't need.
 
-**Already present when:** the step already uses pairs or groups with roles that rotate.
+**Already present when:** the step already uses pairs or groups with roles that rotate. The tutoring protocol counts as present only when the same pairs already tutor across sessions.
 
 ## CL-03 Real-World Context Mapping
 **Rule:** ground mathematical or logical processing in zero-cost ambient parameters drawn from students' daily surroundings (e.g. seasonal rainfall, sports scores, a local planting calendar, prices on a generic price list).
@@ -40,10 +41,11 @@ The layer "optimizes [steps] using interest-driven, peer-supported, and contextu
 **Allowed edits:**
 - Replace or supplement the given numbers with ones the class can observe at school or that are common knowledge (temperatures, lengths, counts on the school grounds, a made-up price list based on everyday goods).
 - Add one sentence linking the result to something students see (e.g. "which is more than the class's longest jump").
+- Map the school grounds on paper (routine `civic-mapping`) — only when the run opted into `mapping` and the step handles place, route or count data: groups walk set school-ground routes, mark what helps or hinders on a paper map, and combine marks into one class tally. Report-back stays in school. Name the routine in the change entry.
 
-**Never:** ask for household or family information (income, home conditions, family members, what the family owns); depend on one locality's market or prices; require a trip off school grounds.
+**Never:** ask for household or family information (income, home conditions, family members, what the family owns); depend on one locality's market or prices; require a trip off school grounds; photograph or record anything; use a device for the mapping; present findings to real officials.
 
-**Already present when:** the step already uses data the class collected or everyday quantities.
+**Already present when:** the step already uses data the class collected or everyday quantities. Group mapping counts as present only when groups already map routes and combine a class tally.
 
 ## CL-04 Collective Shared Purpose
 **Rule:** supplement individual grading with non-adversarial, whole-cohort milestones or parallel production goals (e.g. class-wide data aggregates, a combined portfolio).

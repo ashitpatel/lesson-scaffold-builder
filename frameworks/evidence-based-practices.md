@@ -1,6 +1,6 @@
 # Evidence-Based Practice cards (EB-01 to EB-09)
 
-The cards the Evidence-Based stage (`prompts/25-evidence-based.md`) may apply to an MLS unit, and the critic (`prompts/50-critic.md`) checks against. The requirements ask the pipeline to anchor its loops "strictly to verified, evidence-based practices" and to disallow "unsupported learning outcome assumptions" (G14), but don't list the practices. These nine were chosen because each has broad, replicated support across well-known research syntheses (listed under **Basis**) and works offline with paper or chalk. All but EB-06 fit inside an existing classroom step; EB-06 may reorganize practice across a unit's steps, using existing practice time without adding periods. **This selection is a project decision that should be reviewed by the people who own LSB's content.**
+The cards the Evidence-Based stage (`prompts/25-evidence-based.md`) may apply to an MLS unit, and the critic (`prompts/50-critic.md`) checks against. The requirements ask the pipeline to anchor its loops "strictly to verified, evidence-based practices" and to disallow "unsupported learning outcome assumptions" (G14), but don't list the practices. These nine were chosen because each has broad, replicated support across well-known research syntheses (listed under **Basis**) and works offline with paper or chalk. All but EB-06 fit inside an existing classroom step; EB-06 may reorganize practice across a unit's steps, using existing practice time without adding periods. **This selection is a project decision that should be reviewed by the people who own LSB's content.** EB-04 and EB-05 each carry one Stanford-translated routine (see docs/methodologies.md for sources and thresholds).
 
 Each card has **non-negotiables**: the parts the evidence is about. An edit that can't include all of them is a hollow version of the practice, and the right answer is to abstain.
 
@@ -59,28 +59,30 @@ Each card has **non-negotiables**: the parts the evidence is about. An edit that
 **Allowed edits:**
 - Ask one or two questions every student answers at the same time (slates, scrap paper held up, fingers for a choice, cards), look at all the answers, and re-explain if many are wrong before moving on.
 - Add a confidence check around the questions — required unless the step is at the sentence cap: before answering, every student shows thumbs-up, sideways or down for how sure they feel; after the answers are checked, they show it again. The signals guide re-explanation and are never recorded or displayed by name.
+- Add uptake moves around the answers (routine `uptake-moves`) — only when the run opted into `uptake` and the step has students explain or discuss (not silent drill): the educator revoices one student idea ("So you are saying..."), presses one student to explain their reasoning ("Why does that work?"), and waits silently after asking. Nothing is recorded. Name the routine in the change entry.
 
 **Non-negotiables:** every student answers, not just volunteers; the educator looks at the answers during the lesson; what happens next depends on them (re-explain, or move on).
 
-**Never:** record or display individual answers or confidence signals; call out who got it wrong; turn it into a test.
+**Never:** record or display individual answers or confidence signals; record the classroom in any form; call out who got it wrong; turn it into a test.
 
-**Already present when:** the unit already has every student answer during teaching and adjusts to the answers, with a confidence signal before and after.
+**Already present when:** the unit already has every student answer during teaching and adjusts to the answers, with a confidence signal before and after. Uptake moves count as present only when the educator already revoices student ideas.
 
-**Basis:** "check for student understanding" is one of Rosenshine's (2012) *Principles of Instruction*; Black and Wiliam (1998), *Inside the Black Box*, review evidence on formative assessment used to adjust teaching. The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration is studied in Erickson and Heit (2015), *Metacognition and confidence: comparing math to other academic subjects*, who find students better calibrated after completing a test. The paper-only port is a project adaptation.
+**Basis:** "check for student understanding" is one of Rosenshine's (2012) *Principles of Instruction*; Black and Wiliam (1998), *Inside the Black Box*, review evidence on formative assessment used to adjust teaching. The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration is studied in Erickson and Heit (2015), *Metacognition and confidence: comparing math to other academic subjects*, who find students better calibrated after completing a test. The paper-only port is a project adaptation. The uptake moves adapt classroom-discourse coaching to unaided teacher prompts, without recording; measuring talk via lesson recordings is intentionally not adapted (TeachFX FAQ; Learning Forward (2026), *AI-enhanced Coaching: What Early Studies Show*).
 
 ## EB-05 Concrete and Visual Representations
 **Targets:** a step that explains an abstract idea (a ratio, a process, a relationship) in words or symbols only.
 
 **Allowed edits:**
 - Pair the explanation with a simple drawing, diagram or physical model made from classroom or found materials, and say explicitly how each part of the picture or model matches the abstract idea.
+- Offer a second channel (routine `udl-choice`) — only when the run opted into `udl`: each key point in the step is both heard and seen (said aloud and shown on the board), and each answer may be spoken, written or shown. Nothing beyond paper, chalk and voice. Name the routine in the change entry.
 
 **Non-negotiables:** the picture or model is shown together with the words or symbols, not instead of them; the link between them is stated.
 
-**Never:** add decoration that doesn't carry the idea; require printing, devices or purchased materials.
+**Never:** add decoration that doesn't carry the idea; require printing, devices or purchased materials; offer a channel needing materials some students lack.
 
-**Already present when:** the unit already uses a diagram, model or drawing linked to the abstract idea.
+**Already present when:** the unit already uses a diagram, model or drawing linked to the abstract idea. Choice counts as present only when students already get two perception channels and two response modes.
 
-**Basis:** "combine graphics with verbal descriptions" and "connect and integrate abstract and concrete representations of concepts" are recommendations of Pashler et al. (2007).
+**Basis:** "combine graphics with verbal descriptions" and "connect and integrate abstract and concrete representations of concepts" are recommendations of Pashler et al. (2007). Choice of channel adapts Universal Design for Learning (multiple means of Engagement, Representation, and Action and Expression) to paper, chalk and voice (CAST, *UDL Guidelines*).
 
 ## EB-06 Teaching at the Right Level (level groups)
 **Targets:** a unit whose practice steps assume one level while learners span several — typically foundational reading or mathematics practice with mixed prior attainment.

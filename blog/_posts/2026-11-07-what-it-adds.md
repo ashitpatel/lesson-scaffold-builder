@@ -8,7 +8,7 @@ date: 2026-11-07 00:03:00 +0000
 
 *Part 4 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
-The [last post]({{ site.baseurl }}/what-it-takes-out/) covered the deletions. This one covers the additions: nineteen small teaching methods, each with strict conditions, a limit on how many a unit can take — and a standing permission to use none of them.
+The [last post]({{ site.baseurl }}/what-it-takes-out/) covered the deletions. This one covers the additions: twenty-one small teaching methods, each with strict conditions, a limit on how many a unit can take — and a standing permission to use none of them.
 
 Each method is written down as a **method card**: a strict rule the tool must follow, not a suggestion. These aren't the printed teacher cards from [part 1]({{ site.baseurl }}/from-lesson-to-classroom/); a teacher sees only a method's code, in a tag on the step it changed. A method card says:
 - which kind of step it **targets**;
@@ -20,7 +20,7 @@ Evidence-based cards add **non-negotiables** and their **basis** in research. Re
 
 > **Targets:** a unit where students must remember facts or steps for later, and nothing asks them to recall it from memory. **Allowed edits:** open a later lesson with 3 to 5 short questions answered from memory, then show the answers so each student checks their own. **Non-negotiables:** notes out of sight; answers shown straight after; nothing collected, marked or recorded. **Never:** grade or record the results; rank students; replace teaching with quizzing.
 
-All nineteen are in the [frameworks folder](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/frameworks), and the [README](https://github.com/ashitpatel/lesson-scaffold-builder#two-kinds-of-card) sets out both kinds of card side by side.
+All twenty-one are in the [frameworks folder](https://github.com/ashitpatel/lesson-scaffold-builder/tree/main/frameworks), and the [README](https://github.com/ashitpatel/lesson-scaffold-builder#two-kinds-of-card) sets out both kinds of card side by side.
 
 ## Evidence-based: nine techniques with trial support
 
@@ -60,9 +60,18 @@ Class votes apply **only where there is a real resource trade-off for the class 
 
 Like the peer designs, these are engagement and civic-reasoning designs, not levers on scores.
 
+## Tech-conditional: two Stanford methods behind a gate
+
+The fourth family translates Stanford field programs that need classroom technology, so each card carries an extra gate: the adapter must opt in, and the run must confirm the devices, connectivity and grade band — otherwise the tool abstains, and the whole stage is skipped when neither family is wanted.
+
+- **A browser reading screening** for early readers: each child completes one short session on their own device while the teacher watches the room, then the teacher regroups for decoding practice. Nothing about any child is written down.
+- **AI literacy through making** for older students: pairs use a classroom AI tool for one bounded task, then critique what it produced for bias and errors, ending with a teacher-led debrief.
+
+Every applied step is marked with what tech it needs and a same-day plan B for when the connection fails.
+
 ## The most common answer is no
 
-Each family is applied in its own stage, one unit at a time, and each stage may use at most two of its methods and add at most one step per unit — and "doesn't apply" is normal. A unit can therefore carry methods from all three families: the first unit of the Tanzania multiplication lesson has five (two memory and practice techniques, two peer designs and a budget ledger), and most units have far fewer. The no-code prompt version is stricter: at most two methods and one added step per unit in all. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the teacher card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
+Each family is applied in its own stage, one unit at a time, and each stage may use at most two of its methods and add at most one step per unit — and "doesn't apply" is normal. A unit can therefore carry methods from all four families: the first unit of the Tanzania multiplication lesson has five (two memory and practice techniques, two peer designs and a budget ledger), and most units have far fewer. The no-code prompt version is stricter: at most two methods and one added step per unit in all. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the teacher card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
 
 ## One note that isn't a method
 
