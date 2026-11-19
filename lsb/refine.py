@@ -326,7 +326,7 @@ def _build_model(args) -> run.Model:
     if args.backend == "claude-code":
         return run.ClaudeCodeModel(effort=args.effort, model=args.model or run.MODEL)
     if args.backend == "muse":
-        return run.MuseModel(effort=args.effort, model=args.model)
+        return run.MuseModel(effort=args.effort, model=args.model, max_steps=args.max_model_steps)
     if args.backend == "gemini":
         return run.GeminiModel(effort=args.effort, model=args.model)
     import anthropic  # noqa: F401  (mirrors run.py; the class imports it too)
@@ -347,9 +347,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--effort", default="high", choices=["low", "medium", "high", "xhigh", "max"])
     ap.add_argument("--backend", default="claude-code", choices=["claude-code", "muse", "gemini", "api"])
     ap.add_argument("--model", default=None, help="model id (backend defaults apply)")
+    ap.add_argument("--max-model-steps", type=int, default=1,
+                    help="muse backend: model steps per call (raise when calls fail for needing more steps)")
     args = ap.parse_args(argv)
     if not args.instruction and not args.ask:
         ap.error("give at least one --instruction or --ask")
+    if args.max_model_steps < 1:
+        ap.error("--max-model-steps must be at least 1")
     try:
         src_text = args.source.read_text(encoding="utf-8")
     except OSError as e:

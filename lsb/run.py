@@ -269,11 +269,13 @@ class MuseModel:
     counts come from the run.usage event.
     """
 
-    def __init__(self, effort: str = "high", model: str | None = None, timeout: int = 1200, runner=None):
+    def __init__(self, effort: str = "high", model: str | None = None, max_steps: int = 1,
+                 timeout: int = 1200, runner=None):
         import subprocess
 
         self.effort = effort
         self.model = model
+        self.max_steps = max_steps
         self.timeout = timeout
         self.runner = runner or subprocess.run
 
@@ -288,7 +290,7 @@ class MuseModel:
                 "muse", "exec", "--json",
                 "--prompt-file", str(prompt_file),
                 "--reasoning-effort", self.effort,
-                "--max-model-steps", "1",
+                "--max-model-steps", str(self.max_steps),
                 "--disable-reminders",
                 "--no-session-log",
             ]
@@ -328,7 +330,9 @@ class MuseModel:
                 raise SystemExit(f"Muse is not signed in: {detail}")
             if USAGE_LIMIT.search(proc.stderr or ""):
                 raise ModelUnavailable(detail[:300])
-            raise StageError(f"muse exec exit {proc.returncode}: {detail}")
+            hint = ("; the model needed more than %d step(s): retry with --max-model-steps %d or higher"
+                    % (self.max_steps, self.max_steps + 1)) if "terminal state" in (proc.stderr or "") else ""
+            raise StageError(f"muse exec exit {proc.returncode}: {detail}{hint}")
         text = "".join(texts)
         if not text.strip():
             raise StageError("muse exec returned no text")
@@ -638,6 +642,23 @@ def _score(issues: list[dict]) -> dict:
 
 def _rank(score: dict) -> tuple:
     return (score.get("rejected", 0), score["blocker"], score["major"], score["minor"])
+
+
+def flag_severity_counts(flags: list[dict] | None) -> dict[str, int]:
+    """Count source flags by severity; ungraded shapes count separately, never fail."""
+    counts = {"blocker": 0, "major": 0, "minor": 0, "ungraded": 0}
+    for f in flags or []:
+        sev = f.get("severity") if isinstance(f, dict) else None
+        counts[sev if sev in counts else "ungraded"] += 1
+    return counts
+
+
+def format_flag(flag: dict) -> str:
+    """One CLI line for a source flag; blockers shout, everything else stays quiet."""
+    base = f"  source flag: {flag.get('where', '?')}: {flag.get('problem', '')}"
+    if isinstance(flag, dict) and flag.get("severity") == "blocker":
+        return "  BLOCKER " + base[2:]
+    return base
 
 
 def _update_flags(result: RunResult, critic: dict) -> None:
@@ -1570,6 +1591,7 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         "cards_g21": None if result.cards_problems is None else (result.cards_problems or "pass"),
         "readability": readability,
         "source_flags": result.source_flags,
+        "source_flags_severity": flag_severity_counts(result.source_flags),
         "source_ref": src.ref,
         "source_language": src_language,
         "language": target_language,
@@ -1638,6 +1660,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-cl", action="store_true", help="skip the Connected Learning stage")
     ap.add_argument("--no-pb", action="store_true", help="skip the Participatory Budgeting stage")
     ap.add_argument("--no-st", action="store_true", help="skip the Stanford-methods stage")
+    ap.add_argument("--max-model-steps", type=int, default=1,
+                    help="muse backend: model steps per call (raise when calls fail for needing more steps)")
     ap.add_argument("--max-stage-revisions", type=int, default=1,
                     help="critic-driven revision rounds per optimisation stage (default 1)")
     ap.add_argument("--out", type=Path, help="output directory (default runs/<timestamp>)")
@@ -1662,6 +1686,8 @@ def main(argv: list[str] | None = None) -> int:
         ap.error("--ask and --answers cannot be combined")
     if args.answers and not args.answers.exists():
         ap.error(f"answers file not found: {args.answers}")
+    if args.max_model_steps < 1:
+        ap.error("--max-model-steps must be at least 1")
     try:
         prompter = ask.FilePrompter(args.answers) if args.answers else (
             ask.InteractivePrompter() if args.ask else ask.DefaultPrompter())
@@ -1673,7 +1699,7 @@ def main(argv: list[str] | None = None) -> int:
         model: Model = ClaudeCodeModel(effort=args.effort, model=args.model or MODEL)
         api_errors: tuple = ()
     elif args.backend == "muse":
-        model = MuseModel(effort=args.effort, model=args.model)
+        model = MuseModel(effort=args.effort, model=args.model, max_steps=args.max_model_steps)
         api_errors = ()
     elif args.backend == "gemini":
         model = GeminiModel(effort=args.effort, model=args.model)
@@ -1709,7 +1735,7 @@ def main(argv: list[str] | None = None) -> int:
     for note in result.notes:
         print(f"  {note}")
     for flag in result.source_flags:
-        print(f"  source flag: {flag.get('where', '?')}: {flag.get('problem', '')}")
+        print(format_flag(flag))
     if result.cards_problems is not None:
         print("teacher cards: cards.txt, cards.html; G21 " +
               ("pass" if not result.cards_problems else f"{len(result.cards_problems)} problem(s)"))

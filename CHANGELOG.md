@@ -2,6 +2,11 @@
 
 Each release on GitHub attaches the ready-to-use files from `dist/`. The version lives in [`VERSION`](VERSION). The pipeline is also installable: `pip install git+https://github.com/ashitpatel/lesson-scaffold-builder.git`.
 
+## Unreleased
+
+- **Source-flag severity taxonomy.** Critic flags now carry severity (`blocker`/`major`/`minor`), category and handling notes; `summary.json` counts them and blockers stand out in CLI output. Flags still never fail a run: the adapter decides use.
+- **`--max-model-steps` for the muse backend.** Raises the per-call model-step budget when calls fail for needing more steps (default 1, unchanged); the failure message now names the flag.
+
 ## 0.4.0 — 2026-11-19
 
 - [x] A. Stuck-group note: **keep** the one-exception policy. Teachers new to group work need a first move when a group stalls; the note ends in help (EB-03-consistent); the exception is disclosed in the disclaimer.

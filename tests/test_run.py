@@ -844,6 +844,44 @@ class StanfordMethods(unittest.TestCase):
         self.assertTrue(any("(needs:" in n for n in r.notes), r.notes)
 
 
+class FlagSeverity(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_counts_grade_and_tolerate_junk(self):
+        flags = [{"severity": "blocker"}, {"severity": "major"}, {"severity": "minor"},
+                 {"problem": "old shape"}, {"severity": "critical"}, "junk"]
+        self.assertEqual(run.flag_severity_counts(flags),
+                         {"blocker": 1, "major": 1, "minor": 1, "ungraded": 3})
+        self.assertEqual(run.flag_severity_counts(None),
+                         {"blocker": 0, "major": 0, "minor": 0, "ungraded": 0})
+
+    def test_blockers_shout_on_cli(self):
+        self.assertIn("BLOCKER", run.format_flag({"where": "w", "problem": "p", "severity": "blocker"}))
+        self.assertNotIn("BLOCKER", run.format_flag({"where": "w", "problem": "p", "severity": "minor"}))
+        self.assertNotIn("BLOCKER", run.format_flag({"where": "w", "problem": "p"}))
+
+    def test_severity_counts_land_in_summary(self):
+        c = json.loads(critic("PASS"))
+        c["source_flags"] = [
+            {"where": "§1", "problem": "pupils pour boiling water", "severity": "blocker",
+             "category": "safety", "handled": "educator demo only"},
+            {"where": "§2", "problem": "wall chart with names", "severity": "major",
+             "category": "privacy", "handled": "removed; class totals only"},
+            {"where": "§3", "problem": "old shape"},
+        ]
+        m = FakeModel([decomposed(VALID)], [json.dumps(c)])
+        r = run.run_pipeline(SOURCE, m, self.out)
+        self.assertEqual(r.status, "pass")
+        saved = json.loads((self.out / "summary.json").read_text())
+        self.assertEqual(saved["source_flags_severity"],
+                         {"blocker": 1, "major": 1, "minor": 0, "ungraded": 1})
+
+
 class Requests(unittest.TestCase):
     def test_every_placeholder_is_supplied(self):
         values = {
@@ -979,6 +1017,25 @@ class MuseBackend(unittest.TestCase):
         self.model(self.ok(), model="muse-spark-1.3").complete([{"text": "s"}], "u")
         cmd = self.seen["cmd"]
         self.assertEqual(cmd[cmd.index("--model") + 1], "muse-spark-1.3")
+
+    def test_max_steps_flag_is_passed_through(self):
+        self.model(self.ok(), max_steps=3).complete([{"text": "s"}], "u")
+        cmd = self.seen["cmd"]
+        self.assertEqual(cmd[cmd.index("--max-model-steps") + 1], "3")
+
+    def test_terminal_state_error_hints_at_flag(self):
+        with self.assertRaises(run.StageError) as ctx:
+            self.model("", returncode=1,
+                       stderr="run ended with Failed: model did not reach a terminal state within 1 step(s)").complete(
+                [{"text": "s"}], "u")
+        self.assertIn("--max-model-steps 2 or higher", str(ctx.exception))
+
+    def test_main_rejects_zero_steps(self):
+        import io
+        from contextlib import redirect_stderr
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                run.main([str(FIXTURES / "hydrology-source.md"), "--ref", "x", "--max-model-steps", "0"])
 
     def test_non_json_lines_are_ignored(self):
         m = self.model("muse: workspace root: /tmp/x\n" + self.ok())
