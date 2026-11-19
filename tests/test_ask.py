@@ -31,6 +31,18 @@ def scripted(answers):
     return ask.InteractivePrompter(input=fake_input, output=lambda *a: None)
 
 
+def scripted_out(answers):
+    it = iter(answers)
+    out = []
+
+    def fake_input(_):
+        try:
+            return next(it)
+        except StopIteration:
+            raise EOFError from None
+    return ask.InteractivePrompter(input=fake_input, output=out.append), out
+
+
 class Prompters(unittest.TestCase):
     def test_default_returns_defaults(self):
         self.assertEqual(ask.DefaultPrompter().ask(choice()), 2)
@@ -66,6 +78,50 @@ class Prompters(unittest.TestCase):
             f.write_text("[1]", encoding="utf-8")
             with self.assertRaises(SystemExit):
                 ask.FilePrompter(f)
+
+
+class Explainer(unittest.TestCase):
+    def detailed(self):
+        return choice(options=((1, "one", ""), (2, "two", "")),
+                      details=((2, "TWO IS THE SECOND"),))
+
+    def test_question_mark_shows_detail_then_reprompts(self):
+        p, out = scripted_out(["?2", "1"])
+        self.assertEqual(p.ask(self.detailed()), 1)
+        self.assertTrue(any("TWO IS THE SECOND" in line for line in out), out)
+        self.assertTrue(any("(?N" in line for line in out), out)
+
+    def test_bare_or_bad_question_mark_guides(self):
+        p, out = scripted_out(["?", "?9", "2"])
+        self.assertEqual(p.ask(self.detailed()), 2)
+        self.assertTrue(any("?1, ?2" in line for line in out), out)
+
+    def test_option_without_detail_says_so(self):
+        p, out = scripted_out(["?1", "1"])
+        self.assertEqual(p.ask(self.detailed()), 1)
+        self.assertTrue(any("No further detail for that option" in line for line in out), out)
+
+    def test_no_details_choice_says_none(self):
+        p, out = scripted_out(["?1", "2"])
+        self.assertEqual(p.ask(choice()), 2)
+        self.assertTrue(any("No further detail available" in line for line in out), out)
+        self.assertFalse(any("(?N" in line for line in out), out)
+
+    def test_question_mark_works_in_multi(self):
+        c = choice(multi=True, default=[1], details=((2, "SECOND"),))
+        p, out = scripted_out(["?2", "2,1"])
+        self.assertEqual(p.ask(c), [2, 1])
+        self.assertTrue(any("SECOND" in line for line in out), out)
+
+    def test_show_prints_only_where_read(self):
+        p, out = scripted_out([])
+        p.show("hello")
+        self.assertEqual(out, ["hello"])
+        self.assertIsNone(ask.DefaultPrompter().show("hello"))
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / "a.json"
+            f.write_text(json.dumps({}), encoding="utf-8")
+            self.assertIsNone(ask.FilePrompter(f).show("hello"))
 
 
 class Suggestions(unittest.TestCase):

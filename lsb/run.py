@@ -1005,38 +1005,150 @@ def _breakdown_choices(src: Source) -> list[ask.Choice]:
     ]
 
 
-def _methodology_choices() -> list[ask.Choice]:
-    """Opt-in to Stanford-translated method families plus the tech inventory.
+GOAL_FAMILIES = {"gaps": ("tutoring", "roar"), "talk": ("uptake",), "world": ("mapping",),
+                 "access": ("udl",), "ai": ("ai",)}
+METHOD_OPT_IN_OPTIONS = (
+    ("tutoring", "Peer tutoring protocol", "same pairs, rotating roles, 3+ times a week"),
+    ("uptake", "Talk uptake moves", "revoice ideas, press for reasoning, wait time"),
+    ("mapping", "Civic mapping on paper", "map school grounds, tally as a class"),
+    ("udl", "UDL choice", "a second way to perceive and to respond"),
+    ("roar", "ROAR screening", "needs 1:1 browser devices + internet, Primary"),
+    ("ai", "AI literacy", "needs shared devices + internet, High band"),
+)
+METHOD_OPT_IN_DETAILS = (
+    ("tutoring", "What: skill practice in steady pairs, tutor and tutee roles swapping each session.\n"
+                 "Demands: practice 3+ times a week with the same tutor.\n"
+                 "Changes: one practice step per fitting unit; nothing new needed.\n"
+                 "More: docs/methodologies.md (NSSA playbook)."),
+    ("uptake", "What: the teacher revoices one student idea, presses reasoning, waits silently.\n"
+                "Demands: discussion steps; nothing is ever recorded.\n"
+                "Changes: added to whole-class checks.\n"
+                "More: docs/methodologies.md."),
+    ("mapping", "What: groups map school grounds on paper, tally as a class, report back in school.\n"
+                 "Demands: place or count content; no photos, devices, or trips.\n"
+                 "Changes: one mapping step per fitting unit.\n"
+                 "More: docs/methodologies.md."),
+    ("udl", "What: every key point heard and seen; answers spoken, written or shown.\n"
+             "Demands: nothing beyond paper, chalk and voice.\n"
+             "Changes: second channels on explanation steps.\n"
+             "More: docs/methodologies.md (CAST UDL Guidelines)."),
+    ("roar", "What: each child completes a short browser reading check; the teacher regroups from it.\n"
+              "Demands: one browser device per student + internet, Primary band. Nothing recorded.\n"
+              "Changes: one screening step, marked with its tech needs.\n"
+              "More: docs/methodologies.md."),
+    ("ai", "What: pairs use classroom AI for one bounded task, then critique bias and errors with a debrief.\n"
+            "Demands: shared devices + internet, High band.\n"
+            "Changes: one AI step, marked with its tech needs.\n"
+            "More: docs/methodologies.md."),
+)
+FAMILY_BLURBS = {
+    "tutoring": "peer tutoring (extra practice in steady pairs)",
+    "uptake": "talk uptake moves (revoice ideas, press reasoning)",
+    "mapping": "civic mapping on paper (map grounds, tally as a class)",
+    "udl": "UDL choice (second ways in and out)",
+    "roar": "ROAR screening (browser check per student)",
+    "ai": "AI literacy (use + critique AI)",
+}
 
-    Defaults preserve current behavior: no family applies, and the inventory
-    answers sit below every threshold. See docs/methodologies.md.
-    """
+
+def _method_goals_choice() -> ask.Choice:
+    return ask.Choice(
+        "method_goals", "Which goals matter for this run?",
+        (("gaps", "Find where strugglers are stuck", "screening + extra practice"),
+         ("talk", "More students talking and explaining", "uptake moves in checks"),
+         ("world", "Lessons tied to real surroundings", "paper mapping + class tallies"),
+         ("access", "More ways in and more ways to respond", "second channels"),
+         ("ai", "Students using and judging AI tools", "High band + devices needed")),
+        [], multi=True,
+        context="Pick any, or leave blank for none. Your picks propose method families next.")
+
+
+def method_proposal(goals: Any, grade_band: str | None) -> str:
+    """Suggested opt-in families from goal answers, for the opt-in question's context."""
+    picked = [g for g in goals if g in GOAL_FAMILIES] if isinstance(goals, list) else []
+    if not picked:
+        return ("No goals picked, so no families suggested. Pick any anyway, "
+                "or leave blank for none. (?N explains an option.)")
+    labels = {v: label for v, label, _ in _method_goals_choice().options}
+    fams: list[str] = []
+    for g in picked:
+        for f in GOAL_FAMILIES[g]:
+            if f not in fams:
+                fams.append(f)
+    order = [v for v, _, _ in METHOD_OPT_IN_OPTIONS]
+    kept, notes = [], []
+    for f in fams:
+        need = opt.ST_GRADES.get(f)
+        if need is not None and grade_band is not None and grade_band != need:
+            notes.append(f"{FAMILY_BLURBS[f]} needs the {need} band (this run: {grade_band}) — left out")
+        else:
+            if need is not None and grade_band is None:
+                notes.append(f"{FAMILY_BLURBS[f]} needs the {need} band "
+                             "(this run states no grade band — pass --grade-band or it stays out)")
+            kept.append(f)
+    kept.sort(key=order.index)
+    nums = ", ".join(str(order.index(f) + 1) for f in kept)
+    lines = ["Based on your goals (%s), suggested: %s — %s." % (
+        ", ".join(labels[g] for g in picked), nums or "none",
+        "; ".join(FAMILY_BLURBS[f] for f in kept) or "nothing fits")]
+    lines += notes
+    lines.append("Each applies only above its threshold (checked next). "
+                 "Type suggested numbers, adjust, or blank for none.")
+    return "\n".join(lines)
+
+
+def _method_opt_in_choice(goals: Any, grade_band: str | None) -> ask.Choice:
+    return ask.Choice(
+        "method_opt_in", "Which Stanford-translated method families may apply?",
+        METHOD_OPT_IN_OPTIONS, [], multi=True, context=method_proposal(goals, grade_band),
+        details=METHOD_OPT_IN_DETAILS)
+
+
+def _method_inventory_choices() -> list[ask.Choice]:
+    """Tech/time inventory. Defaults sit below every threshold (current behavior)."""
     return [
-        ask.Choice("method_opt_in", "Which Stanford-translated method families may apply?",
-                   (("tutoring", "Peer tutoring protocol", "same pairs, rotating roles, 3+ times a week"),
-                    ("uptake", "Talk uptake moves", "revoice ideas, press for reasoning, wait time"),
-                    ("mapping", "Civic mapping on paper", "map school grounds, tally as a class"),
-                    ("udl", "UDL choice", "a second way to perceive and to respond"),
-                    ("roar", "ROAR screening", "needs 1:1 browser devices + internet, Primary"),
-                    ("ai", "AI literacy", "needs shared devices + internet, High band")),
-                   [], multi=True,
-                   context=("These methods apply only above their effectiveness thresholds "
-                            "(docs/methodologies.md); below the line the run abstains with a reason. "
-                            "Recording the classroom is never offered.")),
         ask.Choice("sessions_per_week", "How many sessions per week can practice run?",
                    ((1, "1", ""), (2, "2", ""), (3, "3", ""), (4, "4", ""), (5, "5 or more", "")),
-                   1),
+                   1, context="Tutoring works only at 3+ sessions a week; below that it stays out with a reason."),
         ask.Choice("tutor_staff", "Is the same tutor available across sessions?",
-                   ((True, "Yes", ""), (False, "No", "")), False),
+                   ((True, "Yes", ""), (False, "No", "")), False,
+                   context="Tutoring needs the same tutor across sessions; without one it stays out."),
         ask.Choice("classroom_devices", "What devices reach students in class?",
                    (("none", "None", ""), ("teacher-only", "Teacher device only", ""),
                     ("shared", "Shared student devices", ""), ("one-per-student", "One per student", "")),
-                   "none"),
+                   "none",
+                   context="Decides whether ROAR screening and AI literacy can be offered at all."),
         ask.Choice("classroom_internet", "Does the classroom have internet?",
-                   ((True, "Yes", ""), (False, "No", "")), False),
+                   ((True, "Yes", ""), (False, "No", "")), False,
+                   context="ROAR and AI steps need connectivity; without it they stay out with a reason."),
         ask.Choice("home_access", "How many students have a device plus internet at home?",
-                   (("most", "Most", ""), ("some", "Some", ""), ("few", "Few or none", "")), "few"),
+                   (("most", "Most", ""), ("some", "Some", ""), ("few", "Few or none", "")), "few",
+                   context="Only customizes pointers (ROAR also runs at home); nothing is assigned for home."),
     ]
+
+
+def eligibility_preview(choices: dict, grade_band: str | None) -> str | None:
+    """What opted-in families will do, for display before the run proceeds."""
+    opt_in = choices.get("method_opt_in") or []
+    fams = [v for v, _, _ in METHOD_OPT_IN_OPTIONS if v in opt_in]
+    if not fams:
+        return None
+    methods = {k: choices.get(k) for k in METHOD_KEYS}
+    methods["grade_band"] = grade_band
+    labels = dict((v, label) for v, label, _ in METHOD_OPT_IN_OPTIONS)
+    by_family = {f: r for r, f in opt.ROUTINE_FAMILIES.items()}
+    lines = ["Methodology check (based on your answers):"]
+    for f in fams:
+        if f in by_family:
+            blockers = opt.routine_blockers(by_family[f], methods)
+        else:
+            blockers = [b[6:] if b.startswith("needs ") else b for b in opt.stanford_blockers(f, methods)]
+        if blockers:
+            lines.append("• %s: not offered — %s." % (labels[f], "; ".join(blockers)))
+        else:
+            lines.append("• %s: will be considered for fitting units." % labels[f])
+    lines.append("Details: docs/methodologies.md.")
+    return "\n".join(lines)
 
 
 def _methodology_notes(choices: dict, grade_band: str | None) -> list[str]:
@@ -1311,8 +1423,16 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
     choices: dict[str, Any] = {}
     for c in _framework_choices():
         choices[c.key] = prompter.ask(c)
-    for c in _methodology_choices():
+    choices["method_goals"] = prompter.ask(_method_goals_choice())
+    choices["method_opt_in"] = prompter.ask(
+        _method_opt_in_choice(choices["method_goals"], src.grade_band))
+    for c in _method_inventory_choices():
         choices[c.key] = prompter.ask(c)
+    preview = eligibility_preview(choices, src.grade_band)
+    if preview is not None:
+        show = getattr(prompter, "show", None)
+        if show is not None:
+            show(preview)
     excluded = set(choices["frameworks_excluded"])
     choices["locale_mode"] = prompter.ask(_locale_choice())
     if choices["locale_mode"] not in loc.MODES:

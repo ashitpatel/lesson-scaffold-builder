@@ -29,6 +29,29 @@ instead); ROAR per-screener minutes and exact grades (snippet-only);
 the "8-workshop" RQ count (unverified, unused). No effect-size claim
 from any source ships to cards.
 
+## What changes on your cards
+
+One paragraph per family, in teacher language:
+
+- **Peer tutoring.** One practice step per fitting unit becomes paired
+  tutoring: the same pairs each session, tutor and tutee swapping roles,
+  working the unit's own exercises. Nothing new needed.
+- **Talk uptake moves.** Whole-class checks gain three teacher moves:
+  revoice one student idea, press one student for reasoning, wait
+  silently after asking. Nothing is recorded.
+- **Civic mapping.** One step per fitting unit sends groups to map
+  school grounds on paper and combine marks into one class tally, then
+  report back in school. No photos, devices, or trips.
+- **UDL choice.** Explanation steps present each key point heard and
+  seen; answers may be spoken, written or shown. Nothing beyond paper,
+  chalk and voice.
+- **ROAR screening.** One step runs a short browser reading check per
+  child, then the teacher regroups for decoding practice. Marked with
+  its tech needs; nothing about any child is recorded.
+- **AI literacy.** One step has pairs use classroom AI for a bounded
+  task, then critique bias and errors with a teacher debrief. Marked
+  with its tech needs.
+
 ## Threshold model
 
 Each offered family has a fit-gate. Below the gate the run abstains or
@@ -57,6 +80,7 @@ Notes:
 
 | Key | Options | Default | Consumers |
 |---|---|---|---|
+| `method_goals` | multi of `gaps`, `talk`, `world`, `access`, `ai` | `[]` | proposes opt-in suggestions (guides humans; gates nothing) |
 | `method_opt_in` | multi of `tutoring`, `uptake`, `mapping`, `udl`, `roar`, `ai` | `[]` | every gate |
 | `sessions_per_week` | `1`, `2`, `3`, `4`, `5+` | `1` | tutoring gate |
 | `tutor_staff` | `yes`, `no` | `no` | tutoring gate |
@@ -67,6 +91,11 @@ Notes:
 All defaults preserve current behavior: a run that answers nothing gets
 no new methods. Audio recording is deliberately not asked: no answer
 could authorize it.
+
+Guided flow (`--ask`): plain-language goals propose families, every
+option explains itself via `?N` with pointers here, and an eligibility
+preview shows what will and won't apply (and why) before the run
+proceeds. `--answers` files skip the guidance and answer directly.
 
 ## Routine tokens
 

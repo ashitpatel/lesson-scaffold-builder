@@ -33,11 +33,23 @@ class Choice:
     multi: bool = False
     free_text: bool = False
     context: str = ""
+    details: tuple[tuple[Any, str], ...] = ()  # (value, expanded brief) for "?N" in InteractivePrompter
+
+
+def detail_for(choice: Choice, value: Any) -> str | None:
+    """The expanded brief for one option value, or None when it has none."""
+    for v, text in choice.details:
+        if v == value:
+            return text
+    return None
 
 
 class Prompter(Protocol):
     def ask(self, choice: Choice) -> Any:
         """Return this choice's value."""
+
+    def show(self, text: str) -> None:
+        """Display a non-question message (a no-op where nobody reads)."""
 
 
 class DefaultPrompter:
@@ -46,6 +58,9 @@ class DefaultPrompter:
     def ask(self, choice: Choice) -> Any:
         return choice.default
 
+    def show(self, text: str) -> None:
+        pass
+
 
 class InteractivePrompter:
     """Ask on the terminal. Blank answers and EOF take the default."""
@@ -53,6 +68,22 @@ class InteractivePrompter:
     def __init__(self, input=input, output=print):
         self.input = input
         self.output = output
+
+    def show(self, text: str) -> None:
+        self.output(text)
+
+    @staticmethod
+    def _show_detail(choice: Choice, which: str, output) -> None:
+        if not choice.details:
+            output("No further detail available.")
+            return
+        try:
+            value = choice.options[int(which.strip()) - 1][0]
+        except (ValueError, IndexError):
+            output("Type ?1, ?2, ... for more about an option.")
+            return
+        found = detail_for(choice, value)
+        output(found if found is not None else "No further detail for that option.")
 
     def ask(self, choice: Choice) -> Any:
         if choice.context:
@@ -64,6 +95,8 @@ class InteractivePrompter:
             self.output("  (comma-separated numbers for more than one)")
         if choice.free_text:
             self.output("  (or type your own answer)")
+        if choice.details:
+            self.output("  (?N for more about an option)")
         while True:
             try:
                 raw = self.input("> ").strip()
@@ -71,6 +104,9 @@ class InteractivePrompter:
                 return choice.default
             if not raw:
                 return choice.default
+            if raw.startswith("?"):
+                self._show_detail(choice, raw[1:], self.output)
+                continue
             if choice.multi:
                 try:
                     picked = [choice.options[int(p.strip()) - 1][0] for p in raw.split(",")]
@@ -104,6 +140,9 @@ class FilePrompter:
         self.answers = json.loads(Path(path).read_text(encoding="utf-8"))
         if not isinstance(self.answers, dict):
             raise SystemExit(f"answers file {path} must hold a JSON object of choice answers")
+
+    def show(self, text: str) -> None:
+        pass
 
     def ask(self, choice: Choice) -> Any:
         if choice.key not in self.answers:

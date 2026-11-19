@@ -706,6 +706,7 @@ class MethodologyChoices(unittest.TestCase):
         self.assertEqual(saved["notes"], [n for n in saved["notes"] if not n.startswith("methodology ")])
         choices = json.loads((self.out / "choices.json").read_text())
         self.assertEqual(choices["method_opt_in"], [])
+        self.assertEqual(choices["method_goals"], [])
         self.assertEqual(choices["sessions_per_week"], 1)
         self.assertEqual(choices["tutor_staff"], False)
         self.assertEqual(choices["classroom_devices"], "none")
@@ -745,6 +746,48 @@ class MethodologyChoices(unittest.TestCase):
         notes = [n for n in r.notes if n.startswith("methodology ")]
         self.assertEqual(len(notes), 1)  # roar passes silently; the stage records per-unit outcomes
         self.assertIn("High grade band", notes[0])  # Primary band fails the ai gate
+
+
+    def test_goals_land_in_choices(self):
+        p = self.answers({"method_goals": ["gaps", "talk", "xx"]})
+        self.go(FakeModel([decomposed(VALID)], [critic("PASS")]), prompter=p)
+        choices = json.loads((self.out / "choices.json").read_text())
+        self.assertEqual(choices["method_goals"], ["gaps", "talk"])
+
+    def test_proposal_suggests_numbers_and_grade_caveats(self):
+        c = run._method_opt_in_choice(["gaps"], None)
+        self.assertIn("1, 5", c.context)
+        self.assertIn("--grade-band", c.context)
+        c = run._method_opt_in_choice(["gaps"], "Middle")
+        self.assertNotIn("1, 5", c.context)
+        self.assertIn("left out", c.context)
+        c = run._method_opt_in_choice([], None)
+        self.assertIn("No goals picked", c.context)
+
+    def test_preview_lists_pass_and_fail(self):
+        choices = {"method_opt_in": ["tutoring", "uptake"], "sessions_per_week": 1,
+                   "tutor_staff": False, "classroom_devices": "none",
+                   "classroom_internet": False, "home_access": "few"}
+        text = run.eligibility_preview(choices, None)
+        self.assertIn("Peer tutoring protocol: not offered", text)
+        self.assertIn("sessions_per_week is 1", text)
+        self.assertIn("Talk uptake moves: will be considered", text)
+        self.assertIsNone(run.eligibility_preview({"method_opt_in": []}, None))
+
+    def test_preview_shown_to_interactive_reader(self):
+        shown = []
+
+        class Shown(ask.FilePrompter):
+            def show(self, text):
+                shown.append(text)
+
+        f = Path(self.tmp.name) / "answers.json"
+        f.write_text(json.dumps({"method_opt_in": ["uptake"]}), encoding="utf-8")
+        run.run_pipeline(SOURCE, FakeModel([decomposed(VALID)], [critic("PASS")]),
+                         self.out, prompter=Shown(f))
+        self.assertEqual(len(shown), 1)
+        self.assertIn("Talk uptake moves", shown[0])
+        self.assertIn("will be considered", shown[0])
 
 
 class MethodRoutines(unittest.TestCase):

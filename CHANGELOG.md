@@ -6,6 +6,7 @@ Each release on GitHub attaches the ready-to-use files from `dist/`. The version
 
 - **Source-flag severity taxonomy.** Critic flags now carry severity (`blocker`/`major`/`minor`), category and handling notes; `summary.json` counts them and blockers stand out in CLI output. Flags still never fail a run: the adapter decides use.
 - **`--max-model-steps` for the muse backend.** Raises the per-call model-step budget when calls fail for needing more steps (default 1, unchanged); the failure message now names the flag.
+- **Guided methodology choices.** `--ask` opens with plain-language goals that propose method families, every option explains itself via `?N` with research pointers, and an eligibility preview shows what will and won't apply (and why) before the run proceeds.
 
 ## 0.4.0 — 2026-11-19
 

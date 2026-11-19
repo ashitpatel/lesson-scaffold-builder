@@ -26,6 +26,7 @@ ROUTINE_HOSTS = {"nssa-tutoring": "CL-02", "uptake-moves": "EB-04",
 ST_CARDS = ("ST-01", "ST-02")
 # Tech-conditional cards and the method family each needs.
 ST_FAMILIES = {"ST-01": "roar", "ST-02": "ai"}
+ST_GRADES = {"roar": "Primary", "ai": "High"}
 NEEDS_MARKER = "(needs:"
 
 
@@ -49,17 +50,16 @@ def stanford_blockers(family: str, methods: dict | None) -> list[str]:
             blockers.append("needs one browser device per student")
         if not internet:
             blockers.append("needs classroom internet")
-        if grade != "Primary":
-            blockers.append("needs Primary grade band")
     elif family == "ai":
         if devices not in ("shared", "one-per-student"):
             blockers.append("needs shared or 1:1 student devices")
         if not internet:
             blockers.append("needs classroom internet")
-        if grade != "High":
-            blockers.append("needs High grade band")
     else:
         blockers.append("unknown family %r" % family)
+        return blockers
+    if grade != ST_GRADES[family]:
+        blockers.append(f"needs {ST_GRADES[family]} grade band")
     return blockers
 
 
