@@ -12,15 +12,14 @@ api` calls the Anthropic API directly and needs ANTHROPIC_API_KEY or an `ant
 auth login` profile.
 Every intermediate JSON is saved under runs/<timestamp>/.
 
-Choices: `--ask` pauses to ask, first, which frameworks to exclude, then
+Choices: on a terminal the run pauses to ask (`--ask` forces it), first, which frameworks to exclude, then
 the MLS decisions (one module or several; if several, unit maximum, breakdown
 focus, max weeks per module) and what each remaining stage may do (cards,
 cards per unit, added step), with suggestions drawn from the source and the
 cards files. A single MLS spans the lesson: D04 yields its upper bound and
 the critic runs in `single` mode.
 `--answers FILE` reads those answers from a JSON object instead, so sweeps
-answer without stopping; anything missing falls back to defaults. Without
-either flag nothing is asked. The values land in choices.json.
+answer without stopping; anything missing falls back to defaults. Piped runs and `--yes` ask nothing. The values land in choices.json.
 The outset also asks how to handle locale-specific content: generalize
 (the default), keep the source's locale, or generalize, then relocalize to the
 `--locale` target, reviewing each proposed replacement first. Relocalize runs
@@ -1749,6 +1748,15 @@ def dry_run(src: Source) -> int:
     return 1 if problems else 0
 
 
+def _choose_prompter(args, interactive: bool) -> ask.Prompter:
+    """Pick the prompter: file answers win, then explicit --ask/--yes, then a terminal check."""
+    if args.answers:
+        return ask.FilePrompter(args.answers)
+    if args.ask or (interactive and not args.yes):
+        return ask.InteractivePrompter()
+    return ask.DefaultPrompter()
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python3 -m lsb.run", description=__doc__.split("\n\n")[0])
     ap.add_argument("source", type=Path, help="text file with the source content")
@@ -1765,6 +1773,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="model id (default: claude-opus-5-5 for claude-code/api, "
                          "the CLI default for muse, gemini-2.5-flash for gemini)")
     ap.add_argument("--ask", action="store_true", help="ask about the breakdown and each stage's limits")
+    ap.add_argument("--yes", action="store_true", help="answer every question with its default; never prompt")
     ap.add_argument("--answers", type=Path, metavar="FILE",
                     help="JSON answers for the --ask questions (sweeps answer without stopping)")
     ap.add_argument("--language", default=None, metavar="CODE",
@@ -1804,13 +1813,14 @@ def main(argv: list[str] | None = None) -> int:
         return 2 if dry_run(src) else 0
     if args.ask and args.answers:
         ap.error("--ask and --answers cannot be combined")
+    if args.ask and args.yes:
+        ap.error("--ask and --yes cannot be combined")
     if args.answers and not args.answers.exists():
         ap.error(f"answers file not found: {args.answers}")
     if args.max_model_steps < 1:
         ap.error("--max-model-steps must be at least 1")
     try:
-        prompter = ask.FilePrompter(args.answers) if args.answers else (
-            ask.InteractivePrompter() if args.ask else ask.DefaultPrompter())
+        prompter = _choose_prompter(args, ask.interactive_available())
     except (OSError, ValueError) as e:
         ap.error(f"cannot read answers file: {e}")
 

@@ -80,13 +80,16 @@ class Evaluate(unittest.TestCase):
 
 class Cli(unittest.TestCase):
     def test_run_case_forwards_extra_args_to_lsb_run(self):
+        import subprocess
         seen = {}
 
         def fake_run(cmd, **kw):
             seen["cmd"] = cmd
+            seen["stdin"] = kw.get("stdin")
         with tempfile.TemporaryDirectory() as tmp:
             regress.run_case(CASE, Path(tmp), ["--backend", "muse", "--model", "m"], runner=fake_run)
         self.assertEqual(seen["cmd"][-4:], ["--backend", "muse", "--model", "m"])
+        self.assertEqual(seen["stdin"], subprocess.DEVNULL)
 
     def test_check_mode_writes_a_report(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -128,7 +128,9 @@ def run_case(case: dict, root: Path, extra: list[str], runner=None) -> Path:
     cmd += extra
     root.mkdir(parents=True, exist_ok=True)
     with open(root / f"{case['name']}.log", "w", encoding="utf-8") as log:
-        (runner or subprocess.run)(cmd, cwd=base, stdout=log, stderr=subprocess.STDOUT)
+        # Detached stdin: sweep children must never prompt, even from a terminal.
+        (runner or subprocess.run)(cmd, cwd=base, stdin=subprocess.DEVNULL,
+                                   stdout=log, stderr=subprocess.STDOUT)
     return run_dir
 
 

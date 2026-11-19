@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -42,6 +43,14 @@ def detail_for(choice: Choice, value: Any) -> str | None:
         if v == value:
             return text
     return None
+
+
+def interactive_available() -> bool:
+    """True when a human can answer questions (stdin is a terminal)."""
+    try:
+        return sys.stdin.isatty()
+    except (AttributeError, ValueError):
+        return False
 
 
 class Prompter(Protocol):

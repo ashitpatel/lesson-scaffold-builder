@@ -925,6 +925,37 @@ class FlagSeverity(unittest.TestCase):
                          {"blocker": 1, "major": 1, "minor": 0, "ungraded": 1})
 
 
+class PrompterChoice(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def args(self, **over):
+        from argparse import Namespace
+        kw = {"answers": None, "ask": False, "yes": False}
+        kw.update(over)
+        return Namespace(**kw)
+
+    def test_file_wins_then_flags_then_terminal(self):
+        f = Path(self.tmp.name) / "answers.json"
+        f.write_text(json.dumps({}), encoding="utf-8")
+        self.assertIsInstance(run._choose_prompter(self.args(answers=str(f)), False), ask.FilePrompter)
+        self.assertIsInstance(run._choose_prompter(self.args(ask=True), False), ask.InteractivePrompter)
+        self.assertIsInstance(run._choose_prompter(self.args(yes=True), True), ask.DefaultPrompter)
+        self.assertIsInstance(run._choose_prompter(self.args(), True), ask.InteractivePrompter)
+        self.assertIsInstance(run._choose_prompter(self.args(), False), ask.DefaultPrompter)
+
+    def test_main_rejects_ask_with_yes(self):
+        import io
+        from contextlib import redirect_stderr
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                run.main([str(FIXTURES / "hydrology-source.md"), "--ref", "x", "--ask", "--yes"])
+
+
 class Requests(unittest.TestCase):
     def test_every_placeholder_is_supplied(self):
         values = {

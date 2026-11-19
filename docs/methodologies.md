@@ -54,7 +54,7 @@ One paragraph per family, in teacher language:
 
 ## Using the guided flow
 
-With `--ask`, the run interviews you before spending anything on models:
+On a terminal, the run interviews you before spending anything on models (`--yes` silences it):
 
 1. **Goals.** Pick what matters in plain language (find strugglers,
    more talk, real surroundings, access, AI). Leave blank for none.
@@ -68,8 +68,8 @@ With `--ask`, the run interviews you before spending anything on models:
    what will be considered and what stays out with reasons. Overruling
    the proposal is allowed; thresholds still apply.
 
-`--answers` files skip the guidance and answer directly; `method_goals`
-is accepted but gates nothing.
+Piped runs take defaults silently; `--answers` files skip the guidance
+and answer directly; `method_goals` is accepted but gates nothing.
 
 Worked example (middle-school class via `--grade-band Middle`, wants
 strugglers found and AI judged; practice 3 times a week with a steady

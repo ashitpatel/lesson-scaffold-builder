@@ -12,7 +12,7 @@ date: 2026-11-19 00:00:00 +0000
 
 ## Goals first, methods second
 
-Run with `--ask` and the methodology section opens with one question in plain language: which goals matter — finding where strugglers are stuck, more students talking, lessons tied to real surroundings, more ways in and out, students judging AI tools. Pick any, or nothing. The next question then proposes method families with numbered picks:
+Run on a terminal and the methodology section opens with one question in plain language: which goals matter — finding where strugglers are stuck, more students talking, lessons tied to real surroundings, more ways in and out, students judging AI tools. Pick any, or nothing. The next question then proposes method families with numbered picks:
 
 ```
 Based on your goals (Find where strugglers are stuck), suggested: 1, 5 — peer tutoring (extra practice in steady pairs); ROAR screening (browser check per student).
@@ -46,7 +46,7 @@ Methodology check (based on your answers):
 Details: docs/methodologies.md.
 ```
 
-Read a rejection as information, not failure. "Not offered" always names the missing factor, and each factor suggests its own remedy: more sessions, a steady tutor, devices, or — for grade-band mismatches — nothing to do, the method genuinely doesn't fit. You can overrule the proposal and opt into anything; the thresholds still apply, enforced in code, so a weak version can never slip through. (Automated sweeps skip the whole interview and answer from a file.)
+Read a rejection as information, not failure. "Not offered" always names the missing factor, and each factor suggests its own remedy: more sessions, a steady tutor, devices, or — for grade-band mismatches — nothing to do, the method genuinely doesn't fit. You can overrule the proposal and opt into anything; the thresholds still apply, enforced in code, so a weak version can never slip through. (Piped runs, `--answers` files and `--yes` skip the whole interview.)
 
 One honest limit: this is guided choice, not conversation. The tool cannot discuss trade-offs with you; for that, read the linked guides, which were written to be read. What it can do — propose from goals, explain every option, and show its reasoning before spending your money — is now the default way in.
 

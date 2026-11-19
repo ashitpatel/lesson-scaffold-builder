@@ -124,6 +124,21 @@ class Explainer(unittest.TestCase):
             self.assertIsNone(ask.FilePrompter(f).show("hello"))
 
 
+class InteractiveAvailable(unittest.TestCase):
+    def test_terminal_stdin(self):
+        from unittest import mock
+        with mock.patch.object(ask.sys, "stdin") as stdin:
+            stdin.isatty.return_value = True
+            self.assertTrue(ask.interactive_available())
+            stdin.isatty.return_value = False
+            self.assertFalse(ask.interactive_available())
+
+    def test_broken_stdin_is_not_interactive(self):
+        from unittest import mock
+        with mock.patch.object(ask.sys, "stdin", None):
+            self.assertFalse(ask.interactive_available())
+
+
 class Suggestions(unittest.TestCase):
     def test_section_headers_come_from_the_source(self):
         src = (ROOT / "tests/fixtures/kenya-water-source.md").read_text(encoding="utf-8")
