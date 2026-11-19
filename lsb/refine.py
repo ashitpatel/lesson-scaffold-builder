@@ -289,8 +289,14 @@ def run_revision(src_text: str, run_dir: Path, base_label: str, seq: dict,
             new_seq = after["sequence"]
             new_assump = after.get("assumptions", assumptions)
             summary = _load_json(run_dir / "summary.json", "summary") if (run_dir / "summary.json").exists() else {}
+            # A refinement of a translated run reuses the original run's note
+            # translation and group-work set; a refinement that newly adds or
+            # removes group work on a translated run will not move the note.
             deck = render.build_deck(new_seq, {"environment_assumptions": new_assump},
-                                     summary.get("optimisation"), trace, ref)
+                                     summary.get("optimisation"), trace, ref,
+                                     group_work_units=render.group_work_for_run(run_dir, summary),
+                                     stuck_note=render.note_for_run(run_dir),
+                                     language=render.language_for_summary(summary))
             card_problems = render.write_cards(deck, rev_dir)
             (rev_dir / "sequence.json").write_text(json.dumps(new_seq, ensure_ascii=False, indent=2), encoding="utf-8")
             (rev_dir / "assumptions.json").write_text(json.dumps(new_assump, ensure_ascii=False, indent=2), encoding="utf-8")

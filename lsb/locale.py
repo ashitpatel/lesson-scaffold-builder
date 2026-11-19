@@ -300,4 +300,11 @@ def check_translation(before_seq: dict, before_assump: list,
             for key in ("assumes", "if_not"):
                 if b.get(key) and (not isinstance(a.get(key), str) or not a[key].strip()):
                     problems.append(f"{b.get('mls_id')}: {key} emptied")
+    note = after.get("stuck_note")
+    if note is not None:  # absent means the English note is kept; present must be usable
+        if not isinstance(note, dict) or not isinstance(note.get("heading"), str) or not note["heading"].strip():
+            problems.append("stuck_note has no 'heading' text")
+        elif not isinstance(note.get("lines"), list) or not note["lines"] or \
+                not all(isinstance(line, str) and line.strip() for line in note["lines"]):
+            problems.append("stuck_note has no 'lines' list of texts")
     return problems

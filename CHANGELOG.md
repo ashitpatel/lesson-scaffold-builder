@@ -11,6 +11,10 @@ Each release on GitHub attaches the ready-to-use files from `dist/`. The version
 - [x] E. Already-present widening: **keep widened**. Routine-less units with base practice stay eligible targets; with D, this is how the routines reach most units.
 - [x] R. Standing rule: **adopted** for this session. Bug fixes and factual corrections proceed silently; teacher-facing content, project claims, or pipeline-behavior changes get a one-question checkpoint first.
 
+Follow-up to C (implemented, unreleased):
+- **Translated stuck note.** The translate stage now carries the fixed "If a group is stuck" note's heading and lines into the run's language; which units get the note is decided on the reviewed English, since translated steps no longer match the group-work pattern. Runs translated before this change re-render with the English note via `english-final.json`.
+- **Translated-page language tag.** `cards.html` now declares the run's output language (`<html lang>`, BCP47 with an `en` fallback for unknown languages); the G21 self-check verifies the tag.
+
 ## 0.3.0 — 2026-11-09
 
 - **Locale support.** An outset choice — generalize, keep, or relocalize locale-specific content — with a removal log, target proposals, overall locale notes, and per-item approve/skip/own-text review (revertible as a set when replacements newly break a code check). Locale additions propose anchored insertions with per-item review and per-addition trial application; final-content translation renders the cards in the run's language (English original kept), with per-language word-cap multipliers (`--language`, `--locale`).

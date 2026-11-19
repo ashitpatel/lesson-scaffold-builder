@@ -43,6 +43,44 @@ WIDTH = 78
 WHO = 22  # left column width in cards.txt
 ROLE_NAMES = {"Lead_Educator": "Lead Educator", "Peer_Facilitator": "Peer Facilitator",
               "Community_Volunteer": "Community Volunteer"}
+# Free-text output language (summary.json "language") to BCP47 tag for
+# cards.html. Unknown languages fall back to "en": no worse than before.
+HTML_LANG = {
+    "en": "en", "english": "en",
+    "fr": "fr", "french": "fr", "francais": "fr", "français": "fr",
+    "es": "es", "spanish": "es", "espanol": "es", "español": "es",
+    "pt": "pt", "portuguese": "pt", "portugues": "pt", "português": "pt",
+    "de": "de", "german": "de", "it": "it", "italian": "it",
+    "nl": "nl", "dutch": "nl",
+    "ar": "ar", "arabic": "ar",
+    "hi": "hi", "hindi": "hi",
+    "bn": "bn", "bengali": "bn", "bangla": "bn",
+    "ur": "ur", "urdu": "ur",
+    "ta": "ta", "tamil": "ta", "te": "te", "telugu": "te",
+    "mr": "mr", "marathi": "mr", "gu": "gu", "gujarati": "gu",
+    "kn": "kn", "kannada": "kn", "ml": "ml", "malayalam": "ml",
+    "pa": "pa", "punjabi": "pa", "ne": "ne", "nepali": "ne",
+    "th": "th", "thai": "th",
+    "vi": "vi", "vietnamese": "vi",
+    "id": "id", "indonesian": "id", "ms": "ms", "malay": "ms",
+    "tl": "tl", "tagalog": "tl", "fil": "fil", "filipino": "fil",
+    "my": "my", "burmese": "my", "myanmar": "my",
+    "km": "km", "khmer": "km", "cambodian": "km", "lo": "lo", "lao": "lo",
+    "zh": "zh", "chinese": "zh", "ja": "ja", "japanese": "ja", "ko": "ko", "korean": "ko",
+    "sw": "sw", "swahili": "sw", "kiswahili": "sw",
+    "yo": "yo", "yoruba": "yo", "ha": "ha", "hausa": "ha", "ig": "ig", "igbo": "ig",
+    "am": "am", "amharic": "am",
+    "ru": "ru", "russian": "ru", "tr": "tr", "turkish": "tr",
+    "fa": "fa", "persian": "fa", "farsi": "fa",
+    "fi": "fi", "finnish": "fi", "sv": "sv", "swedish": "sv", "is": "is", "icelandic": "is",
+}
+
+
+def html_lang(language: Any) -> str:
+    """BCP47 tag for the run's output language; "en" when unknown."""
+    if isinstance(language, str) and language.strip():
+        return HTML_LANG.get(language.strip().lower(), "en")
+    return "en"
 # A fixed classroom-management note, the same on every card it appears on: it is
 # rendered text, not a method card, so it adds no step and uses no card slot.
 # It makes no outcome claim, and it ends in help (EB-03) rather than withholding it.
@@ -52,6 +90,9 @@ STUCK_LINES = (
     'Then: "What is one small thing you can try in the next five minutes?"',
     "If they are still stuck, help: show them the next step or a worked example.",
 )
+# The English stuck note as the translate stage receives it ({{STUCK_NOTE}} in
+# prompts/59-translate.md); a translated reply carries the same shape back.
+STUCK_NOTE_EN = {"heading": STUCK_HEADING, "lines": list(STUCK_LINES)}
 GROUP_WORK = re.compile(r"\b(groups?|pairs?|partners?|teams?|in threes|in fours)\b", re.I)
 STAGE_NAMES = {"evidence_based": "Evidence-Based", "connected_learning": "Connected Learning", "participatory_budgeting": "Participatory Budgeting"}
 
@@ -64,6 +105,9 @@ class Deck:
     trace: list[dict] = field(default_factory=list)  # final source trace (card ids on changed steps)
     optimisation: dict = field(default_factory=dict)  # summary.json "optimisation"
     disclaimer: str = ""
+    group_work_units: set[str] | None = None  # units with group work, decided on the reviewed English; None detects from this deck's actions
+    stuck_note: tuple[str, tuple[str, ...]] | None = None  # translated (heading, lines); None prints the English note
+    language: str | None = None  # summary.json output language when translated; None means English
 
     def units(self) -> list[dict]:
         units = [u for u in self.sequence.get("mls_units", []) if isinstance(u, dict)]
@@ -112,6 +156,51 @@ def run_assumptions(run_dir: Path, summary: dict | None = None) -> list[dict]:
     return [a for a in found or [] if isinstance(a, dict)]
 
 
+TRANSLATION = "translation.json"
+ENGLISH_FINAL = "english-final.json"
+
+
+def group_work_for_run(run_dir: Path, summary: dict) -> set[str] | None:
+    """Unit ids whose reviewed English had group work, or None to detect live.
+
+    New translated runs record the set in summary.json; older ones are
+    re-derived from english-final.json; English runs detect from their own
+    actions, since those still match the pattern.
+    """
+    trans = summary.get("translation") or {}
+    saved = trans.get("group_work_units")
+    if isinstance(saved, list) and all(isinstance(u, str) for u in saved):
+        return set(saved)
+    if not trans.get("applied"):
+        return None
+    try:
+        english = json.loads((run_dir / ENGLISH_FINAL).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    seq = english.get("sequence") if isinstance(english, dict) else None
+    return find_group_work_units(seq) if isinstance(seq, dict) else None
+
+
+def note_for_run(run_dir: Path) -> tuple[str, tuple[str, ...]] | None:
+    """The run's translated stuck note, or None for the English note."""
+    try:
+        saved = json.loads((run_dir / TRANSLATION).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return parse_stuck_note(saved.get("stuck_note") if isinstance(saved, dict) else None)
+
+
+def language_for_summary(summary: dict) -> str | None:
+    """The output language for cards, or None for English.
+
+    summary.json always records the requested "language", but the cards are
+    translated only when translation applied; a failed translation stays English.
+    """
+    if (summary.get("translation") or {}).get("applied") and isinstance(summary.get("language"), str):
+        return summary["language"]
+    return None
+
+
 def load_run(run_dir: Path) -> Deck:
     """A Deck from a saved `lsb.run` output directory."""
     summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
@@ -124,11 +213,17 @@ def load_run(run_dir: Path) -> Deck:
     if "units" in optimisation:  # runs from before the PB stage logged one stage, unkeyed
         optimisation = {optimisation.get("stage", "connected_learning"): optimisation}
     return build_deck(sequence, {"environment_assumptions": run_assumptions(run_dir, summary)},
-                      optimisation, trace, summary.get("source_ref", ""))
+                      optimisation, trace, summary.get("source_ref", ""),
+                      group_work_units=group_work_for_run(run_dir, summary),
+                      stuck_note=note_for_run(run_dir),
+                      language=language_for_summary(summary))
 
 
 def build_deck(sequence: dict, decomposed: dict | None, optimisation: dict | None, trace: list | None,
-               source_ref: str = "") -> Deck:
+               source_ref: str = "",
+               group_work_units: set[str] | None = None,
+               stuck_note: tuple[str, tuple[str, ...]] | None = None,
+               language: str | None = None) -> Deck:
     try:
         disclaimer = json.loads(CONFIG_PATH.read_text(encoding="utf-8")).get("onboarding_disclaimer", "")
     except (OSError, json.JSONDecodeError):
@@ -140,6 +235,9 @@ def build_deck(sequence: dict, decomposed: dict | None, optimisation: dict | Non
         trace=[e for e in trace or [] if isinstance(e, dict)],
         optimisation=optimisation or {},
         disclaimer=disclaimer,
+        group_work_units=group_work_units,
+        stuck_note=stuck_note,
+        language=language,
     )
 
 
@@ -181,10 +279,41 @@ def _assumptions(deck: Deck, uid: str) -> list[tuple[str, str]]:
     return [(str(a.get("assumes", "")), str(a.get("if_not", ""))) for a in deck.assumptions if a.get("mls_id") == uid]
 
 
-def _has_group_work(unit: dict) -> bool:
-    """True when a step's action puts students in groups or pairs."""
+def _has_group_work(unit: dict, group_work: set[str] | None = None) -> bool:
+    """True when the unit's steps put students in groups or pairs.
+
+    `group_work` overrides detection: on translated runs the actions no longer
+    match the English pattern, so the run records which units had group work
+    in the reviewed English (see group_work_for_run).
+    """
+    if group_work is not None:
+        return str(unit.get("mls_id")) in group_work
     return any(isinstance(t, dict) and GROUP_WORK.search(str(t.get("action", "")))
                for t in unit.get("tasks") or [])
+
+
+def find_group_work_units(sequence: dict) -> set[str]:
+    """Ids of the units whose actions put students in groups or pairs."""
+    return {str(u.get("mls_id")) for u in (sequence or {}).get("mls_units") or []
+            if isinstance(u, dict) and _has_group_work(u)}
+
+
+def parse_stuck_note(obj: Any) -> tuple[str, tuple[str, ...]] | None:
+    """A saved translated note as (heading, lines); None when absent or malformed."""
+    if not isinstance(obj, dict):
+        return None
+    heading = obj.get("heading")
+    lines = obj.get("lines")
+    if not isinstance(heading, str) or not heading.strip():
+        return None
+    if not isinstance(lines, list) or not lines or \
+            not all(isinstance(line, str) and line.strip() for line in lines):
+        return None
+    return heading, tuple(lines)
+
+
+def _note(deck: Deck) -> tuple[str, tuple[str, ...]]:
+    return deck.stuck_note or (STUCK_HEADING, STUCK_LINES)
 
 
 def _overview_rows(deck: Deck) -> list[tuple[str, str]]:
@@ -266,10 +395,11 @@ def render_text(deck: Deck, width: int = WIDTH) -> str:
                 out += _wrap("- Needs: " + assumes, width, hang="  ")
                 if if_not:
                     out += _wrap("If not: " + if_not, width, "  ")
-        if _has_group_work(unit):
+        if _has_group_work(unit, deck.group_work_units):
+            heading, lines = _note(deck)
             out.append(light)
-            out.append(STUCK_HEADING.upper())
-            for line in STUCK_LINES:
+            out.append(heading.upper())
+            for line in lines:
                 out += _wrap("- " + line, width, hang="  ")
         changes = _changes(deck, uid)
         if changes:
@@ -349,9 +479,10 @@ def render_html(deck: Deck) -> str:
             items = "".join(f"<li>Needs: {_e(a)}" + (f"<br>If not: {_e(b)}" if b else "") + "</li>"
                             for a, b in assumptions)
             parts.append(f"<h3>Before you start</h3><ul>{items}</ul>")
-        if _has_group_work(unit):
-            items = "".join(f"<li>{_e(line)}</li>" for line in STUCK_LINES)
-            parts.append(f"<h3>{_e(STUCK_HEADING)}</h3><ul>{items}</ul>")
+        if _has_group_work(unit, deck.group_work_units):
+            heading, lines = _note(deck)
+            items = "".join(f"<li>{_e(line)}</li>" for line in lines)
+            parts.append(f"<h3>{_e(heading)}</h3><ul>{items}</ul>")
         changes = _changes(deck, uid)
         if changes:
             items = "".join(f"<li>{_e(stage)}, {_e(card)} {_e(names.get(card, ''))}: {_e(summary)}</li>"
@@ -359,7 +490,7 @@ def render_html(deck: Deck) -> str:
             parts.append(f"<h3>Changes from the source</h3><ul>{items}</ul>")
         parts.append("</section>")
 
-    return ("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
+    return ("<!doctype html>\n" + f'<html lang="{html_lang(deck.language)}"><head><meta charset="utf-8">'
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
             f"<title>{_e(title)}</title><style>\n{CSS}\n</style></head><body>\n"
             + "\n".join(parts) + "\n</body></html>\n")
@@ -447,6 +578,12 @@ def check_render(deck: Deck, text: str, page: str, width: int = WIDTH) -> list[s
     for n, line in enumerate(text.splitlines(), start=1):
         if len(line) > width:
             problems.append(f"cards.txt line {n} is {len(line)} characters; the limit is {width}")
+    want = html_lang(deck.language)
+    lang = re.search(r'<html lang="([^"]*)"', page)
+    if lang is None:
+        problems.append("cards.html has no lang attribute on <html>")
+    elif lang.group(1) != want:
+        problems.append(f"cards.html declares lang {lang.group(1)!r}; this run needs {want!r}")
     if FORBIDDEN_HTML.search(page):
         problems.append(f"cards.html is not text-only and offline: found {FORBIDDEN_HTML.search(page).group(0)!r}")
     colours = {c.lower() for c in COLOUR.findall(page)} - {"#000", "#fff", "#000000", "#ffffff"}

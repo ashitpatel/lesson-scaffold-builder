@@ -171,10 +171,28 @@ class Translation(unittest.TestCase):
             for t in u["tasks"]:
                 t["action"] += " (fr)"
         assump = [{"mls_id": "U1", "assumes": "Papier autour. (fr)", "if_not": "Ardoises. (fr)"}]
-        return {"sequence": seq, "assumptions": assump}
+        note = {"heading": "Si un groupe est bloque.", "lines": ["Demandez.", "Essayez.", "Aidez."]}
+        return {"sequence": seq, "assumptions": assump, "stuck_note": note}
 
     def test_good_translation_passes(self):
         self.assertEqual(loc.check_translation(self.seq(), self.assump(), self.translated()), [])
+
+    def test_missing_note_passes_and_falls_back_to_english(self):
+        good = self.translated()
+        del good["stuck_note"]
+        self.assertEqual(loc.check_translation(self.seq(), self.assump(), good), [])
+
+    def test_malformed_note_fails(self):
+        for bad_note in ({"heading": "", "lines": ["a"]},
+                         {"heading": "H", "lines": []},
+                         {"heading": "H", "lines": ["a", "  "]},
+                         {"heading": "H"},
+                         "note"):
+            with self.subTest(note=bad_note):
+                bad = self.translated()
+                bad["stuck_note"] = bad_note
+                self.assertTrue(any("stuck_note" in p for p in
+                                    loc.check_translation(self.seq(), self.assump(), bad)))
 
     def test_bad_shapes_fail(self):
         before, assump = self.seq(), self.assump()
@@ -270,7 +288,7 @@ class Plumbing(unittest.TestCase):
         self.assertEqual(set(run.prompt_placeholders("57-locale-add.md")),
                          {"SEQUENCE_JSON", "TARGET_LOCALE", "LOCALE_NOTES", "LOCALE_LOG"})
         self.assertEqual(set(run.prompt_placeholders("59-translate.md")),
-                         {"SEQUENCE_JSON", "ASSUMPTIONS", "TARGET_LANGUAGE", "FEEDBACK"})
+                         {"SEQUENCE_JSON", "ASSUMPTIONS", "STUCK_NOTE", "TARGET_LANGUAGE", "FEEDBACK"})
         self.assertEqual(set(run.prompt_placeholders("04-translate-source.md")),
                          {"SOURCE_TEXT", "SOURCE_LANGUAGE", "FEEDBACK"})
 

@@ -304,6 +304,48 @@ class IntakeTranslation(unittest.TestCase):
         self.assertEqual(self.summary()["intake"], {"source": "French", "applied": False})
 
 
+class OutputTranslation(unittest.TestCase):
+    NOTE = {"heading": "Si un groupe est bloque", "lines": ["Demandez.", "Essayez.", "Aidez."]}
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name) / "run"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def reply(self, **kw):
+        out = {"sequence": VALID, "assumptions": []}
+        out.update(kw)
+        return json.dumps(out)
+
+    def test_translated_run_prints_the_translated_note(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), self.reply(stuck_note=self.NOTE)])
+        r = run.run_pipeline(SOURCE, m, self.out, language="French")
+        self.assertEqual(r.status, "pass")
+        self.assertIn("If a group is stuck", m.calls[2][1])  # the English note went to the model
+        expected_group = sorted(render.find_group_work_units(VALID))
+        self.assertEqual(json.loads((self.out / "summary.json").read_text())["translation"],
+                         {"target": "French", "applied": True,
+                          "group_work_units": expected_group, "stuck_note": self.NOTE})
+        cards = (self.out / "cards.txt").read_text(encoding="utf-8")
+        self.assertIn("SI UN GROUPE EST BLOQUE", cards)
+        self.assertNotIn("IF A GROUP IS STUCK", cards)
+        self.assertEqual(r.cards_problems, [])
+
+    def test_missing_note_keeps_the_english_note(self):
+        m = FakeModel([decomposed(VALID)], [critic("PASS"), self.reply()])
+        r = run.run_pipeline(SOURCE, m, self.out, language="French")
+        self.assertEqual(r.status, "pass")
+        info = json.loads((self.out / "summary.json").read_text())["translation"]
+        self.assertTrue(info["applied"])
+        self.assertIsNone(info["stuck_note"])
+        self.assertTrue(any("English kept" in n for n in r.notes))
+        cards = (self.out / "cards.txt").read_text(encoding="utf-8")
+        if render.find_group_work_units(VALID):
+            self.assertIn("IF A GROUP IS STUCK", cards)
+
+
 class ConnectedLearning(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

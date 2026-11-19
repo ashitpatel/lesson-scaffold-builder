@@ -75,7 +75,7 @@ IF A GROUP IS STUCK
 - If they are still stuck, help: show them the next step or a worked example.
 ```
 
-It isn't a method: it adds no step, changes no step, uses no slot and claims nothing. The last line matters. The suggestion said to ask the questions *before giving any hints*; that part was dropped, because worked examples, one of the nine techniques, exist because learners new to a procedure need to be shown. The tool prints the note itself, so on cards in another language it currently stays in English. Whether teachers use it at all is a question for the classroom pilot in [part 8]({{ site.baseurl }}/does-it-work/).
+It isn't a method: it adds no step, changes no step, uses no slot and claims nothing. The last line matters. The suggestion said to ask the questions *before giving any hints*; that part was dropped, because worked examples, one of the nine techniques, exist because learners new to a procedure need to be shown. The tool prints the note itself, translated with the cards: the translate stage carries the note's heading and lines into the run's language, and which units get it is decided on the reviewed English, since translated steps no longer match. Whether teachers use it at all is a question for the classroom pilot in [part 8]({{ site.baseurl }}/does-it-work/).
 
 A second suggestion, opening a problem with "who in our neighbourhood deals with this?", was turned down. Everyday numbers already allow one sentence linking a result to something learners can see, and asking about the neighbourhood invites answers about home and family, which that method forbids.
 

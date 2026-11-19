@@ -1133,6 +1133,7 @@ def _apply_translation(result: RunResult, best: dict, call, save,
             out = call("translate", TRANSLATE,
                        {"SEQUENCE_JSON": _dump(result.sequence),
                         "ASSUMPTIONS": _dump(assumptions),
+                        "STUCK_NOTE": _dump(render.STUCK_NOTE_EN),
                         "TARGET_LANGUAGE": target, "FEEDBACK": feedback},
                        attempt, tdefs)
         except (StageError, ModelUnavailable) as e:
@@ -1150,10 +1151,17 @@ def _apply_translation(result: RunResult, best: dict, call, save,
             return
         save("english-final.json", {"sequence": result.sequence, "assumptions": assumptions})
         save("translation.json", out)
+        # Decided while the sequence is still English: translated actions no
+        # longer match the group-work pattern the renderer looks for.
+        info["group_work_units"] = sorted(render.find_group_work_units(result.sequence))
+        note = render.parse_stuck_note(out.get("stuck_note"))
+        info["stuck_note"] = {"heading": note[0], "lines": list(note[1])} if note else None
         result.sequence = out["sequence"]
         best["environment_assumptions"] = out["assumptions"]
         info["applied"] = True
         result.notes.append(f"translation: cards translated to {target}")
+        if note is None:
+            result.notes.append("translation: stuck note untranslated; English kept")
         return
 
 
@@ -1409,7 +1417,12 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
         # Relocalisation and translation change these in memory only; save the final
         # ones so lsb.render can re-render the same cards (see render.load_run).
         save(render.FINAL_ASSUMPTIONS, best_decomposed.get("environment_assumptions") or [])
-        deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
+        saved_group = trans_info.get("group_work_units")
+        group = {u for u in saved_group if isinstance(u, str)} if isinstance(saved_group, list) else None
+        deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref,
+                                 group_work_units=group if trans_info.get("applied") else None,
+                                 stuck_note=render.parse_stuck_note(trans_info.get("stuck_note")),
+                                 language=target_language if trans_info.get("applied") else None)
         result.cards_problems = render.write_cards(deck, out_dir)
         for problem in result.cards_problems:
             result.notes.append(f"cards: G21 check failed: {problem}")

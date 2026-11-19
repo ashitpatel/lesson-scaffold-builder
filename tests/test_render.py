@@ -97,6 +97,133 @@ class Content(unittest.TestCase):
         self.assertEqual(render.check_render(d, render.render_text(d), render.render_html(d)), [])
 
 
+FR_NOTE = ("Si un groupe est bloque",
+           ("Demandez : sur quoi bloquez-vous exactement ?",
+            "Puis : une petite chose a essayer dans les cinq prochaines minutes ?",
+            "S'ils bloquent toujours, aidez : montrez l'etape suivante ou un exemple resolu."))
+
+
+def french_sequence():
+    seq = copy.deepcopy(VALID)
+    for t in seq["mls_units"][0]["tasks"]:
+        t["action"] = "Les eleves ecrivent seuls."
+    for t in seq["mls_units"][1]["tasks"]:
+        t["action"] = "Mettez les enfants en groupes."
+    return seq
+
+
+class TranslatedNote(unittest.TestCase):
+    def test_translated_note_renders_where_english_detection_fails(self):
+        seq = french_sequence()
+        d = render.build_deck(seq, DECOMPOSED, OPTIMISATION, TRACE, "Source",
+                              group_work_units={U1}, stuck_note=FR_NOTE)
+        text, page = render.render_text(d), render.render_html(d)
+        cards = text.split(f"{U1}:")
+        self.assertNotIn("SI UN GROUPE EST BLOQUE", cards[0].split(f"{U0}:")[-1])
+        self.assertIn("SI UN GROUPE EST BLOQUE", cards[-1])
+        self.assertIn("sur quoi bloquez-vous exactement ?", text)
+        self.assertIn("<h3>Si un groupe est bloque</h3>", page)
+        self.assertNotIn("IF A GROUP IS STUCK", text)
+        self.assertEqual(render.check_render(d, text, page), [])
+
+    def test_without_override_live_detection_sees_no_english_group_words(self):
+        d = render.build_deck(french_sequence(), DECOMPOSED, OPTIMISATION, TRACE, "Source")
+        text = render.render_text(d)
+        self.assertNotIn("IF A GROUP IS STUCK", text)
+
+    def test_note_falls_back_to_english_without_a_saved_translation(self):
+        d = render.build_deck(french_sequence(), DECOMPOSED, OPTIMISATION, TRACE, "Source",
+                              group_work_units={U1}, stuck_note=None)
+        text, page = render.render_text(d), render.render_html(d)
+        self.assertIn("IF A GROUP IS STUCK", text)
+        self.assertIn("What exactly are you stuck on?", page)
+        self.assertEqual(render.check_render(d, text, page), [])
+
+    def test_parse_stuck_note(self):
+        self.assertEqual(render.parse_stuck_note({"heading": "H", "lines": ["a", "b"]}), ("H", ("a", "b")))
+        for bad in (None, {}, {"heading": "", "lines": ["a"]}, {"heading": "H", "lines": []},
+                    {"heading": "H", "lines": ["a", "  "]}, {"heading": "H"}, "note", []):
+            with self.subTest(bad=bad):
+                self.assertIsNone(render.parse_stuck_note(bad))
+
+    def test_load_run_restores_translated_note_and_group_set(self):
+        seq = french_sequence()
+        note = {"heading": FR_NOTE[0], "lines": list(FR_NOTE[1])}
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            (run_dir / "sequence.json").write_text(json.dumps(seq))
+            (run_dir / "summary.json").write_text(json.dumps({
+                "best_attempt": 1, "source_ref": "Saved",
+                "translation": {"target": "French", "applied": True,
+                                "group_work_units": [U1], "stuck_note": note}}))
+            (run_dir / "translation.json").write_text(json.dumps({"stuck_note": note}))
+            (run_dir / render.FINAL_ASSUMPTIONS).write_text(json.dumps([]))
+            d = render.load_run(run_dir)
+            text = render.render_text(d)
+            self.assertIn("SI UN GROUPE EST BLOQUE", text.split(f"{U1}:")[-1])
+            self.assertNotIn("IF A GROUP IS STUCK", text)
+            self.assertEqual(render.check_render(d, text, render.render_html(d)), [])
+
+    def test_old_translated_run_falls_back_to_english_note_via_english_final(self):
+        english = copy.deepcopy(VALID)
+        for t in english["mls_units"][0]["tasks"]:
+            t["action"] = "Students write the answers alone."
+        for t in english["mls_units"][1]["tasks"]:
+            t["action"] = "Students work in pairs on the tally."
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            (run_dir / "sequence.json").write_text(json.dumps(french_sequence()))
+            (run_dir / "summary.json").write_text(json.dumps({
+                "best_attempt": 1, "translation": {"target": "French", "applied": True}}))
+            (run_dir / "english-final.json").write_text(json.dumps({"sequence": english}))
+            (run_dir / render.FINAL_ASSUMPTIONS).write_text(json.dumps([]))
+            d = render.load_run(run_dir)
+            text = render.render_text(d)
+            self.assertIn("IF A GROUP IS STUCK", text.split(f"{U1}:")[-1])
+            self.assertNotIn("IF A GROUP IS STUCK", text.split(f"{U1}:")[0].split(f"{U0}:")[-1])
+
+
+class HtmlLang(unittest.TestCase):
+    def test_language_tags(self):
+        self.assertEqual(render.html_lang("French"), "fr")
+        self.assertEqual(render.html_lang("fr"), "fr")
+        self.assertEqual(render.html_lang("Thai"), "th")
+        self.assertEqual(render.html_lang("Yoruba"), "yo")
+        self.assertEqual(render.html_lang("Klingon"), "en")
+        self.assertEqual(render.html_lang(None), "en")
+        self.assertEqual(render.html_lang("  "), "en")
+        self.assertEqual(render.html_lang(3), "en")
+
+    def test_translated_deck_declares_its_language(self):
+        d = render.build_deck(french_sequence(), DECOMPOSED, OPTIMISATION, TRACE, "Source",
+                              language="French")
+        page = render.render_html(d)
+        self.assertIn('<html lang="fr">', page)
+        self.assertEqual(render.check_render(d, render.render_text(d), page), [])
+
+    def test_english_deck_declares_english(self):
+        self.assertIn('<html lang="en">', render.render_html(deck()))
+
+    def test_wrong_lang_tag_fails_the_check(self):
+        d = deck()
+        page = render.render_html(d).replace('<html lang="en">', '<html lang="fr">', 1)
+        found = render.check_render(d, render.render_text(d), page)
+        self.assertTrue(any("lang" in p for p in found), found)
+
+    def test_load_run_restores_language_only_when_translation_applied(self):
+        for applied, want in ((True, "fr"), (False, "en")):
+            with self.subTest(applied=applied):
+                with tempfile.TemporaryDirectory() as tmp:
+                    run_dir = Path(tmp)
+                    (run_dir / "sequence.json").write_text(json.dumps(french_sequence()))
+                    (run_dir / "summary.json").write_text(json.dumps({
+                        "best_attempt": 1, "language": "French",
+                        "translation": {"target": "French", "applied": applied}}))
+                    (run_dir / render.FINAL_ASSUMPTIONS).write_text(json.dumps([]))
+                    d = render.load_run(run_dir)
+                    self.assertIn(f'<html lang="{want}">', render.render_html(d))
+
+
 class Check(unittest.TestCase):
     def setUp(self):
         self.deck = deck()
