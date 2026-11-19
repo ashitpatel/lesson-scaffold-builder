@@ -36,8 +36,8 @@ def run_dir(tmp):
     (root / "choices.json").write_text(json.dumps({"single_module": False}), encoding="utf-8")
     (root / "summary.json").write_text(
         json.dumps({"optimisation": {}, "source_ref": "Test"}), encoding="utf-8")
-    (root / "decomposed-sequence.json").write_text(
-        json.dumps({"environment_assumptions": ASSUMPTIONS}), encoding="utf-8")
+    (root / "decomposed-sequence.json").write_text(json.dumps(VALID), encoding="utf-8")  # a sequence, as lsb.run saves it
+    (root / "final_assumptions.json").write_text(json.dumps(ASSUMPTIONS), encoding="utf-8")
     (root / "source_trace.json").write_text(json.dumps([]), encoding="utf-8")
     return root
 
@@ -166,6 +166,24 @@ class Scoping(unittest.TestCase):
             self.seq(), ASSUMPTIONS, ASSUMPTIONS, [[U0, 1]])
         self.assertEqual(kept, [])
         self.assertEqual(len(scoped), 1)
+
+
+class BaseAssumptions(unittest.TestCase):
+    def test_original_base_uses_the_assumptions_the_cards_printed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = run_dir(tmp)
+            _, assumptions, _, _, label, _ = refine.load_base(root, 0)
+            self.assertEqual((label, assumptions), ("original", ASSUMPTIONS))
+
+    def test_older_run_falls_back_to_its_best_decompose_attempt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = run_dir(tmp)
+            (root / "final_assumptions.json").unlink()
+            (root / "summary.json").write_text(json.dumps({"best_attempt": 2, "source_ref": "Test"}))
+            (root / "02-decompose.json").write_text(
+                json.dumps({"sequence": VALID, "environment_assumptions": ASSUMPTIONS}))
+            _, assumptions, _, _, _, _ = refine.load_base(root, 0)
+            self.assertEqual(assumptions, ASSUMPTIONS)
 
 
 class RevisionLoop(unittest.TestCase):

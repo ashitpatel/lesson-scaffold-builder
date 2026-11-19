@@ -1406,6 +1406,9 @@ def run_pipeline(src: Source, model: Model, out_dir: Path, max_revisions: int = 
                            final_cap, trans_info)
 
     if result.status == "pass" and best_decomposed is not None:
+        # Relocalisation and translation change these in memory only; save the final
+        # ones so lsb.render can re-render the same cards (see render.load_run).
+        save(render.FINAL_ASSUMPTIONS, best_decomposed.get("environment_assumptions") or [])
         deck = render.build_deck(result.sequence, best_decomposed, result.optimisation, final_trace, src.ref)
         result.cards_problems = render.write_cards(deck, out_dir)
         for problem in result.cards_problems:

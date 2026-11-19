@@ -138,6 +138,18 @@ class Files(unittest.TestCase):
             self.assertIn("Reused bottles", text)
             self.assertTrue((run_dir / "cards.html").exists())
 
+    def test_load_run_prefers_the_final_assumptions_over_the_decompose_ones(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            (run_dir / "sequence.json").write_text(json.dumps(VALID))
+            (run_dir / "01-decompose.json").write_text(json.dumps({"sequence": VALID, **DECOMPOSED}))
+            (run_dir / "summary.json").write_text(json.dumps({"best_attempt": 1}))
+            final = [{**a, "if_not": "Use bamboo tubes"} for a in DECOMPOSED["environment_assumptions"]]
+            (run_dir / render.FINAL_ASSUMPTIONS).write_text(json.dumps(final))
+            deck = render.load_run(run_dir)
+            self.assertEqual(deck.assumptions, final)
+            self.assertIn("Use bamboo tubes", render.render_text(deck))
+
     def test_unreadable_run(self):
         with tempfile.TemporaryDirectory() as tmp:
             with redirect_stderr(io.StringIO()):

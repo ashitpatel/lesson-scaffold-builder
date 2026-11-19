@@ -1,12 +1,15 @@
 """Pipeline routing, tested with a scripted fake model (no network, no key)."""
 
 import copy
+import io
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
-from lsb import run
+from lsb import render, run
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 VALID = json.loads((FIXTURES / "hydrology-valid.json").read_text(encoding="utf-8"))
@@ -171,6 +174,31 @@ class Pipeline(unittest.TestCase):
         self.assertIn("MLS-HYDRO-02:", (self.out / "cards.txt").read_text(encoding="utf-8"))
         self.assertTrue((self.out / "cards.html").exists())
         self.assertEqual(json.loads((self.out / "summary.json").read_text())["cards_g21"], "pass")
+
+    def test_rerendering_a_translated_run_gives_the_same_cards(self):
+        # Translation (and relocalisation) change the fallbacks in memory only;
+        # final_assumptions.json lets lsb.render re-render what the run printed.
+        out = json.loads(decomposed(VALID))
+        out["environment_assumptions"] = [{"mls_id": "MLS-HYDRO-02", "assumes": "dry weeks",
+                                           "if_not": "extend the unit by one week"}]
+
+        def translate(result, best, *a, **kw):
+            best["environment_assumptions"] = [{**best["environment_assumptions"][0],
+                                                "if_not": "prolonger l'unite d'une semaine"}]
+            kw.get("info", a[-1])["applied"] = True
+
+        with mock.patch.object(run, "_apply_translation", translate):
+            r = self.go(FakeModel([json.dumps(out)], [critic("PASS")]), language="French")
+        self.assertEqual(r.cards_problems, [])
+        printed = (self.out / "cards.txt").read_bytes()
+        self.assertIn("prolonger l'unite".encode(), printed)
+        saved = json.loads((self.out / "final_assumptions.json").read_text())
+        self.assertEqual(saved[0]["if_not"], "prolonger l'unite d'une semaine")
+        again = Path(self.tmp.name) / "again"
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(render.main([str(self.out), "--out", str(again)]), 0)
+        self.assertEqual((again / "cards.txt").read_bytes(), printed)
+        self.assertEqual((again / "cards.html").read_bytes(), (self.out / "cards.html").read_bytes())
 
     def test_a_run_that_did_not_pass_writes_no_cards(self):
         r = self.go(FakeModel([decomposed(VALID)] * 3, [critic("REVISE", [ISSUE])] * 3))

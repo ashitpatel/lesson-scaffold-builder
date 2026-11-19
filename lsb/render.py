@@ -48,7 +48,7 @@ STAGE_NAMES = {"evidence_based": "Evidence-Based", "connected_learning": "Connec
 class Deck:
     sequence: dict
     source_ref: str = ""
-    assumptions: list[dict] = field(default_factory=list)  # environment_assumptions from 05-decompose
+    assumptions: list[dict] = field(default_factory=list)  # final environment_assumptions (see run_assumptions)
     trace: list[dict] = field(default_factory=list)  # final source trace (card ids on changed steps)
     optimisation: dict = field(default_factory=dict)  # summary.json "optimisation"
     disclaimer: str = ""
@@ -72,21 +72,47 @@ def card_names() -> dict[str, str]:
     return names
 
 
+FINAL_ASSUMPTIONS = "final_assumptions.json"  # environment_assumptions as printed on the cards
+
+
+def _best_decompose(run_dir: Path, summary: dict) -> dict:
+    best = summary.get("best_attempt")
+    path = run_dir / f"{best:02d}-decompose.json" if isinstance(best, int) else None
+    return json.loads(path.read_text(encoding="utf-8")) if path and path.exists() else {}
+
+
+def run_assumptions(run_dir: Path, summary: dict | None = None) -> list[dict]:
+    """The environment assumptions a saved run printed on its cards.
+
+    Repair, relocalisation and translation change them after decompose, so a
+    run saves the final ones in final_assumptions.json. Runs from before that
+    have only the best attempt's NN-decompose.json, which is right only when
+    none of those steps changed them.
+    """
+    path = run_dir / FINAL_ASSUMPTIONS
+    if path.exists():
+        found = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        if summary is None:
+            summary_p = run_dir / "summary.json"
+            summary = json.loads(summary_p.read_text(encoding="utf-8")) if summary_p.exists() else {}
+        found = _best_decompose(run_dir, summary).get("environment_assumptions")
+    return [a for a in found or [] if isinstance(a, dict)]
+
+
 def load_run(run_dir: Path) -> Deck:
     """A Deck from a saved `lsb.run` output directory."""
     summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
     sequence = json.loads((run_dir / "sequence.json").read_text(encoding="utf-8"))
-    best = summary.get("best_attempt")
-    decomposed: dict = {}
-    if isinstance(best, int) and (run_dir / f"{best:02d}-decompose.json").exists():
-        decomposed = json.loads((run_dir / f"{best:02d}-decompose.json").read_text(encoding="utf-8"))
+    decomposed = _best_decompose(run_dir, summary)
     trace_file = run_dir / "source_trace.json"
     trace = (json.loads(trace_file.read_text(encoding="utf-8")) if trace_file.exists()
              else decomposed.get("source_trace") or [])
     optimisation = summary.get("optimisation") or {}
     if "units" in optimisation:  # runs from before the PB stage logged one stage, unkeyed
         optimisation = {optimisation.get("stage", "connected_learning"): optimisation}
-    return build_deck(sequence, decomposed, optimisation, trace, summary.get("source_ref", ""))
+    return build_deck(sequence, {"environment_assumptions": run_assumptions(run_dir, summary)},
+                      optimisation, trace, summary.get("source_ref", ""))
 
 
 def build_deck(sequence: dict, decomposed: dict | None, optimisation: dict | None, trace: list | None,

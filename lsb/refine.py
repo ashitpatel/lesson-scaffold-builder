@@ -73,8 +73,10 @@ def load_base(run_dir: Path, base: int | None) -> tuple[dict, list, dict, list, 
         base = revs[-1] if revs else 0
     if base == 0:
         seq = _load_json(run_dir / "sequence.json", "sequence")
-        dec_p = run_dir / "decomposed-sequence.json"
-        assumptions = _load_json(dec_p, "decomposed").get("environment_assumptions", []) if dec_p.exists() else []
+        try:
+            assumptions = render.run_assumptions(run_dir, summary)
+        except (OSError, json.JSONDecodeError) as e:
+            raise SystemExit(f"{run_dir}: cannot read its assumptions: {e}")
         return seq, assumptions, choices, trace, "original", ref
     if base not in revs:
         raise SystemExit(f"{run_dir} has no revision {base} (has: {revs or 'none'})")
