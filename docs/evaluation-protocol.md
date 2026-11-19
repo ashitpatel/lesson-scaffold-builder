@@ -48,7 +48,7 @@ For every unit, keep the adapter's changes to the cards as a diff against the fr
 - **Goal preservation** (1–5): do the unit's objective and core concepts survive decomposition?
 - **Wrongly removed content.** For each source flag in `summary.json` (and each item in `locale-log.json` for relocalize runs), was the removal right? Count removals the reviewer would undo.
 - **Missed problems.** Unsafe, costly or region-specific content that is still on the cards.
-- **Evidence-based practice fit.** For each evidence-based method card applied, are its non-negotiables intact on the teacher card? Was it applied where it shouldn't have been, or missed where it clearly fits?
+- **Evidence-based practice fit.** For each evidence-based method card applied, are its non-negotiables intact on the teacher card? Was it applied where it shouldn't have been, or missed where it clearly fits? Where EB-01, EB-03, EB-04 or EB-08 was applied, is its plan gate or confidence check on the card in teacher-runnable form?
 - **Adapter edits.** The size of the diff against the frozen cards.
 - **Ready for class?** Yes, yes after minor edits, or no.
 
@@ -66,9 +66,10 @@ For every unit, keep the adapter's changes to the cards as a diff against the fr
 
 **What to record:**
 - **Step completion:** the share of planned steps run within the unit's 2-to-4-week window, and which steps were skipped and why.
-- **Fidelity to non-negotiables**, for units where these method cards were applied:
-  - EB-01: notes away, answers shown straight after, **nothing marked or recorded**;
-  - EB-04: **every** student answers at once, the teacher looks, and what happens next depends on it;
+- **Fidelity to non-negotiables and micro-routines**, for units where these method cards were applied:
+  - EB-01: notes away, answers shown straight after, **nothing marked or recorded**, with a confidence signal before answering and after checking;
+  - EB-03/EB-08: a one-sentence plan precedes solving on multi-step problems; plan sentences never collected or graded;
+  - EB-04: **every** student answers at once, the teacher looks, and what happens next depends on it, with a confidence signal before answering and after checking;
   - EB-06: a fresh level check, and groups re-checked rather than fixed.
   A hollow version counts as not done.
 - **Conditions that didn't hold.** Each unit card lists the conditions it relies on and what to do if one doesn't hold. Record which conditions failed and whether the fallback worked.

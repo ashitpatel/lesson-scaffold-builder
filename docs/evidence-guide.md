@@ -8,11 +8,11 @@ The nine fall into five groups: two that strengthen memory, two that explain cle
 
 ### EB-01 Retrieval practice
 
-**What it is.** Learners answer questions from memory — then check their own answers. Typically a few short questions opening a later lesson, on scrap paper, slates or aloud, with the answers shown straight after so each learner marks their own. Nothing is collected or graded.
+**What it is.** Learners answer questions from memory — then check their own answers. Typically a few short questions opening a later lesson, on scrap paper, slates or aloud, with the answers shown straight after so each learner marks their own. Nothing is collected or graded. Around the recall sits a confidence check: before answering, every learner shows thumbs-up, sideways or down for how sure they feel, and shows it again after marking their own.
 
 **When it fits.** When learners must remember facts, terms, methods or steps for later work, and nothing currently asks them to recall it from memory. It replaces re-reading or copying, never teaching: showing the answers afterwards is part of the method, not optional.
 
-**Evidence.** Practice testing earned one of only two high-utility ratings in a major review of ten learning techniques ([Dunlosky et al., 2013](https://doi.org/10.1177/1529100612453266)). Behind that rating sit a meta-analysis of testing versus restudy ([Rowland, 2014](https://doi.org/10.1037/a0037559)), the *Science* study that made the testing effect famous ([Karpicke & Roediger, 2008](https://doi.org/10.1126/science.1152408)), and a strong-evidence recommendation in the IES practice guide ([Pashler et al., 2007](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)).
+**Evidence.** Practice testing earned one of only two high-utility ratings in a major review of ten learning techniques ([Dunlosky et al., 2013](https://doi.org/10.1177/1529100612453266)). Behind that rating sit a meta-analysis of testing versus restudy ([Rowland, 2014](https://doi.org/10.1037/a0037559)), the *Science* study that made the testing effect famous ([Karpicke & Roediger, 2008](https://doi.org/10.1126/science.1152408)), and a strong-evidence recommendation in the IES practice guide ([Pashler et al., 2007](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)). The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration of math confidence is studied in ([Erickson & Heit, 2015](https://doi.org/10.3389/fpsyg.2015.00742)), who find learners better calibrated after completing a test. The thumbs-signal port is a project adaptation.
 
 ### EB-02 Spaced practice
 
@@ -26,11 +26,11 @@ The nine fall into five groups: two that strengthen memory, two that explain cle
 
 ### EB-03 Worked examples, then practice
 
-**What it is.** Show a complete example worked step by step, then one with the last step left for learners to finish, before they solve similar problems alone. Alternating works too: one example, one similar problem, repeat.
+**What it is.** Show a complete example worked step by step, then one with the last step left for learners to finish, before they solve similar problems alone. Alternating works too: one example, one similar problem, repeat. On multi-step problems the card adds a plan gate: before touching numbers, each learner writes or says one sentence stating what they will try first.
 
 **When it fits.** When learners first meet a new procedure — a calculation, a method, a problem type — and would otherwise go straight to solving alone, or only ever watch. Not for open-ended creative or argument writing, where a full example would hand over the answer.
 
-**Evidence.** An IES recommendation ([Pashler et al., 2007](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)), one of Rosenshine's principles ([Rosenshine, 2012](https://eric.ed.gov/?id=EJ971753)), and a review devoted to the worked-examples literature ([Atkinson et al., 2000](https://eric.ed.gov/?id=EJ627412)).
+**Evidence.** An IES recommendation ([Pashler et al., 2007](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)), one of Rosenshine's principles ([Rosenshine, 2012](https://eric.ed.gov/?id=EJ971753)), and a review devoted to the worked-examples literature ([Atkinson et al., 2000](https://eric.ed.gov/?id=EJ627412)). The plan gate adapts the explore-plan-solve-review phases of [CueThinkEF+](https://aerdf.org/empowering-learners-transforming-math-problem-solving-inside-the-cuethinkef-pennesota-project/), a technology-based platform with executive-function supports; its independent evaluation found early but not statistically significant effects ([AIR, 2023–24](https://efmathprogram.org/wp-content/uploads/2026/01/EvaluationStudyReportSummaryforDistrictPartners.pdf)). The paper-only gate is a project adaptation, not the tested platform.
 
 ### EB-05 Concrete and visual representations
 
@@ -44,11 +44,11 @@ The nine fall into five groups: two that strengthen memory, two that explain cle
 
 ### EB-08 Self-explanation
 
-**What it is.** After each step of a worked example, learners say or write *why* the step works — to a neighbour, in one line, or aloud to themselves — before solving alone. The correct reasoning is confirmed straight after.
+**What it is.** After each step of a worked example, learners say or write *why* the step works — to a neighbour, in one line, or aloud to themselves — before solving alone. The correct reasoning is confirmed straight after. On multi-step problems the card adds a plan gate: each learner writes or says one sentence stating what they will try first, before solving alone.
 
 **When it fits.** When learners only read, watch or copy examples without processing them. The prompts must ask for reasoning (why this step), not recall of facts, and must target content already taught.
 
-**Evidence.** A moderate-utility rating ([Dunlosky et al., 2013](https://doi.org/10.1177/1529100612453266)) and the study that named the effect, on students explaining worked examples while learning to solve problems ([Chi et al., 1989](https://doi.org/10.1207/s15516709cog1302_1)).
+**Evidence.** A moderate-utility rating ([Dunlosky et al., 2013](https://doi.org/10.1177/1529100612453266)) and the study that named the effect, on students explaining worked examples while learning to solve problems ([Chi et al., 1989](https://doi.org/10.1207/s15516709cog1302_1)). The plan gate adapts the explore-plan-solve-review phases of [CueThinkEF+](https://aerdf.org/empowering-learners-transforming-math-problem-solving-inside-the-cuethinkef-pennesota-project/), a technology-based platform with executive-function supports; its independent evaluation found early but not statistically significant effects ([AIR, 2023–24](https://efmathprogram.org/wp-content/uploads/2026/01/EvaluationStudyReportSummaryforDistrictPartners.pdf)). The paper-only gate is a project adaptation, not the tested platform.
 
 ### EB-09 Elaborative interrogation
 
@@ -72,11 +72,11 @@ The nine fall into five groups: two that strengthen memory, two that explain cle
 
 ### EB-04 Checking for understanding
 
-**What it is.** During the lesson, ask one or two questions that *every* learner answers at the same time — slates held up, fingers for a choice, scrap paper — look at all the answers, and re-explain if many are wrong before moving on.
+**What it is.** During the lesson, ask one or two questions that *every* learner answers at the same time — slates held up, fingers for a choice, scrap paper — look at all the answers, and re-explain if many are wrong before moving on. Around the questions sits a confidence check: every learner shows thumbs-up, sideways or down before answering, and again after the answers are checked.
 
 **When it fits.** When the educator explains or models something new and would otherwise move on without seeing whether every learner followed. Volunteers answering is the failure mode this replaces.
 
-**Evidence.** A Rosenshine principle ([Rosenshine, 2012](https://eric.ed.gov/?id=EJ971753)) in the tradition of the formative-assessment review ([Black & Wiliam, 1998](https://doi.org/10.1177/003172171009200119)) — with one honest caution: a later meta-analysis across 42 effect sizes found a weighted mean of 0.20, real but modest ([Kingston & Nash, 2011](https://doi.org/10.1111/j.1745-3992.2011.00220.x)).
+**Evidence.** A Rosenshine principle ([Rosenshine, 2012](https://eric.ed.gov/?id=EJ971753)) in the tradition of the formative-assessment review ([Black & Wiliam, 1998](https://doi.org/10.1177/003172171009200119)) — with one honest caution: a later meta-analysis across 42 effect sizes found a weighted mean of 0.20, real but modest ([Kingston & Nash, 2011](https://doi.org/10.1111/j.1745-3992.2011.00220.x)). The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration of math confidence is studied in ([Erickson & Heit, 2015](https://doi.org/10.3389/fpsyg.2015.00742)), who find learners better calibrated after completing a test. The thumbs-signal port is a project adaptation.
 
 ### EB-06 Teaching at the right level (level groups)
 

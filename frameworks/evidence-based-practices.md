@@ -12,14 +12,15 @@ Each card has **non-negotiables**: the parts the evidence is about. An edit that
 **Allowed edits:**
 - Open a later lesson with 3 to 5 short questions on earlier content, answered from memory on scrap paper, slates or orally, then show the answers so each student checks their own.
 - Turn a re-reading or copying step into recall: students write what they remember, then check against the notes.
+- Add a confidence check around the recall — required unless the step is at the sentence cap: before answering, every student shows thumbs-up, sideways or down for how sure they feel; after checking their own answers, they show it again. The signals are never recorded or graded.
 
 **Non-negotiables:** answers come from memory, with notes, charts and books out of sight; students see the correct answers straight after; nothing is collected, marked or recorded.
 
-**Never:** grade or record the results; rank students; replace teaching with quizzing.
+**Never:** grade or record the results or the confidence signals; rank students; replace teaching with quizzing.
 
-**Already present when:** the unit already has students recall earlier content without notes and then check it.
+**Already present when:** the unit already has students recall earlier content without notes and then check it, with a confidence signal before and after.
 
-**Basis:** practice testing was rated high utility in Dunlosky et al. (2013), *Improving Students' Learning With Effective Learning Techniques*; "use quizzing to promote learning" is a recommendation of the IES practice guide by Pashler et al. (2007), *Organizing Instruction and Study to Improve Student Learning*.
+**Basis:** practice testing was rated high utility in Dunlosky et al. (2013), *Improving Students' Learning With Effective Learning Techniques*; "use quizzing to promote learning" is a recommendation of the IES practice guide by Pashler et al. (2007), *Organizing Instruction and Study to Improve Student Learning*. The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration is studied in Erickson and Heit (2015), *Metacognition and confidence: comparing math to other academic subjects*, who find students better calibrated after completing a test. The paper-only port is a project adaptation.
 
 ## EB-02 Spaced Practice
 **Targets:** a unit whose key content is practised only in the week it is taught, when later units or the final task need it.
@@ -42,28 +43,30 @@ Each card has **non-negotiables**: the parts the evidence is about. An edit that
 **Allowed edits:**
 - Show a complete worked example, then one with the last step left for students to finish, before independent problems.
 - Alternate: one worked example, then one similar problem for students, then the next example.
+- On multi-step problems, add a plan gate — required unless the step is at the sentence cap: before touching numbers, each student writes or says one sentence stating what they will try first; the teacher nods them on, then they solve.
 
 **Non-negotiables:** at least one complete worked example is shown step by step before students solve alone; students then solve similar problems themselves.
 
-**Never:** replace students' own problem-solving with watching; use it for open-ended creative or argument writing, where it would hand students the answer.
+**Never:** replace students' own problem-solving with watching; collect or grade the plan sentences; use it for open-ended creative or argument writing, where it would hand students the answer.
 
-**Already present when:** the unit already models examples step by step and then has students solve similar problems.
+**Already present when:** the unit already models examples step by step and then has students solve similar problems, with a one-sentence plan before multi-step problems.
 
-**Basis:** "interleave worked example solutions with problem-solving exercises" is a recommendation of Pashler et al. (2007); "provide models" and guided practice are among Rosenshine's (2012) *Principles of Instruction*.
+**Basis:** "interleave worked example solutions with problem-solving exercises" is a recommendation of Pashler et al. (2007); "provide models" and guided practice are among Rosenshine's (2012) *Principles of Instruction*. The plan gate adapts the explore-plan-solve-review phases of CueThinkEF+, a technology-based platform that guides students through a four-phase problem-solving process with supports for working memory, inhibitory control and cognitive flexibility (AERDF; American Institutes for Research independent evaluation, 2023–24, which found early but not statistically significant effects). The paper-only gate is a project adaptation, not the tested platform.
 
 ## EB-04 Checking for Understanding
 **Targets:** a step where the educator explains or models something new and moves on without seeing whether every student has understood.
 
 **Allowed edits:**
 - Ask one or two questions every student answers at the same time (slates, scrap paper held up, fingers for a choice, cards), look at all the answers, and re-explain if many are wrong before moving on.
+- Add a confidence check around the questions — required unless the step is at the sentence cap: before answering, every student shows thumbs-up, sideways or down for how sure they feel; after the answers are checked, they show it again. The signals guide re-explanation and are never recorded or displayed by name.
 
 **Non-negotiables:** every student answers, not just volunteers; the educator looks at the answers during the lesson; what happens next depends on them (re-explain, or move on).
 
-**Never:** record or display individual answers; call out who got it wrong; turn it into a test.
+**Never:** record or display individual answers or confidence signals; call out who got it wrong; turn it into a test.
 
-**Already present when:** the unit already has every student answer during teaching and adjusts to the answers.
+**Already present when:** the unit already has every student answer during teaching and adjusts to the answers, with a confidence signal before and after.
 
-**Basis:** "check for student understanding" is one of Rosenshine's (2012) *Principles of Instruction*; Black and Wiliam (1998), *Inside the Black Box*, review evidence on formative assessment used to adjust teaching.
+**Basis:** "check for student understanding" is one of Rosenshine's (2012) *Principles of Instruction*; Black and Wiliam (1998), *Inside the Black Box*, review evidence on formative assessment used to adjust teaching. The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration is studied in Erickson and Heit (2015), *Metacognition and confidence: comparing math to other academic subjects*, who find students better calibrated after completing a test. The paper-only port is a project adaptation.
 
 ## EB-05 Concrete and Visual Representations
 **Targets:** a step that explains an abstract idea (a ratio, a process, a relationship) in words or symbols only.
@@ -115,14 +118,15 @@ Each card has **non-negotiables**: the parts the evidence is about. An edit that
 **Allowed edits:**
 - After each example step (or pair of steps), add a prompt: "Turn to your neighbour and say why this step works" or "Write one line: why did we do this step?"
 - Add one short paired step where learners explain the example's reasoning to each other before solving alone.
+- On multi-step problems, add a plan gate before learners solve alone — required unless the step is at the sentence cap: each learner writes or says one sentence stating what they will try first, then solves.
 
 **Non-negotiables:** prompts ask for the reasoning (why this step, why it works), not recall of facts; every learner explains — pairs, writing, or aloud-to-self all count; the correct reasoning is confirmed straight after.
 
-**Never:** ask learners to explain what hasn't been taught; grade the explanations.
+**Never:** ask learners to explain what hasn't been taught; grade the explanations or the plan sentences.
 
-**Already present when:** the unit already has learners explain example reasoning in their own words.
+**Already present when:** the unit already has learners explain example reasoning in their own words, with a one-sentence plan before multi-step problems.
 
-**Basis:** self-explanation was rated moderate utility in Dunlosky et al. (2013); Chi et al. (1989), *Self-Explanations: How Students Study and Use Examples in Learning to Solve Problems*.
+**Basis:** self-explanation was rated moderate utility in Dunlosky et al. (2013); Chi et al. (1989), *Self-Explanations: How Students Study and Use Examples in Learning to Solve Problems*. The plan gate adapts the explore-plan-solve-review phases of CueThinkEF+, a technology-based platform that guides students through a four-phase problem-solving process with supports for working memory, inhibitory control and cognitive flexibility (AERDF; American Institutes for Research independent evaluation, 2023–24, which found early but not statistically significant effects). The paper-only gate is a project adaptation, not the tested platform.
 
 ## EB-09 Elaborative Interrogation
 **Targets:** facts, definitions or cause-effect statements learners must remember, where a why/how question has a precise answer in the lesson.

@@ -2,6 +2,15 @@
 
 Each release on GitHub attaches the ready-to-use files from `dist/`. The version lives in [`VERSION`](VERSION). The pipeline is also installable: `pip install git+https://github.com/ashitpatel/lesson-scaffold-builder.git`.
 
+## Unreleased (Final — decision walkthrough 2026-11-19, accepted by owner)
+
+- [x] A. Stuck-group note: **keep** the one-exception policy. Teachers new to group work need a first move when a group stalls; the note ends in help (EB-03-consistent); the exception is disclosed in the disclaimer.
+- [x] B. Stuck-note wording: **keep** the three lines unchanged. Short, plain, printable; dropping "before giving any hints" was the right cut.
+- [x] C. Untranslated note on non-English cards: **keep English-fixed for now**, translate in a follow-up. Renderer string-table plumbing is real work; the limitation is already disclosed in the blog.
+- [x] D. EF routines: **strengthen** into required-when-fitting edits, then re-sweep to verify. The fractions sweep showed optional bullets get skipped; the routines are sound, the failure is prompt strength.
+- [x] E. Already-present widening: **keep widened**. Routine-less units with base practice stay eligible targets; with D, this is how the routines reach most units.
+- [x] R. Standing rule: **adopted** for this session. Bug fixes and factual corrections proceed silently; teacher-facing content, project claims, or pipeline-behavior changes get a one-question checkpoint first.
+
 ## 0.3.0 — 2026-11-09
 
 - **Locale support.** An outset choice — generalize, keep, or relocalize locale-specific content — with a removal log, target proposals, overall locale notes, and per-item approve/skip/own-text review (revertible as a set when replacements newly break a code check). Locale additions propose anchored insertions with per-item review and per-addition trial application; final-content translation renders the cards in the run's language (English original kept), with per-language word-cap multipliers (`--language`, `--locale`).
