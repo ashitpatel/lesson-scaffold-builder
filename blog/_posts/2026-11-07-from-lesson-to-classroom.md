@@ -57,7 +57,7 @@ CHANGES FROM THE SOURCE
   examples, every pupil writes and holds up a fraction equivalent to 3/5 …
 ```
 
-Every unit card has the same parts: who does each step and what, what the unit relies on and what to do if it isn't there, and every change the tool made. A tag such as `[changed: EB-04]` names the teaching method that changed the step. Each method is itself written as a strict rule, called a method card, which [part 4]({{ site.baseurl }}/what-it-adds/) describes. In this series, *cards* on their own always means the printed teacher cards.
+Every unit card has the same parts: who does each step and what, what the unit relies on and what to do if it isn't there, and every change the tool made. A unit with group or pair work also gets the same short note on what to ask a group that is stuck. A tag such as `[changed: EB-04]` names the teaching method that changed the step. Each method is itself written as a strict rule, called a method card, which [part 4]({{ site.baseurl }}/what-it-adds/) describes. In this series, *cards* on their own always means the printed teacher cards.
 
 The scaffold's shape — small, time-bound, owned by the teacher — is borrowed from [Shikshagraha's](https://shikshagraha.org/) Micro-Improvement Plan, from the movement now running over a million micro-improvements across India's public schools.
 

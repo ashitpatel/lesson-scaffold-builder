@@ -1,6 +1,6 @@
 ---
 title: "What it adds to your lesson, and only where it fits"
-description: "Fifteen small teaching methods in plain language: five memory and practice techniques, five peer and interest designs, five class-vote formats, each with strict conditions, and abstention as the most common answer."
+description: "Nineteen small teaching methods in plain language: nine memory and practice techniques, five peer and interest designs, five class-vote formats, each with strict conditions, and abstention as the most common answer."
 layout: post
 series: scaffold
 date: 2026-11-07 00:03:00 +0000
@@ -8,7 +8,7 @@ date: 2026-11-07 00:03:00 +0000
 
 *Part 4 of 8 in a series on [Lesson Scaffold Builder](https://github.com/ashitpatel/lesson-scaffold-builder).*
 
-The [last post]({{ site.baseurl }}/what-it-takes-out/) covered the deletions. This one covers the additions: nineteen small teaching methods, each allowed at most twice per unit, each with strict conditions — and a standing permission to use none of them.
+The [last post]({{ site.baseurl }}/what-it-takes-out/) covered the deletions. This one covers the additions: nineteen small teaching methods, each with strict conditions, a limit on how many a unit can take — and a standing permission to use none of them.
 
 Each method is written down as a **method card**: a strict rule the tool must follow, not a suggestion. These aren't the printed teacher cards from [part 1]({{ site.baseurl }}/from-lesson-to-classroom/); a teacher sees only a method's code, in a tag on the step it changed. A method card says:
 - which kind of step it **targets**;
@@ -62,7 +62,22 @@ Like the peer designs, these are engagement and civic-reasoning designs, not lev
 
 ## The most common answer is no
 
-Per unit, at most two methods and one added step — and "doesn't apply" is normal. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the teacher card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
+Each family is applied in its own stage, one unit at a time, and each stage may use at most two of its methods and add at most one step per unit — and "doesn't apply" is normal. A unit can therefore carry methods from all three families: the first unit of the Tanzania multiplication lesson has five (two memory and practice techniques, two peer designs and a budget ledger), and most units have far fewer. The no-code prompt version is stricter: at most two methods and one added step per unit in all. A phonics drill gets no vote. A lecture with no matching step gets no memory technique it can't support. An excluded family never appears. Every change is tagged on the teacher card (e.g. `[changed: EB-04]`) with a "what changed and why" note, so a teacher can see exactly which method touched which step — or confirm that none did.
+
+## One note that isn't a method
+
+A suggestion came in to borrow from student-coaching programmes: when a group stalls, the teacher works out why before explaining again. As a method card it would fail. The evidence behind it is about one-to-one coaching of older students, not stuck groups of children, and it would take one of a unit's method slots. But a teacher moving from lecture to group work does need a quick move when a group stops. So the cards now print one fixed note, the same text every time, on any unit whose steps mention groups or pairs:
+
+```
+IF A GROUP IS STUCK
+- Ask: "What exactly are you stuck on?"
+- Then: "What is one small thing you can try in the next five minutes?"
+- If they are still stuck, help: show them the next step or a worked example.
+```
+
+It isn't a method: it adds no step, changes no step, uses no slot and claims nothing. The last line matters. The suggestion said to ask the questions *before giving any hints*; that part was dropped, because worked examples, one of the nine techniques, exist because learners new to a procedure need to be shown. The tool prints the note itself, so on cards in another language it currently stays in English. Whether teachers use it at all is a question for the classroom pilot in [part 8]({{ site.baseurl }}/does-it-work/).
+
+A second suggestion, opening a problem with "who in our neighbourhood deals with this?", was turned down. Everyday numbers already allow one sentence linking a result to something learners can see, and asking about the neighbourhood invites answers about home and family, which that method forbids.
 
 The [next post]({{ site.baseurl }}/nine-lessons/) walks through all thirteen test lessons, before and after.
 

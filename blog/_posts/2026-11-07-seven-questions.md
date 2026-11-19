@@ -44,7 +44,7 @@ Now the tool turns strict reviewer. It checks the plan against 21 checks: no chi
 
 ## 7. Here are your cards.
 
-The delivery is an overview card plus one card per unit: who does each step and what they do, what the unit relies on and the fallback if it doesn't hold ("Before you start"), what changed from the lesson and why, and what was set aside. A teacher should be able to run Monday's lesson from the card alone.
+The delivery is an overview card plus one card per unit: who does each step and what they do, what the unit relies on and the fallback if it doesn't hold ("Before you start"), on units with group work a short note on what to ask a group that is stuck, what changed from the lesson and why, and what was set aside. A teacher should be able to run Monday's lesson from the card alone.
 
 ## Try it
 
