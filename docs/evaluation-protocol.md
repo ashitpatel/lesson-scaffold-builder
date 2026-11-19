@@ -24,7 +24,7 @@ The intervention is **not** the raw pipeline output. It is:
 ### Freeze the cards
 
 LLM output differs from run to run, and LSB changes between releases. For Phases 2 and 3, generate each unit's cards **once**. Record:
-- the LSB `VERSION` (currently 0.3.0) and the git commit;
+- the LSB `VERSION` (currently 0.4.0) and the git commit;
 - the backend and the model;
 - the run folder (`runs/<timestamp>/`) with its `summary.json`.
 

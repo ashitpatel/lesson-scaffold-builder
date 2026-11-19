@@ -2,7 +2,7 @@
 
 Each release on GitHub attaches the ready-to-use files from `dist/`. The version lives in [`VERSION`](VERSION). The pipeline is also installable: `pip install git+https://github.com/ashitpatel/lesson-scaffold-builder.git`.
 
-## Unreleased (Final — decision walkthrough 2026-11-19, accepted by owner)
+## 0.4.0 — 2026-11-19
 
 - [x] A. Stuck-group note: **keep** the one-exception policy. Teachers new to group work need a first move when a group stalls; the note ends in help (EB-03-consistent); the exception is disclosed in the disclaimer.
 - [x] B. Stuck-note wording: **keep** the three lines unchanged. Short, plain, printable; dropping "before giving any hints" was the right cut.
@@ -11,11 +11,14 @@ Each release on GitHub attaches the ready-to-use files from `dist/`. The version
 - [x] E. Already-present widening: **keep widened**. Routine-less units with base practice stay eligible targets; with D, this is how the routines reach most units.
 - [x] R. Standing rule: **adopted** for this session. Bug fixes and factual corrections proceed silently; teacher-facing content, project claims, or pipeline-behavior changes get a one-question checkpoint first.
 
-Follow-up to C (implemented, unreleased):
+Follow-up to C (implemented):
 - **Translated stuck note.** The translate stage now carries the fixed "If a group is stuck" note's heading and lines into the run's language; which units get the note is decided on the reviewed English, since translated steps no longer match the group-work pattern. Runs translated before this change re-render with the English note via `english-final.json`.
 - **Translated-page language tag.** `cards.html` now declares the run's output language (`<html lang>`, BCP47 with an `en` fallback for unknown languages); the G21 self-check verifies the tag.
-- **Stanford-translated method routines (Phase 1).** Opt-in method families (peer tutoring, talk uptake, civic mapping, UDL choice) with a tech/time inventory; routines apply only above effectiveness thresholds enforced in code, while tech-gated methods record honest abstentions. See docs/methodologies.md.
-- **Stanford-methods stage (Phase 2).** A fourth optimisation stage with two tech-conditional cards (ST-01 ROAR screening, ST-02 AI literacy), applied only with opt-in plus a passing inventory; applied steps carry a `(needs: …)` marker and plan B, enforced in code and re-verified by the critic's G08 row. Deck grows to twenty-one cards.
+- **Stanford methods.** Opt-in method families (peer tutoring, talk uptake, civic mapping, UDL choice) as named routines gated on a tech/time inventory, plus a fourth optimisation stage with two tech-conditional cards (ST-01 ROAR screening, ST-02 AI literacy) applied only with opt-in plus a passing inventory; applied tech steps carry a `(needs: …)` marker and plan B. Recording children stays vetoed. Deck grows to twenty-one cards. See docs/methodologies.md.
+- **EF+Math routines on EB cards.** One-sentence plan gates on EB-03/EB-08 multi-step problems and thumbs-signal confidence checks on EB-01/EB-04, applied as required-unless-capped edits and labeled project adaptations with inspected sources.
+- **Stuck-group note.** Unit cards with group work print a fixed "If a group is stuck" note (two questions, then show the next step); the onboarding disclaimer names it as the one exception to no prescribed routines. Final environment assumptions are saved so re-rendered cards match.
+- **Non-English intake.** Source lessons in another language are translated to English first, with the original kept alongside for checking.
+- **Docs.** Tagline on front doors, ELEVATE export note, exploratory field-evaluation protocol with adopter outreach template, eighth blog post, annotated teacher/method card examples, per-unit method-limit correction.
 
 ## 0.3.0 — 2026-11-09
 
