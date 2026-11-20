@@ -23,6 +23,8 @@ ROUTINE_FAMILIES = {"nssa-tutoring": "tutoring", "uptake-moves": "uptake",
                     "civic-mapping": "mapping", "udl-choice": "udl"}
 ROUTINE_HOSTS = {"nssa-tutoring": "CL-02", "uptake-moves": "EB-04",
                  "civic-mapping": "CL-03", "udl-choice": "EB-05"}
+# Routines needing explicit opt-in; the rest apply by content fit alone.
+ROUTINE_OPT_IN = frozenset({"nssa-tutoring"})
 ST_CARDS = ("ST-01", "ST-02")
 # Tech-conditional cards and the method family each needs.
 ST_FAMILIES = {"ST-01": "roar", "ST-02": "ai"}
@@ -66,10 +68,12 @@ def stanford_blockers(family: str, methods: dict | None) -> list[str]:
 def routine_blockers(routine: str, methods: dict | None) -> list[str]:
     """Inventory factors blocking this routine; [] means the code gates pass.
 
-    Content fit stays model-judged (the card states it); only countable
-    answers gate here. Without methodology answers nothing is verifiable,
-    so every routine is blocked.
+    Only opt-in routines have countable gates; the rest apply by content
+    fit, which stays model-judged (the card states it). Without methodology
+    answers a gated routine is unverifiable, so it is blocked.
     """
+    if routine not in ROUTINE_OPT_IN:
+        return []
     if not isinstance(methods, dict):
         return ["methodology answers unavailable"]
     opt_in = methods.get("method_opt_in") or []

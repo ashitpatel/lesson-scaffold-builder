@@ -1006,11 +1006,9 @@ def _breakdown_choices(src: Source) -> list[ask.Choice]:
 
 GOAL_FAMILIES = {"gaps": ("tutoring", "roar"), "talk": ("uptake",), "world": ("mapping",),
                  "access": ("udl",), "ai": ("ai",)}
+AUTOMATIC_FAMILIES = frozenset({"uptake", "mapping", "udl"})
 METHOD_OPT_IN_OPTIONS = (
     ("tutoring", "Peer tutoring protocol", "same pairs, rotating roles, 3+ times a week"),
-    ("uptake", "Talk uptake moves", "revoice ideas, press for reasoning, wait time"),
-    ("mapping", "Civic mapping on paper", "map school grounds, tally as a class"),
-    ("udl", "UDL choice", "a second way to perceive and to respond"),
     ("roar", "ROAR screening", "needs 1:1 browser devices + internet, Primary"),
     ("ai", "AI literacy", "needs shared devices + internet, High band"),
 )
@@ -1019,18 +1017,6 @@ METHOD_OPT_IN_DETAILS = (
                  "Demands: practice 3+ times a week with the same tutor.\n"
                  "Changes: one practice step per fitting unit; nothing new needed.\n"
                  "More: docs/methodologies.md (NSSA playbook)."),
-    ("uptake", "What: the teacher revoices one student idea, presses reasoning, waits silently.\n"
-                "Demands: discussion steps; nothing is ever recorded.\n"
-                "Changes: added to whole-class checks.\n"
-                "More: docs/methodologies.md."),
-    ("mapping", "What: groups map school grounds on paper, tally as a class, report back in school.\n"
-                 "Demands: place or count content; no photos, devices, or trips.\n"
-                 "Changes: one mapping step per fitting unit.\n"
-                 "More: docs/methodologies.md."),
-    ("udl", "What: every key point heard and seen; answers spoken, written or shown.\n"
-             "Demands: nothing beyond paper, chalk and voice.\n"
-             "Changes: second channels on explanation steps.\n"
-             "More: docs/methodologies.md (CAST UDL Guidelines)."),
     ("roar", "What: each child completes a short browser reading check; the teacher regroups from it.\n"
               "Demands: one browser device per student + internet, Primary band. Nothing recorded.\n"
               "Changes: one screening step, marked with its tech needs.\n"
@@ -1075,8 +1061,11 @@ def method_proposal(goals: Any, grade_band: str | None) -> str:
             if f not in fams:
                 fams.append(f)
     order = [v for v, _, _ in METHOD_OPT_IN_OPTIONS]
+    auto = [f for f in fams if f in AUTOMATIC_FAMILIES]
     kept, notes = [], []
     for f in fams:
+        if f in AUTOMATIC_FAMILIES:
+            continue
         need = opt.ST_GRADES.get(f)
         if need is not None and grade_band is not None and grade_band != need:
             notes.append(f"{FAMILY_BLURBS[f]} needs the {need} band (this run: {grade_band}) — left out")
@@ -1087,11 +1076,15 @@ def method_proposal(goals: Any, grade_band: str | None) -> str:
             kept.append(f)
     kept.sort(key=order.index)
     nums = ", ".join(str(order.index(f) + 1) for f in kept)
-    lines = ["Based on your goals (%s), suggested: %s — %s." % (
-        ", ".join(labels[g] for g in picked), nums or "none",
-        "; ".join(FAMILY_BLURBS[f] for f in kept) or "nothing fits")]
+    lines = ["Based on your goals (%s)." % ", ".join(labels[g] for g in picked)]
+    if kept:
+        lines.append("Suggested opt-ins: %s — %s." % (nums, "; ".join(FAMILY_BLURBS[f] for f in kept)))
+    else:
+        lines.append("Suggested opt-ins: none.")
+    if auto:
+        lines.append("Already automatic where content fits: %s." % "; ".join(FAMILY_BLURBS[f] for f in auto))
     lines += notes
-    lines.append("Each applies only above its threshold (checked next). "
+    lines.append("Each opt-in applies only above its threshold (checked next). "
                  "Type suggested numbers, adjust, or blank for none.")
     return "\n".join(lines)
 
@@ -1143,9 +1136,9 @@ def eligibility_preview(choices: dict, grade_band: str | None) -> str | None:
         else:
             blockers = [b[6:] if b.startswith("needs ") else b for b in opt.stanford_blockers(f, methods)]
         if blockers:
-            lines.append("• %s: not offered — %s." % (labels[f], "; ".join(blockers)))
+            lines.append("• %s: not offered — %s." % (labels.get(f, f), "; ".join(blockers)))
         else:
-            lines.append("• %s: will be considered for fitting units." % labels[f])
+            lines.append("• %s: will be considered for fitting units." % labels.get(f, f))
     lines.append("Details: docs/methodologies.md.")
     return "\n".join(lines)
 

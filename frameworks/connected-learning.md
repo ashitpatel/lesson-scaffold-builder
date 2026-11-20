@@ -41,7 +41,7 @@ The layer "optimizes [steps] using interest-driven, peer-supported, and contextu
 **Allowed edits:**
 - Replace or supplement the given numbers with ones the class can observe at school or that are common knowledge (temperatures, lengths, counts on the school grounds, a made-up price list based on everyday goods).
 - Add one sentence linking the result to something students see (e.g. "which is more than the class's longest jump").
-- Map the school grounds on paper (routine `civic-mapping`) — only when the run opted into `mapping` and the step handles place, route or count data: groups walk set school-ground routes, mark what helps or hinders on a paper map, and combine marks into one class tally. Report-back stays in school. Name the routine in the change entry.
+- Map the school grounds on paper (routine `civic-mapping`) — for steps handling place, route or count data: groups walk set school-ground routes, mark what helps or hinders on a paper map, and combine marks into one class tally. Report-back stays in school. Name the routine in the change entry.
 
 **Never:** ask for household or family information (income, home conditions, family members, what the family owns); depend on one locality's market or prices; require a trip off school grounds; photograph or record anything; use a device for the mapping; present findings to real officials.
 

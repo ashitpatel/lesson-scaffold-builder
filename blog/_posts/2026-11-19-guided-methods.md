@@ -15,7 +15,9 @@ date: 2026-11-19 00:00:00 +0000
 Run on a terminal and the methodology section opens with one question in plain language: which goals matter — finding where strugglers are stuck, more students talking, lessons tied to real surroundings, more ways in and out, students judging AI tools. Pick any, or nothing. The next question then proposes method families with numbered picks:
 
 ```
-Based on your goals (Find where strugglers are stuck), suggested: 1, 5 — peer tutoring (extra practice in steady pairs); ROAR screening (browser check per student).
+Based on your goals (Find where strugglers are stuck).
+Suggested opt-ins: 1, 2 — peer tutoring (extra practice in steady pairs); ROAR screening (browser check per student).
+ROAR screening (browser check per student) needs the Primary band (this run states no grade band — pass --grade-band or it stays out)
 Each applies only above its threshold (checked next). Type suggested numbers, adjust, or blank for none.
 ```
 
@@ -23,7 +25,7 @@ The proposal is advice, not a decision. Type the numbers, change them, or leave 
 
 ## Every option explains itself
 
-Type `?N` on any option and it answers four questions: what it is, what it demands, what changes on your cards, and where to read more. For example, `?5`:
+Type `?N` on any option and it answers four questions: what it is, what it demands, what changes on your cards, and where to read more. For example, `?2` (uptake moves, civic mapping and UDL choice need no opt-in at all — they apply by content fit, and the proposal says so when your goals point at them):
 
 ```
 What: each child completes a short browser reading check; the teacher regroups from it.
@@ -41,8 +43,7 @@ After five short inventory questions (sessions per week, steady tutor, devices, 
 ```
 Methodology check (based on your answers):
 • Peer tutoring protocol: will be considered for fitting units.
-• ROAR screening: not offered — one browser device per student; Primary grade band.
-• AI literacy: not offered — High grade band.
+• ROAR screening: not offered — one browser device per student; classroom internet; Primary grade band.
 Details: docs/methodologies.md.
 ```
 

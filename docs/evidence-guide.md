@@ -34,11 +34,11 @@ The nine fall into five groups: two that strengthen memory, two that explain cle
 
 ### EB-05 Concrete and visual representations
 
-**What it is.** A drawing, model or demonstration shown *together with* the words or symbols, with the link between them stated out loud — not the picture instead of the explanation.
+**What it is.** A drawing, model or demonstration shown *together with* the words or symbols, with the link between them stated out loud — not the picture instead of the explanation. The card can also offer a second channel: each key point both heard and seen, and each answer spoken, written or shown.
 
 **When it fits.** When an idea is carried only by abstract words or symbols and learners have nothing to hold onto. The representation must use materials already in the classroom.
 
-**Evidence.** Two IES practice-guide recommendations: combine graphics with verbal descriptions, and connect abstract and concrete representations ([Pashler et al., 2007](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)).
+**Evidence.** Two IES practice-guide recommendations: combine graphics with verbal descriptions, and connect abstract and concrete representations ([Pashler et al., 2007](https://ies.ed.gov/ncee/WWC/PracticeGuide/1)). Choice of channel adapts Universal Design for Learning (multiple means of Engagement, Representation, and Action and Expression) to paper, chalk and voice ([CAST UDL Guidelines](https://udlguidelines.cast.org/)).
 
 ## 3. Thinking harder
 
@@ -72,11 +72,11 @@ The nine fall into five groups: two that strengthen memory, two that explain cle
 
 ### EB-04 Checking for understanding
 
-**What it is.** During the lesson, ask one or two questions that *every* learner answers at the same time — slates held up, fingers for a choice, scrap paper — look at all the answers, and re-explain if many are wrong before moving on. Around the questions sits a confidence check: every learner shows thumbs-up, sideways or down before answering, and again after the answers are checked.
+**What it is.** During the lesson, ask one or two questions that *every* learner answers at the same time — slates held up, fingers for a choice, scrap paper — look at all the answers, and re-explain if many are wrong before moving on. Around the questions sits a confidence check: every learner shows thumbs-up, sideways or down before answering, and again after the answers are checked. The check can also carry uptake moves: the educator revoices one learner idea, presses one learner to explain their reasoning, and waits silently after asking.
 
 **When it fits.** When the educator explains or models something new and would otherwise move on without seeing whether every learner followed. Volunteers answering is the failure mode this replaces.
 
-**Evidence.** A Rosenshine principle ([Rosenshine, 2012](https://eric.ed.gov/?id=EJ971753)) in the tradition of the formative-assessment review ([Black & Wiliam, 1998](https://doi.org/10.1177/003172171009200119)) — with one honest caution: a later meta-analysis across 42 effect sizes found a weighted mean of 0.20, real but modest ([Kingston & Nash, 2011](https://doi.org/10.1111/j.1745-3992.2011.00220.x)). The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration of math confidence is studied in ([Erickson & Heit, 2015](https://doi.org/10.3389/fpsyg.2015.00742)), who find learners better calibrated after completing a test. The thumbs-signal port is a project adaptation.
+**Evidence.** A Rosenshine principle ([Rosenshine, 2012](https://eric.ed.gov/?id=EJ971753)) in the tradition of the formative-assessment review ([Black & Wiliam, 1998](https://doi.org/10.1177/003172171009200119)) — with one honest caution: a later meta-analysis across 42 effect sizes found a weighted mean of 0.20, real but modest ([Kingston & Nash, 2011](https://doi.org/10.1111/j.1745-3992.2011.00220.x)). The confidence check adapts the EF+Math prediction/postdiction measure — the same self-rating immediately before and after a mathematics task — to a thumbs signal; prediction/postdiction calibration of math confidence is studied in ([Erickson & Heit, 2015](https://doi.org/10.3389/fpsyg.2015.00742)), who find learners better calibrated after completing a test. The thumbs-signal port is a project adaptation. The uptake moves adapt classroom-discourse coaching to unaided teacher prompts, without recording; measuring talk via lesson recordings is intentionally not adapted ([TeachFX FAQ](https://teachfx.com/faq); [Learning Forward, 2026](https://learningforward.org/journal/learning-with-ai/ai-enhanced-coaching-what-early-studies-show/)).
 
 ### EB-06 Teaching at the right level (level groups)
 

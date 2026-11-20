@@ -214,7 +214,7 @@ The tests are offline (a scripted fake model drives the whole pipeline). The reg
 
 ## The frameworks
 
-> **How they rank.** Of the four, only the **evidence-based practices** have broad, replicated evidence about learning. **Connected Learning** and **participatory budgeting** have no causal evidence of improving test scores; they're used as engagement and civic-reasoning designs, and the pipeline is forbidden from claiming otherwise. **Stanford methods** translate field programs into routines and tech-conditional steps, applied only with explicit opt-in above their effectiveness thresholds. All four must abstain when they don't fit. Four cards also carry Stanford-translated routines (peer tutoring, talk uptake, civic mapping, UDL choice); see [methodologies](docs/methodologies.md).
+> **How they rank.** Of the four, only the **evidence-based practices** have broad, replicated evidence about learning. **Connected Learning** and **participatory budgeting** have no causal evidence of improving test scores; they're used as engagement and civic-reasoning designs, and the pipeline is forbidden from claiming otherwise. **Stanford methods** translate field programs into routines and tech-conditional steps; the tech-conditional ones apply only with explicit opt-in above their effectiveness thresholds. All four must abstain when they don't fit. Four cards also carry Stanford-translated routines — talk uptake, civic mapping and UDL choice by content fit, peer tutoring by opt-in; see [methodologies](docs/methodologies.md).
 
 ### 1. Evidence-based practices (run first)
 

@@ -239,7 +239,7 @@ class Pipeline(unittest.TestCase):
         self.assertTrue((self.out / "summary.json").exists())
 
 
-def cl_reply(unit, apply=True, card="CL-05"):
+def cl_reply(unit, apply=True, card="CL-05", routine=None):
     """A stage reply for `unit`: one added step under `card`, or an abstain."""
     out = copy.deepcopy(unit)
     changes = []
@@ -247,7 +247,10 @@ def cl_reply(unit, apply=True, card="CL-05"):
         n = len(out["tasks"]) + 1
         out["tasks"].append({"step": n, "role": "Lead_Educator",
                              "action": f"Run the {card} activity for 10 minutes with the whole class."})
-        changes = [{"step": n, "change": "added", "replaces_step": None, "card": card, "summary": "s"}]
+        change = {"step": n, "change": "added", "replaces_step": None, "card": card, "summary": "s"}
+        if routine:
+            change["routine"] = routine
+        changes = [change]
     return json.dumps({"mls_id": unit["mls_id"], "decision": "APPLY" if apply else "ABSTAIN", "reason": "r",
                        "credit": [], "unit": out, "changes": changes, "deferred": []})
 
@@ -756,22 +759,26 @@ class MethodologyChoices(unittest.TestCase):
 
     def test_proposal_suggests_numbers_and_grade_caveats(self):
         c = run._method_opt_in_choice(["gaps"], None)
-        self.assertIn("1, 5", c.context)
+        self.assertIn("1, 2", c.context)
         self.assertIn("--grade-band", c.context)
         c = run._method_opt_in_choice(["gaps"], "Middle")
-        self.assertNotIn("1, 5", c.context)
+        self.assertNotIn("1, 2", c.context)
         self.assertIn("left out", c.context)
         c = run._method_opt_in_choice([], None)
         self.assertIn("No goals picked", c.context)
+        c = run._method_opt_in_choice(["talk", "world"], None)
+        self.assertIn("Suggested opt-ins: none.", c.context)
+        self.assertIn("Already automatic where content fits", c.context)
+        self.assertIn("talk uptake moves", c.context)
 
     def test_preview_lists_pass_and_fail(self):
-        choices = {"method_opt_in": ["tutoring", "uptake"], "sessions_per_week": 1,
-                   "tutor_staff": False, "classroom_devices": "none",
+        choices = {"method_opt_in": ["tutoring", "roar"], "sessions_per_week": 3,
+                   "tutor_staff": True, "classroom_devices": "none",
                    "classroom_internet": False, "home_access": "few"}
-        text = run.eligibility_preview(choices, None)
-        self.assertIn("Peer tutoring protocol: not offered", text)
-        self.assertIn("sessions_per_week is 1", text)
-        self.assertIn("Talk uptake moves: will be considered", text)
+        text = run.eligibility_preview(choices, "Primary")
+        self.assertIn("Peer tutoring protocol: will be considered", text)
+        self.assertIn("ROAR screening: not offered", text)
+        self.assertIn("one browser device per student", text)
         self.assertIsNone(run.eligibility_preview({"method_opt_in": []}, None))
 
     def test_preview_shown_to_interactive_reader(self):
@@ -782,11 +789,12 @@ class MethodologyChoices(unittest.TestCase):
                 shown.append(text)
 
         f = Path(self.tmp.name) / "answers.json"
-        f.write_text(json.dumps({"method_opt_in": ["uptake"]}), encoding="utf-8")
+        f.write_text(json.dumps({"method_opt_in": ["tutoring"], "sessions_per_week": 3,
+                                 "tutor_staff": True}), encoding="utf-8")
         run.run_pipeline(SOURCE, FakeModel([decomposed(VALID)], [critic("PASS")]),
                          self.out, prompter=Shown(f))
         self.assertEqual(len(shown), 1)
-        self.assertIn("Talk uptake moves", shown[0])
+        self.assertIn("Peer tutoring protocol", shown[0])
         self.assertIn("will be considered", shown[0])
 
 
@@ -803,25 +811,25 @@ class MethodRoutines(unittest.TestCase):
         f.write_text(json.dumps(obj), encoding="utf-8")
         return ask.FilePrompter(f)
 
-    def test_opted_in_routine_applies_with_inventory_in_context(self):
-        p = self.answers({"method_opt_in": ["uptake"], "sessions_per_week": 3})
+    def test_routine_applies_without_opt_in(self):
         m = FakeModel([decomposed(VALID)], [critic("PASS"), critic("PASS")],
                       eb=[eb_reply(U0, "uptake-moves"), eb_reply(U1, apply=False)])
-        r = run.run_pipeline(SOURCE, m, self.out, stages=("eb",), prompter=p)
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("eb",))
         self.assertEqual(r.status, "pass")
         unit = r.optimisation["evidence_based"]["units"]["MLS-HYDRO-01"]
         self.assertEqual(unit["status"], "applied")
         self.assertEqual(unit["changes"][0]["routine"], "uptake-moves")
         request = m.calls[2][1]
-        self.assertIn("<METHOD_OPT_IN>\nuptake\n</METHOD_OPT_IN>", request)
-        self.assertIn("sessions_per_week: 3", request)
+        self.assertIn("<METHOD_OPT_IN>\n(none)\n</METHOD_OPT_IN>", request)
+        self.assertIn("sessions_per_week: 1", request)
 
     def test_gated_out_routine_is_rejected(self):
         m = FakeModel([decomposed(VALID)], [critic("PASS")],
-                      eb=[eb_reply(U0, "uptake-moves"), eb_reply(U0, "uptake-moves"),
-                          eb_reply(U1, apply=False)])
-        r = run.run_pipeline(SOURCE, m, self.out, stages=("eb",))
-        units = r.optimisation["evidence_based"]["units"]
+                      cl=[cl_reply(U0, card="CL-02", routine="nssa-tutoring"),
+                          cl_reply(U0, card="CL-02", routine="nssa-tutoring"),
+                          cl_reply(U1, apply=False)])
+        r = run.run_pipeline(SOURCE, m, self.out, stages=("cl",))
+        units = r.optimisation["connected_learning"]["units"]
         self.assertEqual(units["MLS-HYDRO-01"]["status"], "edit_rejected")
         self.assertEqual(units["MLS-HYDRO-02"]["status"], "abstained")
         self.assertTrue(any("below threshold" in n for n in r.notes), r.notes)

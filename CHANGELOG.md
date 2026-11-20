@@ -8,6 +8,7 @@ Each release on GitHub attaches the ready-to-use files from `dist/`. The version
 - **`--max-model-steps` for the muse backend.** Raises the per-call model-step budget when calls fail for needing more steps (default 1, unchanged); the failure message now names the flag.
 - **Guided methodology choices.** `--ask` opens with plain-language goals that propose method families, every option explains itself via `?N` with research pointers, and an eligibility preview shows what will and won't apply (and why) before the run proceeds.
 - **Guided interview by default.** Runs on a terminal now ask instead of silently defaulting; `--yes` takes every default without asking, sweeps run detached so they never prompt.
+- **Narrowed method opt-in.** Talk uptake, civic mapping and UDL choice now apply by content fit with no opt-in; only peer tutoring (staffing commitment) and the tech-conditional families ask. Old answers files naming the retired options still validate; those values are ignored.
 
 ## 0.4.0 — 2026-11-19
 

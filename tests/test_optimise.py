@@ -304,9 +304,17 @@ class RoutineGates(unittest.TestCase):
             with self.subTest(routine=routine):
                 self.assertEqual(self.gated(routine, card, self.METHODS), [])
 
-    def test_routine_without_opt_in_is_blocked(self):
+    def test_content_fit_routines_need_no_opt_in(self):
         methods = {**self.METHODS, "method_opt_in": []}
-        found = self.gated("uptake-moves", "EB-04", methods)
+        for routine, card in (("uptake-moves", "EB-04"), ("udl-choice", "EB-05"),
+                              ("civic-mapping", "CL-03")):
+            with self.subTest(routine=routine):
+                self.assertEqual(self.gated(routine, card, methods), [])
+                self.assertEqual(self.gated(routine, card, None), [])
+
+    def test_tutoring_without_opt_in_is_blocked(self):
+        methods = {**self.METHODS, "method_opt_in": []}
+        found = self.gated("nssa-tutoring", "CL-02", methods)
         self.assertTrue(any("below threshold" in p and "method_opt_in" in p for p in found), found)
 
     def test_tutoring_needs_dosage_and_tutor(self):
@@ -315,10 +323,10 @@ class RoutineGates(unittest.TestCase):
         self.assertTrue(any("sessions_per_week is 2" in p for p in found), found)
         self.assertTrue(any("no consistent tutor" in p for p in found), found)
 
-    def test_routine_without_answers_is_blocked(self):
-        out = modified(card="EB-04")
-        out["changes"][0]["routine"] = "uptake-moves"
-        found = opt.check_unit_edit(BEFORE, out, opt.EB_CARDS)
+    def test_gated_routine_without_answers_is_blocked(self):
+        out = modified(card="CL-02")
+        out["changes"][0]["routine"] = "nssa-tutoring"
+        found = opt.check_unit_edit(BEFORE, out, opt.CL_CARDS)
         self.assertTrue(any("methodology answers unavailable" in p for p in found), found)
 
     def test_unknown_routine_and_wrong_host_fail(self):

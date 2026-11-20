@@ -15,9 +15,9 @@ Every threshold value below traces to an inspected primary source (Step 1,
 | Methodology | Verdict | Reason |
 |---|---|---|
 | NSSA tutoring protocol | ADAPT → CL-02 fold-in (`nssa-tutoring`) | Human routine, no tech. Dose 3+/week for 10+ weeks, consistent trained tutors, ≤4:1, curriculum-aligned, in-school-day. [NSSA playbook](https://nssa.stanford.edu/district-playbook-high-impact-tutoring/about) |
-| Talk uptake moves | ADAPT method only → EB-04 fold-in (`uptake-moves`) | Revoice ideas, press for reasoning, wait time need no tech. Recording the classroom to measure them is vetoed (G06). [TeachFX FAQ](https://teachfx.com/faq), [Learning Forward](https://learningforward.org/journal/learning-with-ai/ai-enhanced-coaching-what-early-studies-show/) |
-| Civic mapping | ADAPT paper core → CL-03 fold-in (`civic-mapping`) | Our Voice runs Discover/Discuss/Activate/Change; the app (photos, GPS, audio narratives) is dropped for G06/G08. In-school paper mapping + class tallies + in-school report-back survive. [PARCS](https://pmc.ncbi.nlm.nih.gov/articles/PMC10522010/) |
-| UDL choice | ADAPT → EB-05 fold-in (`udl-choice`) | CAST's three principles (Engagement, Representation, Action & Expression) prescribe no technology; choice/autonomy and multiple perception channels encode directly. [CAST](https://udlguidelines.cast.org/) |
+| Talk uptake moves | ADAPT method only → EB-04 fold-in (`uptake-moves`), automatic | Revoice ideas, press for reasoning, wait time need no tech. Recording the classroom to measure them is vetoed (G06). [TeachFX FAQ](https://teachfx.com/faq), [Learning Forward](https://learningforward.org/journal/learning-with-ai/ai-enhanced-coaching-what-early-studies-show/) |
+| Civic mapping | ADAPT paper core → CL-03 fold-in (`civic-mapping`), automatic | Our Voice runs Discover/Discuss/Activate/Change; the app (photos, GPS, audio narratives) is dropped for G06/G08. In-school paper mapping + class tallies + in-school report-back survive. [PARCS](https://pmc.ncbi.nlm.nih.gov/articles/PMC10522010/) |
+| UDL choice | ADAPT → EB-05 fold-in (`udl-choice`), automatic | CAST's three principles (Engagement, Representation, Action & Expression) prescribe no technology; choice/autonomy and multiple perception channels encode directly. [CAST](https://udlguidelines.cast.org/) |
 | ROAR screening | OFFERED as ST-01 (opt-in + inventory + Primary) | Self-administered browser assessment; needs one browser device per student plus connectivity; runs in class or at home. [Stanford](https://news.stanford.edu/stories/2022/06/new-online-tool-helps-schools-spot-struggling-readers) |
 | AI literacy (CRAFT-style) | OFFERED as ST-02 (opt-in + inventory + High) | Needs basic AI tools, bandwidth, teacher training; High band. [Stanford GSE](https://ed.stanford.edu/news/bringing-ai-literacy-high-schools) |
 | RQ Lab | OUT OF SCOPE | Grade-9 pastoral workshops in 16-per-cohort groups; no lesson-scaffold mapping. Revisit for advisory content. [Transcript](https://ampedto11.com/podcast/can-we-teach-the-capacity-to-relate/) |
@@ -72,33 +72,33 @@ Piped runs take defaults silently; `--answers` files skip the guidance
 and answer directly; `method_goals` is accepted but gates nothing.
 
 Worked example (middle-school class via `--grade-band Middle`, wants
-strugglers found and AI judged; practice 3 times a week with a steady
-tutor; shared devices with internet; the teacher overrules the proposal
-to include the two gated families):
+strugglers found and real surroundings; practice 3 times a week with a
+steady tutor; 1:1 devices with internet; the teacher overrules the
+proposal to include ROAR anyway):
 
 ```
 Which goals matter for this run?
   1. Find where strugglers are stuck — screening + extra practice
   [... options 2–5 ...]
-> 1,5
-Based on your goals (Find where strugglers are stuck, Students using and judging AI tools), suggested: 1 — peer tutoring (extra practice in steady pairs).
+> 1,3
+Based on your goals (Find where strugglers are stuck, Lessons tied to real surroundings).
+Suggested opt-ins: 1 — peer tutoring (extra practice in steady pairs).
+Already automatic where content fits: civic mapping on paper (map grounds, tally as a class).
 ROAR screening (browser check per student) needs the Primary band (this run: Middle) — left out
-AI literacy (use + critique AI) needs the High band (this run: Middle) — left out
-Each applies only above its threshold (checked next). Type suggested numbers, adjust, or blank for none.
+Each opt-in applies only above its threshold (checked next). Type suggested numbers, adjust, or blank for none.
 Which Stanford-translated method families may apply?
-  [... options 1–6 ...]
+  [... options 1–3 ...]
   (?N for more about an option)
-> ?5
+> ?2
 What: each child completes a short browser reading check; the teacher regroups from it.
 Demands: one browser device per student + internet, Primary band. Nothing recorded.
 Changes: one screening step, marked with its tech needs.
 More: docs/methodologies.md.
-> 1,5,6
+> 1,2
 [... five inventory questions ...]
 Methodology check (based on your answers):
 • Peer tutoring protocol: will be considered for fitting units.
-• ROAR screening: not offered — one browser device per student; Primary grade band.
-• AI literacy: not offered — High grade band.
+• ROAR screening: not offered — Primary grade band.
 Details: docs/methodologies.md.
 ```
 
@@ -110,9 +110,9 @@ defers with a reason naming the failed factor — never a weakened variant.
 | Family | Code gates (countable) | Model-judged fit |
 |---|---|---|
 | `tutoring` | Opted in; sessions/week ≥ 3; consistent tutor available | Skill practice suited to pairs; same pairs across the unit's weeks |
-| `uptake` | Opted in | Explanation/discussion steps (not silent drills); move complexity fits the grade band; no recording ever |
-| `mapping` | Opted in | Place/data/community content; on school grounds; in-school or mock audience only; fits declared weeks/periods |
-| `udl` | Opted in | Single-mode explanation or response worth a second channel |
+| `uptake` | — (automatic; content fit only) | Explanation/discussion steps (not silent drills); move complexity fits the grade band; no recording ever |
+| `mapping` | — (automatic; content fit only) | Place/data/community content; on school grounds; in-school or mock audience only; fits declared weeks/periods |
+| `udl` | — (automatic; content fit only) | Single-mode explanation or response worth a second channel |
 | `roar` (ST-01) | Opted in; one browser device per student; internet; Primary band | Foundational-reading content where bottlenecks are invisible |
 | `ai` (ST-02) | Opted in; shared or 1:1 devices; internet; High band | Any subject where students could use and critique AI |
 
@@ -131,7 +131,7 @@ Notes:
 | Key | Options | Default | Consumers |
 |---|---|---|---|
 | `method_goals` | multi of `gaps`, `talk`, `world`, `access`, `ai` | `[]` | proposes opt-in suggestions (guides humans; gates nothing) |
-| `method_opt_in` | multi of `tutoring`, `uptake`, `mapping`, `udl`, `roar`, `ai` | `[]` | every gate |
+| `method_opt_in` | multi of `tutoring`, `roar`, `ai` | `[]` | tutoring + ST gates |
 | `sessions_per_week` | `1`, `2`, `3`, `4`, `5+` | `1` | tutoring gate |
 | `tutor_staff` | `yes`, `no` | `no` | tutoring gate |
 | `classroom_devices` | `none`, `teacher-only`, `shared`, `one-per-student` | `none` | ROAR/AI abstention reasons |
@@ -149,14 +149,15 @@ proceeds. `--answers` files skip the guidance and answer directly.
 
 ## Routine tokens
 
-Fold-ins name a `routine` in their change entry so code can gate them:
+Fold-ins name a `routine` in their change entry so code can gate the ones
+with countable thresholds (`nssa-tutoring`) and trace the rest:
 
-| Token | Host card | Family |
-|---|---|---|
-| `nssa-tutoring` | CL-02 | `tutoring` |
-| `uptake-moves` | EB-04 | `uptake` |
-| `civic-mapping` | CL-03 | `mapping` |
-| `udl-choice` | EB-05 | `udl` |
+| Token | Host card | Family | Gated |
+|---|---|---|---|
+| `nssa-tutoring` | CL-02 | `tutoring` | opt-in + sessions + tutor |
+| `uptake-moves` | EB-04 | `uptake` | content fit only |
+| `civic-mapping` | CL-03 | `mapping` | content fit only |
+| `udl-choice` | EB-05 | `udl` | content fit only |
 
 Summaries stay teacher-readable; the token is structural only and is not
 printed on cards.

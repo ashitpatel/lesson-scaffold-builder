@@ -59,7 +59,7 @@ Each card has **non-negotiables**: the parts the evidence is about. An edit that
 **Allowed edits:**
 - Ask one or two questions every student answers at the same time (slates, scrap paper held up, fingers for a choice, cards), look at all the answers, and re-explain if many are wrong before moving on.
 - Add a confidence check around the questions — required unless the step is at the sentence cap: before answering, every student shows thumbs-up, sideways or down for how sure they feel; after the answers are checked, they show it again. The signals guide re-explanation and are never recorded or displayed by name.
-- Add uptake moves around the answers (routine `uptake-moves`) — only when the run opted into `uptake` and the step has students explain or discuss (not silent drill): the educator revoices one student idea ("So you are saying..."), presses one student to explain their reasoning ("Why does that work?"), and waits silently after asking. Nothing is recorded. Name the routine in the change entry.
+- Add uptake moves around the answers (routine `uptake-moves`) — for steps where students explain or discuss (not silent drill): the educator revoices one student idea ("So you are saying..."), presses one student to explain their reasoning ("Why does that work?"), and waits silently after asking. Nothing is recorded. Name the routine in the change entry.
 
 **Non-negotiables:** every student answers, not just volunteers; the educator looks at the answers during the lesson; what happens next depends on them (re-explain, or move on).
 
@@ -74,7 +74,7 @@ Each card has **non-negotiables**: the parts the evidence is about. An edit that
 
 **Allowed edits:**
 - Pair the explanation with a simple drawing, diagram or physical model made from classroom or found materials, and say explicitly how each part of the picture or model matches the abstract idea.
-- Offer a second channel (routine `udl-choice`) — only when the run opted into `udl`: each key point in the step is both heard and seen (said aloud and shown on the board), and each answer may be spoken, written or shown. Nothing beyond paper, chalk and voice. Name the routine in the change entry.
+- Offer a second channel (routine `udl-choice`): each key point in the step is both heard and seen (said aloud and shown on the board), and each answer may be spoken, written or shown. Nothing beyond paper, chalk and voice. Name the routine in the change entry.
 
 **Non-negotiables:** the picture or model is shown together with the words or symbols, not instead of them; the link between them is stated.
 
